@@ -303,7 +303,6 @@ select.inp option{background:#fff;color:var(--text)}
     <button class="tab" onclick="goTab('settings',this)">⚙ ตั้งค่า</button>
   </div>
 
-  <!-- OVERVIEW -->
   <div class="section active" id="sec-overview">
     <div class="kpi-row">
       <div class="kpi kpi-o" style="--kg:rgba(232,114,42,.15)">
@@ -359,7 +358,6 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
 
-  <!-- ORDERS -->
   <div class="section" id="sec-orders">
     <div class="mtog" id="om-tog"></div>
     <div class="expbar"><span class="expbar-title">📤 Export:</span>
@@ -386,7 +384,6 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
 
-  <!-- SHIPPING -->
   <div class="section" id="sec-shipping">
     <div class="kpi-row">
       <div class="kpi kpi-s"><div class="kpi-icon">📤</div><div class="kpi-label">จ่ายจริงรวม</div><div class="kpi-value" style="color:var(--sky)" id="sh-paid">—</div></div>
@@ -400,7 +397,6 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
 
-  <!-- PURCHASE -->
   <div class="section" id="sec-purchase">
     <div class="kpi-row">
       <div class="kpi kpi-r"><div class="kpi-icon">💸</div><div class="kpi-label">ยอดสั่งของรวม (ต้นทุน)</div><div class="kpi-value" style="color:var(--red)" id="pu-tot">—</div></div>
@@ -448,7 +444,6 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
 
-  <!-- CUSTOMERS -->
   <div class="section" id="sec-customers">
     <div class="kpi-row">
       <div class="kpi kpi-p"><div class="kpi-icon">👥</div><div class="kpi-label">ลูกค้าทั้งหมด</div><div class="kpi-value" style="color:var(--purple)" id="cu-tot">—</div></div>
@@ -486,7 +481,6 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
 
-  <!-- CORPORATE -->
   <div class="section" id="sec-corporate">
     <div class="kpi-row">
       <div class="kpi kpi-o"><div class="kpi-icon">🏢</div><div class="kpi-label">ยอด B2B รวม</div><div class="kpi-value" style="color:var(--orange)" id="co-tot">—</div></div>
@@ -499,7 +493,6 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="card"><div class="card-title">🏢 Corporate Orders (B2B)</div><div class="tbl-wrap" id="co-tbl"></div></div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="section" id="sec-settings">
     <div class="g2">
       <div class="card">
@@ -538,7 +531,6 @@ select.inp option{background:#fff;color:var(--text)}
         </select>
       </div>
 
-      <!-- Summary CSV Uploader -->
       <div style="background:var(--cream3); padding:16px; border-radius:12px; margin-bottom:16px;">
           <div class="card-title" style="color:var(--text); margin-bottom:8px;">📊 ไฟล์สรุปยอดขายรายเดือน (ยอดขายรวม.csv)</div>
           <p style="font-size:0.7rem; color:var(--text2); margin-bottom:10px;">อัปโหลดไฟล์ตารางภาพรวมรายเดือน ระบบจะดึงกำไรสุทธิตามสูตรเป๊ะๆ (เหมาะสำหรับอัปเดตข้อมูลปีเก่าๆ)</p>
@@ -561,12 +553,7 @@ select.inp option{background:#fff;color:var(--text)}
         </div>
     </div>
   </div>
-</div> <!-- END WRAP -->
-
-<!-- MODALS -->
-
-<!-- EXPENSE MODAL -->
-<div class="overlay hidden" id="m-expense">
+</div> <div class="overlay hidden" id="m-expense">
   <div class="modal" style="max-width:400px">
     <div class="modal-title" id="m-expense-title" style="color:var(--purple)">💸 บันทึกค่าใช้จ่ายส่วนตัว (ดึงเงินไปใช้)</div>
     <button class="mclose" onclick="closeM('m-expense')">✕</button>
@@ -599,7 +586,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- EXPENSE LIST MODAL -->
 <div class="overlay hidden" id="m-expense-list">
   <div class="modal" style="max-width:480px">
     <div class="modal-title" id="m-expense-list-title" style="color:var(--purple)">รายการจ่ายอื่นๆ</div>
@@ -608,7 +594,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- CUSTOMER DETAIL MODAL -->
 <div class="overlay hidden" id="m-cust-detail">
   <div class="modal" style="max-width:500px">
     <div class="modal-title" id="mcust-title" style="color:var(--purple)">ข้อมูลลูกค้า</div>
@@ -617,7 +602,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- ORDER DETAIL (QUICK VIEW) MODAL -->
 <div class="overlay hidden" id="m-odp">
   <div class="modal" style="max-width:500px">
     <div class="modal-title" id="odp-title"></div>
@@ -626,7 +610,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- PURCHASE EDIT MODAL -->
 <div class="overlay hidden" id="m-pur-detail">
   <div class="modal" style="max-width:440px">
     <div class="modal-title" id="m-pur-title">แก้ไขรายการสั่งของ (ต้นทุน)</div>
@@ -663,7 +646,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- ORDER FULL EDIT/CREATE MODAL -->
 <div class="overlay hidden" id="m-order">
   <div class="modal">
     <div class="modal-title" id="m-order-title">＋ เพิ่มออเดอร์ใหม่</div>
@@ -687,8 +669,8 @@ select.inp option{background:#fff;color:var(--text)}
     
     <div class="ffull">
        <label style="display:flex; justify-content:space-between; align-items:center;">
-          <span>สินค้าที่สั่ง</span>
-          <button class="btn btn-sm btn-ghost" style="padding:2px 8px; font-size:0.6rem;" onclick="addProdRow()">+ เพิ่มสินค้า</button>
+         <span>สินค้าที่สั่ง</span>
+         <button class="btn btn-sm btn-ghost" style="padding:2px 8px; font-size:0.6rem;" onclick="addProdRow()">+ เพิ่มสินค้า</button>
        </label>
        <div id="prod-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-top:5px;"></div>
     </div>
@@ -716,7 +698,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- SHIPPING MODAL -->
 <div class="overlay hidden" id="m-ship">
   <div class="modal" style="max-width:380px">
     <div class="modal-title">🚚 บันทึกค่าส่ง</div>
@@ -731,7 +712,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- CORPORATE MODAL -->
 <div class="overlay hidden" id="m-corp">
   <div class="modal" style="max-width:440px">
     <div class="modal-title" id="m-corp-title">🏢 เพิ่มออเดอร์ Corporate (B2B)</div>
@@ -761,7 +741,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- UPLOAD MODAL -->
 <div class="overlay hidden" id="m-upload">
   <div class="modal" style="max-width:440px">
     <div class="modal-title">📂 นำเข้า CSV</div>
@@ -787,7 +766,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- FIREBASE MODAL -->
 <div class="overlay hidden" id="m-fb">
   <div class="modal" style="max-width:460px">
     <div class="modal-title">🔥 Firebase Setup</div>
@@ -802,7 +780,6 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- CONFIRM MODAL -->
 <div class="overlay hidden" id="m-confirm" style="z-index:99999;">
   <div class="modal" style="max-width:300px; text-align:center; padding: 30px 20px;">
     <div style="font-size:3rem; margin-bottom:10px;">⚠️</div>
@@ -1234,15 +1211,15 @@ function showExpenseList(mKey) {
    } else {
        html = exps.map(e => `
            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--cream2)">
-              <div>
+             <div>
                  <div style="font-weight:600; font-size:0.8rem">${e.name} ${(mKey==='ALL' && e.month!=='ALL')?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]||'รวมทั้งปี'}]</span>`:''}</div>
                  <div style="font-size:0.65rem; color:var(--muted)">📅 ${e.date || '-'} ${e.note ? `• 📝 ${e.note}` : ''}</div>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px">
+             </div>
+             <div style="display:flex; align-items:center; gap:10px">
                  <span style="font-family:'Space Mono',monospace; font-weight:700; color:var(--purple)">${fmt(e.amount)}</span>
                  <button class="btn btn-ghost btn-sm" style="padding:2px 8px; font-size:0.65rem; border-color:var(--cream3);" onclick="editExpense('${e.id}')">✏️</button>
                  <button class="sli-del" onclick="delExpense('${e.id}')">✕</button>
-              </div>
+             </div>
            </div>
        `).join('');
        const total = exps.reduce((s, e) => s + e.amount, 0);
@@ -1398,21 +1375,21 @@ function showOD(id){
     <div style="background:var(--cream2); padding:12px; border-radius:10px; margin-top:10px; font-size:0.8rem;">
         <div style="font-weight:bold; margin-bottom:8px; color:var(--text2)">📝 อัปเดตสถานะออเดอร์</div>
         <div class="frow">
-           <div>
+            <div>
               <label>สถานะงาน</label>
               <select class="inp" id="edit-o-done" style="padding:4px; font-size:0.75rem;">
-                 <option value="false" ${!o.done ? 'selected' : ''}>⏳ รอจัดส่ง / กำลังทำ</option>
-                 <option value="true" ${o.done ? 'selected' : ''}>✓ จัดส่งแล้ว</option>
+                  <option value="false" ${!o.done ? 'selected' : ''}>⏳ รอจัดส่ง / กำลังทำ</option>
+                  <option value="true" ${o.done ? 'selected' : ''}>✓ จัดส่งแล้ว</option>
               </select>
-           </div>
-           <div>
+            </div>
+            <div>
               <label>การชำระเงิน</label>
               <select class="inp" id="edit-o-pay" style="padding:4px; font-size:0.75rem;">
-                 <option value="โอนแล้ว" ${payStatus.includes('โอนแล้ว') || payStatus.includes('ครบ') ? 'selected' : ''}>✅ โอนแล้ว/โอนครบ</option>
-                 <option value="มัดจำ" ${payStatus.includes('มัดจำ') ? 'selected' : ''}>💳 มัดจำ</option>
-                 <option value="ยังไม่จ่าย" ${!payStatus.includes('โอนแล้ว') && !payStatus.includes('ครบ') && !payStatus.includes('มัดจำ') ? 'selected' : ''}>❌ ยังไม่จ่าย</option>
+                  <option value="โอนแล้ว" ${payStatus.includes('โอนแล้ว') || payStatus.includes('ครบ') ? 'selected' : ''}>✅ โอนแล้ว/โอนครบ</option>
+                  <option value="มัดจำ" ${payStatus.includes('มัดจำ') ? 'selected' : ''}>💳 มัดจำ</option>
+                  <option value="ยังไม่จ่าย" ${!payStatus.includes('โอนแล้ว') && !payStatus.includes('ครบ') && !payStatus.includes('มัดจำ') ? 'selected' : ''}>❌ ยังไม่จ่าย</option>
               </select>
-           </div>
+            </div>
         </div>
         <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
            <label style="display:flex; align-items:center; gap:4px; cursor:pointer; text-transform:none;"><input type="checkbox" id="edit-o-urg" ${isUrgent?'checked':''}> 🔥 งานด่วน</label>
@@ -1749,29 +1726,21 @@ function rShip() {
     if(sl) sl.innerHTML = allShip().map(s=>`<div class="sli"><div class="sli-d">${s.date}</div><div class="sli-n">${s.note||""}</div><div class="sli-a">${fmt(s.cost)}</div></div>`).join(""); 
 }
 
-// --- PURCHASE ---
+// --- PURCHASE (FIXED LOGIC) ---
 function openPurchaseM() {
     const eId = document.getElementById('epu-id'); if(eId) eId.value = '';
-    const eName = document.getElementById('pu-name'); if(eName) eName.value = '';
-    const eType = document.getElementById('pu-type'); if(eType) eType.value = 'ของที่ใช้ทำขาย';
-    const eQty = document.getElementById('pu-qty'); if(eQty) eQty.value = '1';
-    const eTot = document.getElementById('pu-totp'); if(eTot) eTot.value = '0';
-    const eUnit = document.getElementById('pu-unit'); if(eUnit) eUnit.value = '';
-    const eNote = document.getElementById('pu-note'); if(eNote) eNote.value = '';
-    const eMm = document.getElementById('pu-mm'); if(eMm) eMm.value = new Date().getMonth() + 1;
-    const eMn = document.getElementById('pu-mn'); if(eMn) eMn.value = M_LABELS[new Date().getMonth()];
-    openM('m-purchase');
-}
-
-function calcPu() { 
-    const elQty = document.getElementById("pu-qty");
-    const elTotp = document.getElementById("pu-totp");
-    const elUnit = document.getElementById("pu-unit");
-    if(elQty && elTotp && elUnit) {
-        const q=parseFloat(elQty.value)||0; 
-        const t=parseFloat(elTotp.value)||0; 
-        elUnit.value = q>0?(t/q).toFixed(2):0; 
-    }
+    const eName = document.getElementById('epu-name'); if(eName) eName.value = '';
+    const eType = document.getElementById('epu-type'); if(eType) eType.value = 'ของที่ใช้ทำขาย';
+    const eQty = document.getElementById('epu-qty'); if(eQty) eQty.value = '1';
+    const eTot = document.getElementById('epu-totp'); if(eTot) eTot.value = '0';
+    const eUnit = document.getElementById('epu-unit'); if(eUnit) eUnit.value = '';
+    const eNote = document.getElementById('epu-note'); if(eNote) eNote.value = '';
+    const eMm = document.getElementById('epu-mm'); if(eMm) eMm.value = new Date().getMonth() + 1;
+    const eMn = document.getElementById('epu-mn'); if(eMn) eMn.value = M_LABELS[new Date().getMonth()];
+    
+    const mTitle = document.getElementById('m-pur-title'); if(mTitle) mTitle.textContent = "🛒 เพิ่มรายการสั่งของ (ต้นทุน)";
+    const bDel = document.getElementById('btn-del-pur'); if(bDel) bDel.style.display = 'none';
+    openM('m-pur-detail');
 }
 
 function calcPuE() { 
@@ -1785,25 +1754,71 @@ function calcPuE() {
     }
 }
 
-function savePurchase() { 
-    const elMm = document.getElementById("pu-mm");
-    const elName = document.getElementById("pu-name");
-    const elType = document.getElementById("pu-type");
-    const elQty = document.getElementById("pu-qty");
-    const elTotp = document.getElementById("pu-totp");
-    const elNote = document.getElementById("pu-note");
-    if(!elMm || !elName || !elTotp) return;
+function updatePur() {
+    const elId = document.getElementById('epu-id');
+    const id = elId ? elId.value : "";
+    
+    const eMm = document.getElementById('epu-mm');
+    const eName = document.getElementById('epu-name');
+    const eType = document.getElementById('epu-type');
+    const eQty = document.getElementById('epu-qty');
+    const eTotp = document.getElementById('epu-totp');
+    const eNote = document.getElementById('epu-note');
 
-    DB[curYear].purchases.push({
-        id:"PU_"+Date.now(), 
-        month:parseInt(elMm.value), 
-        name:elName.value, 
-        type:elType ? elType.value : "ของที่ใช้ทำขาย", 
-        qty:parseFloat(elQty ? elQty.value : 1)||1, 
-        totalPrice:parseFloat(elTotp.value)||0, 
-        note:elNote ? elNote.value : ""
-    }); 
-    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-purchase'); toast("บันทึกต้นทุนแล้ว"); 
+    if(!eName || !eName.value.trim()) { toast('กรุณากรอกชื่อรายการ/สินค้า', 'warn'); return; }
+    if(!eTotp || parseNum(eTotp.value) <= 0) { toast('กรุณากรอกยอดจ่ายรวม', 'warn'); return; }
+
+    const pData = {
+        month: parseInt(eMm ? eMm.value : 1) || 1,
+        name: eName.value.trim(),
+        type: eType ? eType.value : "ของที่ใช้ทำขาย",
+        qty: parseNum(eQty ? eQty.value : 1) || 1,
+        totalPrice: parseNum(eTotp.value) || 0,
+        note: eNote ? eNote.value.trim() : ""
+    };
+
+    if (id) {
+        // Update existing
+        let p = DB[curYear].purchases.find(x => x.id === id);
+        if(p) Object.assign(p, pData);
+    } else {
+        // Insert new
+        pData.id = "PU_" + Date.now();
+        if(!DB[curYear].purchases) DB[curYear].purchases = [];
+        DB[curYear].purchases.push(pData);
+    }
+    
+    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); 
+    toast(id ? 'อัปเดตรายการสำเร็จ' : 'บันทึกต้นทุนแล้ว');
+}
+
+function showPur(id) {
+    let p = DB[curYear].purchases.find(x => x.id === id);
+    if(!p) return;
+    
+    const eId = document.getElementById('epu-id'); if(eId) eId.value = p.id;
+    const eName = document.getElementById('epu-name'); if(eName) eName.value = p.name || '';
+    const eType = document.getElementById('epu-type'); if(eType) eType.value = p.type || 'ของที่ใช้ทำขาย';
+    const eQty = document.getElementById('epu-qty'); if(eQty) eQty.value = p.qty || 1;
+    const eTotp = document.getElementById('epu-totp'); if(eTotp) eTotp.value = p.totalPrice || 0;
+    const eNote = document.getElementById('epu-note'); if(eNote) eNote.value = p.note || '';
+    const eMm = document.getElementById('epu-mm'); if(eMm) eMm.value = p.month || 1;
+    const eMn = document.getElementById('epu-mn'); if(eMn) eMn.value = M_LABELS[(p.month || 1) - 1];
+    
+    const mTitle = document.getElementById('m-pur-title'); if(mTitle) mTitle.textContent = "✏️ แก้ไขรายการสั่งของ (ต้นทุน)";
+    const bDel = document.getElementById('btn-del-pur'); if(bDel) bDel.style.display = 'block';
+
+    calcPuE();
+    openM('m-pur-detail');
+}
+
+function delPur() {
+    showConfirm('ต้องการลบรายการนี้ใช่หรือไม่?', () => {
+        const elId = document.getElementById('epu-id'); if(!elId) return;
+        const id = elId.value;
+        DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
+        persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
+    });
 }
 
 function rPurchase() { 
@@ -1860,8 +1875,8 @@ function rPurchase() {
 
   const elGrp = document.getElementById("pu-group-wrap");
   if(elGrp) {
-     elGrp.innerHTML = `<table class="tbl"><tr><th>สินค้า / รายการ</th><th>หมวดหมู่</th><th>รวมจำนวน (ชิ้น)</th><th>ต้นทุนเฉลี่ย/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
-     groupedArr.map(x => {
+      elGrp.innerHTML = `<table class="tbl"><tr><th>สินค้า / รายการ</th><th>หมวดหมู่</th><th>รวมจำนวน (ชิ้น)</th><th>ต้นทุนเฉลี่ย/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
+      groupedArr.map(x => {
         let avgCost = x.qty ? (x.total / x.qty).toFixed(2) : x.total;
         return `<tr>
             <td style="font-weight:600">${x.name}</td>
@@ -1870,7 +1885,7 @@ function rPurchase() {
             <td style="font-family:'Space Mono'; color:var(--sky)">฿${fN(avgCost)}</td>
             <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.total)}</td>
         </tr>`;
-     }).join("") + `</table>`;
+      }).join("") + `</table>`;
   }
 
   // Raw Table
@@ -1896,43 +1911,6 @@ function rPurchase() {
       </tr>`;
     }).join("") + `</table>`; 
   }
-}
-
-function showPur(id) {
-    let p = DB[curYear].purchases.find(x => x.id === id);
-    if(!p) return;
-    const eId = document.getElementById('epu-id'); if(eId) eId.value = p.id;
-    const eName = document.getElementById('epu-name'); if(eName) eName.value = p.name || '';
-    const eType = document.getElementById('epu-type'); if(eType) eType.value = p.type || 'ของที่ใช้ทำขาย';
-    const eQty = document.getElementById('epu-qty'); if(eQty) eQty.value = p.qty || 1;
-    const eTotp = document.getElementById('epu-totp'); if(eTotp) eTotp.value = p.totalPrice || 0;
-    const eNote = document.getElementById('epu-note'); if(eNote) eNote.value = p.note || '';
-    calcPuE();
-    openM('m-pur-detail');
-}
-
-function updatePur() {
-    const elId = document.getElementById('epu-id'); if(!elId) return;
-    let id = elId.value;
-    let p = DB[curYear].purchases.find(x => x.id === id);
-    if(!p) return;
-    
-    const eName = document.getElementById('epu-name'); if(eName) p.name = eName.value.trim();
-    const eType = document.getElementById('epu-type'); if(eType) p.type = eType.value;
-    const eQty = document.getElementById('epu-qty'); if(eQty) p.qty = parseNum(eQty.value) || 1;
-    const eTotp = document.getElementById('epu-totp'); if(eTotp) p.totalPrice = parseNum(eTotp.value) || 0;
-    const eNote = document.getElementById('epu-note'); if(eNote) p.note = eNote.value.trim();
-    
-    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('อัปเดตรายการสำเร็จ');
-}
-
-function delPur() {
-    showConfirm('ต้องการลบรายการนี้ใช่หรือไม่?', () => {
-        const elId = document.getElementById('epu-id'); if(!elId) return;
-        let id = elId.value;
-        DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
-        persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
-    });
 }
 
 // --- CUSTOMERS ---
@@ -1997,72 +1975,72 @@ function rCusts() {
 }
 
 function showCust(name) {
-    let orders = getO('ALL').filter(o => o.name === name);
-    if(!orders.length) return;
-    const mt = document.getElementById('mcust-title'); if(mt) mt.textContent = "👤 " + name;
-    let html = `<div style="margin-bottom:15px"><button class="btn btn-sm btn-ghost" onclick="renameCust('${name.replace(/'/g, "\\'")}')">✏️ เปลี่ยนชื่อลูกค้าคนนี้ (แก้ไขทุกออเดอร์)</button></div>`;
-    html += `<div style="font-weight:bold;margin-bottom:8px">ประวัติออเดอร์ (${orders.length} รายการ)</div>`;
-    html += `<div class="ol" style="max-height: 400px; overflow-y:auto;">` + orders.map(oiH).join("") + `</div>`;
-    const mb = document.getElementById('mcust-body'); if(mb) mb.innerHTML = html;
-    openM('m-cust-detail');
+   let orders = getO('ALL').filter(o => o.name === name);
+   if(!orders.length) return;
+   const mt = document.getElementById('mcust-title'); if(mt) mt.textContent = "👤 " + name;
+   let html = `<div style="margin-bottom:15px"><button class="btn btn-sm btn-ghost" onclick="renameCust('${name.replace(/'/g, "\\'")}')">✏️ เปลี่ยนชื่อลูกค้าคนนี้ (แก้ไขทุกออเดอร์)</button></div>`;
+   html += `<div style="font-weight:bold;margin-bottom:8px">ประวัติออเดอร์ (${orders.length} รายการ)</div>`;
+   html += `<div class="ol" style="max-height: 400px; overflow-y:auto;">` + orders.map(oiH).join("") + `</div>`;
+   const mb = document.getElementById('mcust-body'); if(mb) mb.innerHTML = html;
+   openM('m-cust-detail');
 }
 
 function renameCust(oldName) {
-    let newName = prompt(`กรอกชื่อใหม่เพื่อแทนที่ "${oldName}":`, oldName);
-    if(!newName || newName.trim() === "" || newName === oldName) return;
-    newName = newName.trim();
-    
-    let count = 0;
-    NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
-    
-    ["2024","2025","2026","2027"].forEach(y => {
-        if(DB[y]) {
-            M_KEYS.forEach(m => {
-                (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
-            });
-        }
-    });
-    
-    if(count > 0) {
-        persist(); fbSave(); rOverview(); rOTab(); rCusts();
-        showCust(newName);
-        toast(`เปลี่ยนชื่อสำเร็จ (อัปเดต ${count} ออเดอร์)`);
-    } else {
-        toast(`ไม่พบข้อมูลออเดอร์ของลูกค้านี้ให้เปลี่ยน`, "warn");
-    }
+   let newName = prompt(`กรอกชื่อใหม่เพื่อแทนที่ "${oldName}":`, oldName);
+   if(!newName || newName.trim() === "" || newName === oldName) return;
+   newName = newName.trim();
+   
+   let count = 0;
+   NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+   
+   ["2024","2025","2026","2027"].forEach(y => {
+       if(DB[y]) {
+           M_KEYS.forEach(m => {
+               (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+           });
+       }
+   });
+   
+   if(count > 0) {
+       persist(); fbSave(); rOverview(); rOTab(); rCusts();
+       showCust(newName);
+       toast(`เปลี่ยนชื่อสำเร็จ (อัปเดต ${count} ออเดอร์)`);
+   } else {
+       toast(`ไม่พบข้อมูลออเดอร์ของลูกค้านี้ให้เปลี่ยน`, "warn");
+   }
 }
 
 // --- CORPORATE ---
 function openCorpM() {
-    const eId = document.getElementById('co-id'); if(eId) eId.value = '';
-    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = td();
-    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = '';
-    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = '';
-    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = '';
-    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = '1';
-    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = '0';
-    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = '0';
-    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = '';
-    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 เพิ่มออเดอร์ Corporate (B2B)";
-    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'none';
-    openM('m-corp');
+   const eId = document.getElementById('co-id'); if(eId) eId.value = '';
+   const eDate = document.getElementById('co-date'); if(eDate) eDate.value = td();
+   const eClient = document.getElementById('co-client'); if(eClient) eClient.value = '';
+   const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = '';
+   const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = '';
+   const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = '1';
+   const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = '0';
+   const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = '0';
+   const eNote = document.getElementById('co-note'); if(eNote) eNote.value = '';
+   const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 เพิ่มออเดอร์ Corporate (B2B)";
+   const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'none';
+   openM('m-corp');
 }
 
 function editCorp(id) {
-    const c = (DB[curYear].corp || []).find(x => x.id === id);
-    if(!c) return;
-    const eId = document.getElementById('co-id'); if(eId) eId.value = c.id;
-    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = c.date || td();
-    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = c.client;
-    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = c.org;
-    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = c.product;
-    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = c.qty || 1;
-    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = c.amount || 0;
-    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = c.tax || 0;
-    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = c.note || '';
-    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 แก้ไขออเดอร์ Corporate";
-    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'block';
-    openM('m-corp');
+   const c = (DB[curYear].corp || []).find(x => x.id === id);
+   if(!c) return;
+   const eId = document.getElementById('co-id'); if(eId) eId.value = c.id;
+   const eDate = document.getElementById('co-date'); if(eDate) eDate.value = c.date || td();
+   const eClient = document.getElementById('co-client'); if(eClient) eClient.value = c.client;
+   const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = c.org;
+   const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = c.product;
+   const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = c.qty || 1;
+   const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = c.amount || 0;
+   const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = c.tax || 0;
+   const eNote = document.getElementById('co-note'); if(eNote) eNote.value = c.note || '';
+   const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 แก้ไขออเดอร์ Corporate";
+   const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'block';
+   openM('m-corp');
 }
 
 function saveCorp() { 
