@@ -129,7 +129,7 @@ body{
 .oi:hover{background:var(--orange3);border-color:rgba(232,114,42,.3);transform:translateX(2px)}
 .oi-av{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;background:linear-gradient(135deg,var(--orange),var(--orange2))}
 .oi-info{flex:1;min-width:0}
-.oi-name{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+.oi-name{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .oi-det{font-size:.65rem;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oi-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
 .oi-amt{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:var(--orange)}
@@ -612,9 +612,42 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="modal-title">＋ เพิ่มออเดอร์ใหม่</div>
     <button class="mclose" onclick="closeM('m-order')">✕</button>
     <div class="frow"><div><label>ชื่อลูกค้า *</label><input class="inp" id="fn" placeholder="เช่น Mint"></div><div><label>วันที่</label><input class="inp" id="fd" type="date"></div></div>
-    <div class="frow"><div><label>การชำระเงิน</label><select class="inp" id="fp"><option>โอนครบ</option><option>มัดจำ</option><option>รอโอน</option></select></div><div><label>ค่าส่ง (บาท)</label><input class="inp" id="fs" type="number" value="50" min="0" oninput="calcTot()"></div></div>
-    <div class="ffull"><label>สินค้า</label><div class="ppick" id="ppick"></div></div>
-    <div class="frow" style="margin-top:9px"><div><label>หมายเหตุ</label><input class="inp" id="fnote" placeholder="เช่น เร่งด่วน / ของขวัญ"></div><div><label>ยอดรวม</label><input class="inp" id="ftot" readonly></div></div>
+    
+    <div style="display:flex; gap:10px; margin-bottom:11px; flex-wrap:wrap;">
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-urgent"> <span class="pill" style="background:#fff3cd;color:#d9534f;border:1px solid #d9534f">🔥 งานด่วน</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-nofile"> <span class="pill" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb">⚠️ รอไฟล์/ยังไม่ส่ง</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-nopay"> <span class="pill" style="background:#fff3cd;color:#856404;border:1px solid #ffeeba">💳 ยังชำระไม่ครบ</span>
+      </label>
+    </div>
+
+    <div class="frow">
+      <div><label>การจัดส่ง</label>
+        <select class="inp" id="f-deliv">
+          <option value="ขนส่งเอกชน">🚚 ขนส่งเอกชน</option>
+          <option value="แมสเซนเจอร์">🛵 แมสเซนเจอร์</option>
+          <option value="รับเอง">รับเอง</option>
+        </select>
+      </div>
+      <div><label>ค่าส่ง (บาท)</label><input class="inp" id="fs" type="number" value="50" min="0" oninput="calcTot()"></div>
+    </div>
+    
+    <div class="ffull">
+       <label style="display:flex; justify-content:space-between; align-items:center;">
+          <span>สินค้าที่สั่ง</span>
+          <button class="btn btn-sm btn-ghost" style="padding:2px 8px; font-size:0.6rem;" onclick="addProdRow()">+ เพิ่มสินค้า</button>
+       </label>
+       <div id="prod-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-top:5px;"></div>
+    </div>
+
+    <div class="frow" style="margin-top:9px">
+      <div><label>หมายเหตุอื่นๆ</label><input class="inp" id="fnote" placeholder="เช่น ห่อของขวัญ"></div>
+      <div><label>ยอดรวมทั้งหมด (บาท)</label><input class="inp" id="ftot" type="number" value="0"></div>
+    </div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeM('m-order')">ยกเลิก</button>
       <button class="btn btn-orange" onclick="saveOrder()">💾 บันทึก</button>
@@ -832,13 +865,28 @@ const SEED = {
     "POCKET VINYL": 149
   },
   "2026": {
-    JAN: [],
-    FEB: [],
-    MAR: [],
-    shipping: [],
-    corp: [],
+    JAN: [
+      {id:"JAN_1", date:"1/1/2026", name:"Tanawin", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2, "SNOWGLOBE":1}, shipping_charged:0, revenue:1015, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:"ลูกค้ารีบ"},
+      {id:"JAN_2", date:"3/1/2026", name:"Prim", products:{"CD BOX":1}, shipping_charged:50, revenue:179, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    FEB: [
+      {id:"FEB_1", date:"2/2/2026", name:"Chua", products:{"ฟิล์มสไลด์ NFC":12}, shipping_charged:50, revenue:686, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    MAR: [
+      {id:"MAR_1", date:"1/3/2026", name:"จิระ", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2}, shipping_charged:50, revenue:626, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    shipping: [
+      {date:"3/1/2026", cost:225, note:""},{date:"4/1/2026", cost:175, note:""}
+    ],
+    corp: [
+      {date:"10/2/2026", client:"TARN", org:"บริษัทจำกัด", product:"VINYL HEART", qty:"51", amount:8000, note:"แถม 1", delivery:"ส่ง GRAB"}
+    ],
     purchases: [],
-    summary: {}
+    summary: {
+      JAN: {revenue: 82094, shipping_actual: 4977, orders: 96, cogs: 23627.81, net_profit: 54997.19, shipping_charged: 6485},
+      FEB: {revenue: 189164, shipping_actual: 6996, orders: 128, cogs: 66058.45, net_profit: 118608.55, shipping_charged: 9495},
+      MAR: {revenue: 59100, shipping_actual: 1554, orders: 68, cogs: 15264.5, net_profit: 43697.5, shipping_charged: 2970}
+    }
   }
 };
 
@@ -858,6 +906,13 @@ let DB = { "2024": {}, "2025": {}, "2026": {} };
 ["2024", "2025", "2026"].forEach(y => {
   DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
   M_KEYS.forEach(m => DB[y][m] = []);
+  if (y === "2026") {
+    M_KEYS.forEach(m => DB[y][m] = SEED["2026"][m] || []);
+    DB[y].shipping = [...SEED["2026"].shipping];
+    DB[y].corp = [...SEED["2026"].corp];
+    DB[y].purchases = [...(SEED["2026"].purchases || [])];
+    DB[y].summary = { ...SEED["2026"].summary };
+  }
 });
 
 let NO=[], NS=[], FB_DB=null, curOM="JAN";
@@ -1146,18 +1201,30 @@ function rOverview(){
 }
 
 function oiH(o){
-  const stCls = o.done ? "p-g" : o.payment === "มัดจำ" ? "p-o" : "p-s";
-  const stTxt = o.done ? "✓ เสร็จ" : o.payment === "มัดจำ" ? "มัดจำ" : "รอโอน";
+  const stCls = o.done ? "p-g" : "p-s";
+  const stTxt = o.done ? "✓ เสร็จ" : "⏳ ค้าง";
   const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
   
-  let noteHtml = "";
+  let tags = [];
+  let fullNote = [o.note, o.detail, o.payment].filter(Boolean).join(" | ");
+  
+  if (/(งานด่วน|ด่วน)/i.test(fullNote)) tags.push(`<span class="pill" style="background:#fff3cd;color:#d9534f;border:1px solid #d9534f;font-size:0.55rem;padding:0px 6px">🔥 ด่วน</span>`);
+  if (/(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test(fullNote)) tags.push(`<span class="pill" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;font-size:0.55rem;padding:0px 6px">⚠️ รอไฟล์</span>`);
+  if (/(ค้างชำระ|รอโอน|มัดจำ)/i.test(fullNote) || o.payment === "รอโอน" || o.payment === "มัดจำ" || o.payment === "มัดจำ/รอโอน" || o.payment === "ค้างชำระ") tags.push(`<span class="pill" style="background:#fff3cd;color:#856404;border:1px solid #ffeeba;font-size:0.55rem;padding:0px 6px">💳 ค้างชำระ</span>`);
+  if (/(แมสเซนเจอร์|แมส)/i.test(fullNote)) tags.push(`<span class="pill" style="background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb;font-size:0.55rem;padding:0px 6px">🛵 แมสเซนเจอร์</span>`);
+  if (/(ขนส่งเอกชน)/i.test(fullNote)) tags.push(`<span class="pill" style="background:#e2e3e5;color:#383d41;border:1px solid #d6d8db;font-size:0.55rem;padding:0px 6px">🚚 ขนส่ง</span>`);
+
+  let cleanNote = "";
   if(o.note || o.detail) {
-     let fullNote = [o.note, o.detail].filter(Boolean).join(" | ");
-     let isWarn = /(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test(fullNote);
-     let nColor = isWarn ? "var(--red)" : "var(--gold)";
-     let nBg = isWarn ? "var(--red3)" : "transparent";
-     let nPad = isWarn ? "padding:2px 6px;border-radius:4px;" : "";
-     noteHtml = `<div style="font-size:.65rem;color:${nColor};background:${nBg};${nPad}margin-top:4px;display:inline-block;word-break:break-word;line-height:1.4">🚨 ${fullNote}</div>`;
+     cleanNote = [o.note, o.detail].filter(Boolean).join(" | ").replace(/(งานด่วน|รอไฟล์\/ยังไม่ส่ง|ค้างชำระ|ขนส่งเอกชน|แมสเซนเจอร์)/gi, '').replace(/\|/g,'').trim();
+  }
+
+  let noteHtml = "";
+  if(tags.length > 0 || cleanNote) {
+     noteHtml = `<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+       ${tags.join("")}
+       ${cleanNote ? `<span style="font-size:.65rem;color:var(--muted)">📝 ${cleanNote}</span>` : ''}
+     </div>`;
   }
 
   return `<div class="oi" onclick="showOD('${o.id}')" style="align-items:flex-start">
@@ -1275,7 +1342,7 @@ function renderOL(){
   if(q)ords=ords.filter(o=>(o.name||"").toLowerCase().includes(q)||(o.note||"").toLowerCase().includes(q)||(o.detail||"").toLowerCase().includes(q));
   if(sf==="done")ords=ords.filter(o=>o.done);
   if(sf==="pending")ords=ords.filter(o=>!o.done);
-  if(sf==="deposit")ords=ords.filter(o=>o.payment==="มัดจำ");
+  if(sf==="deposit")ords=ords.filter(o=>o.payment==="มัดจำ" || o.payment==="ค้างชำระ" || o.payment==="มัดจำ/รอโอน" || o.payment==="รอโอน");
   if(sf==="missing")ords=ords.filter(o=>/(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test((o.note||"") + (o.detail||"")));
   document.getElementById("order-main-list").innerHTML=ords.slice(0,120).map(oiH).join("") || `<div style='text-align:center;padding:20px;color:var(--muted);font-size:.8rem'>ไม่มีข้อมูลออเดอร์</div>`;
   document.getElementById("ol-ct").textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
@@ -1794,6 +1861,117 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   }, 500);
 });
+
+function buildPick(){
+  document.getElementById("fd").value=td();
+  document.getElementById("fn").value="";
+  document.getElementById("fs").value="50";
+  document.getElementById("fnote").value="";
+  document.getElementById("chk-urgent").checked=false;
+  document.getElementById("chk-nofile").checked=false;
+  document.getElementById("chk-nopay").checked=false;
+  document.getElementById("f-deliv").value="ขนส่งเอกชน";
+  document.getElementById("prod-rows-container").innerHTML="";
+  addProdRow();
+}
+
+function addProdRow() {
+  const container = document.getElementById("prod-rows-container");
+  const rowId = "pr-" + Date.now() + Math.floor(Math.random()*1000);
+  let opts = ALLP.map(p => `<option value="${p}" data-price="${PRICE[p]||0}">${p}</option>`).join("");
+  const html = `
+    <div id="${rowId}" style="display:flex; gap:8px; align-items:center;">
+      <select class="inp prod-sel" style="flex:2;" onchange="calcTot()">
+        <option value="">-- เลือกสินค้า --</option>
+        ${opts}
+      </select>
+      <input type="number" class="inp prod-qty" style="flex:1; text-align:center;" min="1" value="1" placeholder="จำนวน" oninput="calcTot()">
+      <button class="btn btn-danger btn-sm" style="padding:4px 8px; font-size:0.8rem" onclick="document.getElementById('${rowId}').remove(); calcTot();">✕</button>
+    </div>
+  `;
+  container.insertAdjacentHTML('beforeend', html);
+}
+
+function calcTot() {
+  let t = 0;
+  const rows = document.getElementById("prod-rows-container").children;
+  for(let i=0; i<rows.length; i++) {
+     const sel = rows[i].querySelector('.prod-sel');
+     const qty = parseFloat(rows[i].querySelector('.prod-qty').value) || 0;
+     if(sel.value && sel.selectedOptions[0]) {
+        const p = parseFloat(sel.selectedOptions[0].dataset.price) || 0;
+        t += p * qty;
+     }
+  }
+  t += parseFloat(document.getElementById("fs").value) || 0;
+  document.getElementById("ftot").value = t;
+}
+
+function saveOrder(){
+  const name = document.getElementById("fn").value.trim();
+  if(!name){toast("กรุณาใส่ชื่อลูกค้า","warn");return;}
+  
+  const prods = {};
+  let sub = 0;
+  const rows = document.getElementById("prod-rows-container").children;
+  for(let i=0; i<rows.length; i++) {
+     const sel = rows[i].querySelector('.prod-sel');
+     const qty = parseFloat(rows[i].querySelector('.prod-qty').value) || 0;
+     if(sel.value && qty > 0) {
+        prods[sel.value] = (prods[sel.value] || 0) + qty;
+        const p = parseFloat(sel.selectedOptions[0].dataset.price) || 0;
+        sub += p * qty;
+     }
+  }
+  if(Object.keys(prods).length === 0) { toast("กรุณาเลือกสินค้าอย่างน้อย 1 รายการ", "warn"); return; }
+
+  const ship = +(document.getElementById("fs").value) || 0;
+  const rev = +(document.getElementById("ftot").value) || 0; 
+  const dv = document.getElementById("fd").value;
+  const dp = dv.split("-");
+  const ds = dp.length === 3 ? `${+dp[2]}/${+dp[1]}/${dp[0]}` : dv;
+  const month = dp.length === 3 ? (M_KEYS[+dp[1]-1] || "NEW") : "NEW";
+  
+  let noteParts = [];
+  if(document.getElementById("chk-urgent").checked) noteParts.push("งานด่วน");
+  if(document.getElementById("chk-nofile").checked) noteParts.push("รอไฟล์/ยังไม่ส่ง");
+  const manualNote = document.getElementById("fnote").value.trim();
+  if(manualNote) noteParts.push(manualNote);
+  
+  const finalNote = noteParts.join(", ");
+  const deliv = document.getElementById("f-deliv").value;
+  const payStatus = document.getElementById("chk-nopay").checked ? "ค้างชำระ" : "โอนครบ";
+
+  const ord = {
+    id: "N" + Date.now(),
+    date: ds,
+    name: name,
+    products: prods,
+    shipping_charged: ship,
+    revenue: rev,
+    payment: payStatus,
+    detail: deliv,
+    packed: false,
+    done: false,
+    note: finalNote,
+    month: month,
+    isNew: true
+  };
+
+  NO.push(ord);
+  persist();
+  closeM("m-order");
+  toast("✓ เพิ่มออเดอร์ "+name+" "+fmt(rev));
+  
+  const oYear = getOrderYear(ds);
+  if(oYear !== curYear) {
+     toast("ออเดอร์ถูกเพิ่มในปี " + oYear);
+  } else {
+     rOverview();
+     if(curOM===month || curOM==="NEW") rOTab();
+  }
+  fbSave();
+}
 
 // Auto close modals when clicking outside
 document.querySelectorAll(".overlay").forEach(el=>{
