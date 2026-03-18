@@ -87,7 +87,7 @@ body{
 .kpi-icon{position:absolute;top:13px;right:13px;font-size:1.25rem;opacity:.3}
 .kpi-label{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-weight:700}
 .kpi-value{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;line-height:1}
-.kpi-sub{font-size:.63rem;color:var(--muted);margin-top:4px}
+.kpi-sub{font-size:.63rem;color:var(--muted);margin-top:4px;display:flex;align-items:center}
 .kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}
 .kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}.kpi:nth-child(5){animation-delay:.2s}
 
@@ -277,12 +277,25 @@ select.inp option{background:#fff;color:var(--text)}
 <!-- OVERVIEW -->
 <div class="section active" id="sec-overview">
   <div class="kpi-row">
-    <div class="kpi kpi-o" style="--kg:rgba(232,114,42,.15)"><div class="kpi-icon">💰</div><div class="kpi-label">ยอดขายรวม</div><div class="kpi-value" style="color:var(--orange)" id="kv-rev">฿—</div><div class="kpi-sub" id="ksub-rev">ทั้งปี</div></div>
-    <div class="kpi kpi-s" style="--kg:rgba(62,168,216,.12)"><div class="kpi-icon">📦</div><div class="kpi-label">ออเดอร์รวม</div><div class="kpi-value" style="color:var(--sky)" id="kv-ord">—</div><div class="kpi-sub" id="ksub-ord">ม.ค.–ธ.ค.</div></div>
-    <div class="kpi kpi-m" style="--kg:rgba(61,191,168,.12)"><div class="kpi-icon">🧾</div><div class="kpi-label">AOV เฉลี่ย</div><div class="kpi-value" style="color:var(--mint)" id="kv-aov">฿—</div><div class="kpi-sub">ต่อออเดอร์</div></div>
-    <div class="kpi kpi-g" style="--kg:rgba(45,160,106,.12)"><div class="kpi-icon">✨</div><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green)" id="kv-profit">฿—</div><div class="kpi-sub" id="kv-margin">margin —%</div></div>
+    <div class="kpi kpi-o" style="--kg:rgba(232,114,42,.15)">
+      <div class="kpi-icon">💰</div><div class="kpi-label">ยอดขายรวม</div><div class="kpi-value" style="color:var(--orange)" id="kv-rev">฿—</div>
+      <div class="kpi-sub">ปี <span id="ksub-rev"></span> <span id="kv-rev-yoy" style="margin-left:6px;font-weight:bold;"></span></div>
+    </div>
+    <div class="kpi kpi-s" style="--kg:rgba(62,168,216,.12)">
+      <div class="kpi-icon">📦</div><div class="kpi-label">ออเดอร์รวม</div><div class="kpi-value" style="color:var(--sky)" id="kv-ord">—</div>
+      <div class="kpi-sub">ปี <span id="ksub-ord"></span> <span id="kv-ord-yoy" style="margin-left:6px;font-weight:bold;"></span></div>
+    </div>
+    <div class="kpi kpi-m" style="--kg:rgba(61,191,168,.12)">
+      <div class="kpi-icon">🧾</div><div class="kpi-label">AOV เฉลี่ย</div><div class="kpi-value" style="color:var(--mint)" id="kv-aov">฿—</div>
+      <div class="kpi-sub">ต่อออเดอร์</div>
+    </div>
+    <div class="kpi kpi-g" style="--kg:rgba(45,160,106,.12)">
+      <div class="kpi-icon">✨</div><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green)" id="kv-profit">฿—</div>
+      <div class="kpi-sub">margin <span id="kv-margin"></span> <span id="kv-prof-yoy" style="margin-left:6px;font-weight:bold;"></span></div>
+    </div>
     <div class="kpi kpi-c"><div class="kpi-icon">🎯</div><div class="kpi-label">เป้า 1.5M</div><div class="kpi-value" style="color:var(--orange)" id="kv-gpct">—%</div><div class="kpi-sub" id="kv-gleft">เหลืออีก —</div></div>
   </div>
+  
   <div class="g2l">
     <div class="card">
       <div class="card-title">🎯 Progress to 1,500,000 บาท</div>
@@ -300,8 +313,11 @@ select.inp option{background:#fff;color:var(--text)}
         <div style="flex:1"><div id="mbars"></div><div style="margin-top:9px;font-size:.73rem;color:var(--muted);line-height:1.9" id="g-advice"></div></div>
       </div>
     </div>
-    <div class="card"><div class="card-title">📊 ยอดขาย vs กำไร</div><div class="chb"><canvas id="ch-monthly"></canvas></div></div>
+    <div class="card"><div class="card-title">📊 ยอดขาย vs กำไร (ปีที่เลือก)</div><div class="chb"><canvas id="ch-monthly"></canvas></div></div>
   </div>
+
+  <div class="card"><div class="card-title">📈 เปรียบเทียบยอดขายย้อนหลังรายปี (Year-over-Year)</div><div class="chb ch-lg"><canvas id="ch-yoy"></canvas></div></div>
+
   <div class="g2">
     <div class="card"><div class="card-title">🏅 Top สินค้าแห่งปี</div><div class="chb"><canvas id="ch-topprod"></canvas></div></div>
     <div class="card"><div class="card-title">📋 ออเดอร์ล่าสุด</div><div id="recent-ol" class="ol"></div></div>
@@ -335,6 +351,7 @@ select.inp option{background:#fff;color:var(--text)}
           <option value="done">✓ เสร็จแล้ว</option>
           <option value="pending">⏳ ยังไม่เสร็จ</option>
           <option value="deposit">💳 มัดจำ</option>
+          <option value="missing">🚨 รอไฟล์/ยังไม่ส่ง</option>
         </select>
       </div>
       <div class="ol" id="order-main-list"></div>
@@ -402,6 +419,10 @@ select.inp option{background:#fff;color:var(--text)}
   <div class="expbar"><span class="expbar-title">📤 Export:</span>
     <button class="btn btn-ghost btn-sm" onclick="expPurchase('csv')">CSV</button>
   </div>
+  <div class="g2">
+    <div class="card"><div class="card-title">📊 สัดส่วนประเภทค่าใช้จ่าย</div><div class="chb ch-lg"><canvas id="ch-pur-type"></canvas></div></div>
+    <div class="card"><div class="card-title">📈 แนวโน้มค่าใช้จ่ายรายเดือน</div><div class="chb ch-lg"><canvas id="ch-pur-trend"></canvas></div></div>
+  </div>
   <div class="card">
     <div class="card-title">🛒 รายการสั่งซื้อของ (อุปกรณ์ / วัตถุดิบ)</div>
     <div class="srow">
@@ -418,13 +439,19 @@ select.inp option{background:#fff;color:var(--text)}
     <button class="btn btn-ghost btn-sm" onclick="expCusts('csv')">CSV</button>
     <button class="btn btn-ghost btn-sm" onclick="expCusts('xlsx')">Excel</button>
   </div>
+  
+  <div class="srow" style="margin-bottom: 14px;">
+    <input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อ..." oninput="rCusts()">
+    <select class="ssel" id="cu-m" onchange="rCusts()"></select>
+  </div>
+
   <div class="g2">
     <div class="card">
       <div class="card-title">👑 Top Customers</div>
-      <div class="srow"><input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อ..." oninput="renderCusts()"></div>
       <div id="cust-list" style="max-height:500px;overflow-y:auto"></div>
     </div>
     <div>
+      <div class="card"><div class="card-title">📊 Top 10 ลูกค้ายอดเยี่ยม</div><div class="chb ch-lg"><canvas id="ch-cust"></canvas></div></div>
       <div class="card"><div class="card-title">🔁 ลูกค้าซื้อซ้ำ</div><div id="repeat-list" style="max-height:230px;overflow-y:auto"></div></div>
       <div class="card"><div class="card-title">💡 Insights</div><div id="cust-ins"></div></div>
     </div>
@@ -443,6 +470,7 @@ select.inp option{background:#fff;color:var(--text)}
     <button class="btn btn-ghost btn-sm" onclick="expCorp('xlsx')">Excel</button>
     <button class="btn btn-ghost btn-sm" onclick="expCorp('pdf')">PDF</button>
   </div>
+  <div class="card"><div class="card-title">📊 สัดส่วนยอดขาย B2B แยกตามลูกค้า</div><div class="chb ch-lg"><canvas id="ch-corp"></canvas></div></div>
   <div class="card"><div class="card-title">🏢 Corporate Orders</div><div class="tbl-wrap" id="co-tbl"></div></div>
   <div class="igrid">
     <div class="ibox ib-s"><div class="ib-title" style="color:var(--sky)">💡 B2B Opportunity</div><div style="font-size:.78rem;line-height:1.9;color:var(--text2)" id="co-ins"></div></div>
@@ -500,8 +528,19 @@ select.inp option{background:#fff;color:var(--text)}
     </div>
   </div>
   <div class="card">
-    <div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูลปี <span id="lbl-up-year" style="color:var(--orange)">2026</span></div>
-    <p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">อัปโหลด CSV ตามรูปแบบเดิม — ระบบจะบันทึกเข้าปีที่เลือกไว้ด้านบน</p>
+    <div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูล</div>
+    
+    <!-- Upload Year Selector -->
+    <div class="srow" style="margin-bottom: 14px; background: var(--cream2); padding: 10px; border-radius: 10px;">
+      <label style="align-self: center; margin: 0; color: var(--text2);">เลือกปีที่จะนำเข้าข้อมูล (ก่อนอัปโหลด):</label>
+      <select class="ssel" id="upload-year-sel" style="border-color:var(--orange); color:var(--orange); font-weight:700;">
+        <option value="2026">📅 2026</option>
+        <option value="2025">📅 2025</option>
+        <option value="2024">📅 2024</option>
+      </select>
+    </div>
+
+    <p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">คลิกช่องด้านล่างเพื่อเลือกไฟล์ CSV ระบบจะอ่านและดึงข้อมูลให้อัตโนมัติ</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px" id="upload-grid"></div>
   </div>
 </div>
@@ -538,7 +577,7 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- NEW: CORPORATE MODAL -->
+<!-- CORPORATE MODAL -->
 <div class="overlay hidden" id="m-corp">
   <div class="modal" style="max-width:440px">
     <div class="modal-title">🏢 เพิ่มออเดอร์ Corporate (B2B)</div>
@@ -564,7 +603,7 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- NEW: PURCHASE MODAL -->
+<!-- PURCHASE MODAL -->
 <div class="overlay hidden" id="m-purchase">
   <div class="modal" style="max-width:440px">
     <div class="modal-title">🛒 เพิ่มรายการสั่งของ (อุปกรณ์/ต้นทุน)</div>
@@ -596,12 +635,23 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
+<!-- UPLOAD MODAL -->
 <div class="overlay hidden" id="m-upload">
   <div class="modal" style="max-width:440px">
     <div class="modal-title">📂 นำเข้า CSV</div>
     <button class="mclose" onclick="closeM('m-upload')">✕</button>
-    <div class="ffull"><label>ประเภทข้อมูล</label>
-      <select class="inp" id="up-type"></select>
+    
+    <div class="frow">
+      <div class="ffull"><label>เลือกปี</label>
+        <select class="inp" id="m-upload-year" style="color:var(--orange); font-weight:bold;">
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+        </select>
+      </div>
+      <div class="ffull"><label>ประเภทข้อมูล</label>
+        <select class="inp" id="up-type"></select>
+      </div>
     </div>
     <div class="upzone" onclick="document.getElementById('up-f').click()"
          ondragover="event.preventDefault();this.classList.add('drag')"
@@ -686,7 +736,6 @@ let DB = { "2024": {}, "2025": {}, "2026": {} };
 ["2024", "2025", "2026"].forEach(y => {
   DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
   M_KEYS.forEach(m => DB[y][m] = []);
-  // Load SEED for 2026
   if (y === "2026") {
     M_KEYS.forEach(m => DB[y][m] = SEED["2026"][m] || []);
     DB[y].shipping = [...SEED["2026"].shipping];
@@ -697,7 +746,7 @@ let DB = { "2024": {}, "2025": {}, "2026": {} };
 });
 
 let NO=[], NS=[], FB_DB=null, curOM="JAN";
-let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp;
+let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp, ch_corp, ch_pur_type, ch_pur_trend, ch_cust, ch_yoy;
 
 // HELPERS
 function parseNum(val) {
@@ -721,32 +770,50 @@ function allShip(){
   const yNS = NS.filter(e => getOrderYear(e.date) == curYear);
   return [...(DB[curYear].shipping || []), ...yNS];
 }
-function getMonthSummary(m) {
-  if (DB[curYear].summary && DB[curYear].summary[m]) {
-    const newOrds = NO.filter(o => o.isNew && o.month === m && getOrderYear(o.date) == curYear);
+function getMonthSummaryForYear(y, m) {
+  if (DB[y] && DB[y].summary && DB[y].summary[m]) {
+    const newOrds = NO.filter(o => o.isNew && o.month === m && getOrderYear(o.date) == y);
     const newRev = newOrds.reduce((s,o)=>s+(o.revenue||0), 0);
     const newProf = newOrds.reduce((s,o)=>s+((o.revenue||0)*0.65), 0);
     return {
-      revenue: DB[curYear].summary[m].revenue + newRev,
-      orders: DB[curYear].summary[m].orders + newOrds.length,
-      net_profit: DB[curYear].summary[m].net_profit + newProf,
-      shipping_charged: DB[curYear].summary[m].shipping_charged + newOrds.reduce((s,o)=>s+(o.shipping_charged||0), 0)
+      revenue: DB[y].summary[m].revenue + newRev,
+      orders: DB[y].summary[m].orders + newOrds.length,
+      net_profit: DB[y].summary[m].net_profit + newProf,
+      shipping_charged: DB[y].summary[m].shipping_charged + newOrds.reduce((s,o)=>s+(o.shipping_charged||0), 0)
     };
   }
-  const ords = getO(m);
+  const ords = [...(DB[y]?DB[y][m]:[])||[], ...NO.filter(o => o.month === m && getOrderYear(o.date) == y)];
   const rev = ords.reduce((s,o)=>s+(o.revenue||0), 0);
   const prof = ords.reduce((s,o)=>s+((o.revenue||0)*0.65), 0); 
   const sh_chg = ords.reduce((s,o)=>s+(o.shipping_charged||0), 0);
   return { revenue: rev, orders: ords.length, net_profit: prof, shipping_charged: sh_chg };
 }
-function getYearSummary() {
+
+function getYearSummaryFor(y) {
   let r=0, o=0, pr=0, sc=0;
   M_KEYS.forEach(m => {
-    const s = getMonthSummary(m);
+    const s = getMonthSummaryForYear(y, m);
     r += s.revenue; o += s.orders; pr += s.net_profit; sc += s.shipping_charged;
   });
   return { r, o, pr, sc };
 }
+
+function getYearSummary() {
+  return getYearSummaryFor(curYear);
+}
+
+function getMonthSummary(m) {
+  return getMonthSummaryForYear(curYear, m);
+}
+
+function formatYoY(curr, prev) {
+    if (prev === 0 || !prev) return `<span style="color:var(--muted)">—</span>`;
+    const pct = ((curr - prev) / prev) * 100;
+    if (pct > 0) return `<span style="color:var(--green)">▲ ${pct.toFixed(1)}%</span>`;
+    if (pct < 0) return `<span style="color:var(--red)">▼ ${Math.abs(pct).toFixed(1)}%</span>`;
+    return `<span style="color:var(--muted)">0%</span>`;
+}
+
 function sP(m,p){return getO(m).reduce((s,o)=>s+(o.products?.[p]||0),0);}
 function sPQ(q, p){
   const months = q===1 ? ["JAN","FEB","MAR"] : q===2 ? ["APR","MAY","JUN"] : q===3 ? ["JUL","AUG","SEP"] : ["OCT","NOV","DEC"];
@@ -772,7 +839,6 @@ function loadP(){
         if(!DB[y].purchases) DB[y].purchases = [];
       });
     }
-    // Load Sheet URL
     const url = localStorage.getItem("tg_sheet_url");
     if(url) {
       const input = document.getElementById("sheet-url");
@@ -789,6 +855,7 @@ function openM(id){
   if(id==="m-order") buildPick();
   if(id==="m-ship") document.getElementById("fsd").value=td();
   if(id==="m-corp") document.getElementById("co-date").value=td();
+  if(id==="m-upload") document.getElementById("m-upload-year").value = curYear;
 }
 
 function closeM(id){document.getElementById(id).classList.add("hidden");}
@@ -829,10 +896,10 @@ function initUI() {
   
   const upGrid = document.getElementById("upload-grid");
   if(upGrid) {
-    let uHtml = M_KEYS.map((m,i) => `<div><div class="card-title">${M_LABELS[i]}</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-${m}').click()"><input type="file" id="csv-${m}" accept=".csv" onchange="upCSV('${m}',this)"><div style="font-size:1.3rem">📄</div><div style="font-size:.72rem;color:var(--orange);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-${m.toLowerCase()}">ยังไม่ได้อัปโหลด</div></div></div>`).join("");
-    uHtml += `<div><div class="card-title">ค่าส่ง</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-ship').click()"><input type="file" id="csv-ship" accept=".csv" onchange="upCSV('SHIP',this)"><div style="font-size:1.3rem">🚚</div><div style="font-size:.72rem;color:var(--sky);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-ship">ยังไม่ได้อัปโหลด</div></div></div>`;
-    uHtml += `<div><div class="card-title">Corporate (B2B)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-corp').click()"><input type="file" id="csv-corp" accept=".csv" onchange="upCSV('CORP',this)"><div style="font-size:1.3rem">🏢</div><div style="font-size:.72rem;color:var(--mint);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-corp">ยังไม่ได้อัปโหลด</div></div></div>`;
-    uHtml += `<div><div class="card-title">สั่งของ (ต้นทุน)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-pur').click()"><input type="file" id="csv-pur" accept=".csv" onchange="upCSV('PURCHASE',this)"><div style="font-size:1.3rem">🛒</div><div style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-pur">ยังไม่ได้อัปโหลด</div></div></div>`;
+    let uHtml = M_KEYS.map((m,i) => `<div><div class="card-title">${M_LABELS[i]}</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-${m}').click()"><input type="file" id="csv-${m}" accept=".csv" onchange="upCSV('${m}',this,document.getElementById('upload-year-sel').value)"><div style="font-size:1.3rem">📄</div><div style="font-size:.72rem;color:var(--orange);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-${m.toLowerCase()}">ยังไม่นำเข้า</div></div></div>`).join("");
+    uHtml += `<div><div class="card-title">ค่าส่ง</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-ship').click()"><input type="file" id="csv-ship" accept=".csv" onchange="upCSV('SHIP',this,document.getElementById('upload-year-sel').value)"><div style="font-size:1.3rem">🚚</div><div style="font-size:.72rem;color:var(--sky);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-ship">ยังไม่นำเข้า</div></div></div>`;
+    uHtml += `<div><div class="card-title">Corporate (B2B)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-corp').click()"><input type="file" id="csv-corp" accept=".csv" onchange="upCSV('CORP',this,document.getElementById('upload-year-sel').value)"><div style="font-size:1.3rem">🏢</div><div style="font-size:.72rem;color:var(--mint);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-corp">ยังไม่นำเข้า</div></div></div>`;
+    uHtml += `<div><div class="card-title">สั่งของ (ต้นทุน)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-pur').click()"><input type="file" id="csv-pur" accept=".csv" onchange="upCSV('PURCHASE',this,document.getElementById('upload-year-sel').value)"><div style="font-size:1.3rem">🛒</div><div style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-pur">ยังไม่นำเข้า</div></div></div>`;
     upGrid.innerHTML = uHtml;
   }
   
@@ -844,12 +911,17 @@ function initUI() {
   document.getElementById("sh-mf").innerHTML = shMfHtml;
   document.getElementById("pu-m").innerHTML = shMfHtml; 
   
+  let cuMfHtml = `<option value="">ทุกเดือน</option>` + M_KEYS.map((k,i) => `<option value="${k}">${M_LABELS[i]}</option>`).join("");
+  if(document.getElementById("cu-m")) document.getElementById("cu-m").innerHTML = cuMfHtml;
+  
   document.getElementById("year-sel").value = curYear;
 }
 
 function changeYear(y) {
   curYear = y;
   document.getElementById("lbl-up-year").textContent = y;
+  const upSel = document.getElementById("upload-year-sel");
+  if(upSel) upSel.value = y;
   rOverview();
   rOTab();
   if(document.getElementById("sec-shipping").classList.contains("active")) rShip();
@@ -880,12 +952,24 @@ function rOverview(){
   const aov = ys.o ? ys.r/ys.o : 0;
   const mg = ys.r ? (ys.pr/ys.r)*100 : 0;
   
+  // YoY Comparisons
+  const prevYear = (parseInt(curYear) - 1).toString();
+  const prevYs = getYearSummaryFor(prevYear);
+  
   document.getElementById("kv-rev").textContent=fmt(ys.r);
-  document.getElementById("ksub-rev").textContent="ปี " + curYear;
+  document.getElementById("ksub-rev").textContent=curYear;
+  document.getElementById("kv-rev-yoy").innerHTML = formatYoY(ys.r, prevYs.r);
+  
   document.getElementById("kv-ord").textContent=fN(ys.o);
+  document.getElementById("ksub-ord").textContent=curYear;
+  document.getElementById("kv-ord-yoy").innerHTML = formatYoY(ys.o, prevYs.o);
+  
   document.getElementById("kv-aov").textContent=fmt(aov);
+  
   document.getElementById("kv-profit").textContent=fmt(ys.pr);
-  document.getElementById("kv-margin").textContent="margin "+mg.toFixed(1)+"%";
+  document.getElementById("kv-margin").textContent=mg.toFixed(1)+"%";
+  document.getElementById("kv-prof-yoy").innerHTML = formatYoY(ys.pr, prevYs.pr);
+
   document.getElementById("kv-gpct").textContent=pct.toFixed(1)+"%";
   document.getElementById("kv-gleft").textContent="เหลืออีก "+fmt(Math.max(0, goal-ys.r));
   
@@ -912,6 +996,29 @@ function rOverview(){
       ]
     },options:{...CC}
   });
+
+  // YOY Line Chart
+  if(ch_yoy) ch_yoy.destroy();
+  ch_yoy = new Chart(document.getElementById("ch-yoy"), {
+    type: "line",
+    data: {
+      labels: M_LABELS,
+      datasets: ["2024", "2025", "2026"].map((y, i) => {
+        const colors = ["#a0a0a0", "#7bc4e8", "#e8722a"]; 
+        const isCurrent = y === curYear;
+        return {
+          label: `ปี ${y}`,
+          data: M_KEYS.map(m => getMonthSummaryForYear(y, m).revenue),
+          borderColor: isCurrent ? colors[2] : colors[i],
+          backgroundColor: (isCurrent ? colors[2] : colors[i]) + "22",
+          fill: isCurrent,
+          borderDash: isCurrent ? [] : [5, 5],
+          tension: 0.4
+        };
+      })
+    },
+    options: { ...CC, plugins: { legend: { display: true, position: 'bottom' } } }
+  });
   
   const q1p=q1P();const top=Object.entries(q1p).sort((a,b)=>b[1]-a[1]).slice(0,9);
   if(ch_tp)ch_tp.destroy();
@@ -927,12 +1034,24 @@ function oiH(o){
   const stCls = o.done ? "p-g" : o.payment === "มัดจำ" ? "p-o" : "p-s";
   const stTxt = o.done ? "✓ เสร็จ" : o.payment === "มัดจำ" ? "มัดจำ" : "รอโอน";
   const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
-  return `<div class="oi" onclick="showOD('${o.id}')">
-            <div class="oi-av">${(o.name||"?")[0]}</div>
+  
+  let noteHtml = "";
+  if(o.note || o.detail) {
+     let fullNote = [o.note, o.detail].filter(Boolean).join(" | ");
+     let isWarn = /(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test(fullNote);
+     let nColor = isWarn ? "var(--red)" : "var(--gold)";
+     let nBg = isWarn ? "var(--red3)" : "transparent";
+     let nPad = isWarn ? "padding:2px 6px;border-radius:4px;" : "";
+     noteHtml = `<div style="font-size:.65rem;color:${nColor};background:${nBg};${nPad}margin-top:4px;display:inline-block;word-break:break-word;line-height:1.4">🚨 ${fullNote}</div>`;
+  }
+
+  return `<div class="oi" onclick="showOD('${o.id}')" style="align-items:flex-start">
+            <div class="oi-av" style="margin-top:2px">${(o.name||"?")[0]}</div>
             <div class="oi-info">
               <div class="oi-name">${o.name||"—"}${o.corp?" 🏢":""} <span class="pill ${stCls}" style="font-size:.55rem;padding:0px 6px;margin-left:4px">${stTxt}</span></div>
-              <div class="oi-det">${pr}</div>
-              <div style="font-size:.6rem;color:var(--muted);margin-top:2px">📅 ${o.date || "ไม่ระบุ"}</div>
+              <div class="oi-det" style="white-space:normal;word-break:break-word;line-height:1.4">${pr}</div>
+              <div style="font-size:.6rem;color:var(--muted);margin-top:4px">📅 ${o.date || "ไม่ระบุ"}</div>
+              ${noteHtml}
             </div>
             <div class="oi-r">
               <div class="oi-amt">${fmt(o.revenue)}</div>
@@ -952,7 +1071,15 @@ function showOD(id){
   
   const delBtn = o.isNew ? `<button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">🗑 ลบออเดอร์นี้</button>` : '';
   
-  document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${o.note?`<div style='font-size:.76rem;color:var(--gold)'>📝 ${o.note}</div>`:""}${o.detail?`<div style='font-size:.73rem;color:var(--muted);margin-top:3px'>📦 ${o.detail}</div>`:""}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1.5px solid rgba(0,0,0,.05)"><button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button>${delBtn}</div>`;
+  let noteBox = "";
+  if(o.note || o.detail) {
+      noteBox = `<div style="background:var(--cream2); border:1.5px solid var(--cream3); border-radius:8px; padding:10px; margin-top:10px;">`;
+      if(o.note) noteBox += `<div style="font-size:.75rem;color:var(--text2);margin-bottom:4px;line-height:1.5"><b>📝 หมายเหตุ:</b> ${o.note}</div>`;
+      if(o.detail) noteBox += `<div style="font-size:.75rem;color:var(--text2);line-height:1.5"><b>💬 รายละเอียด:</b> ${o.detail}</div>`;
+      noteBox += `</div>`;
+  }
+
+  document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${noteBox}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1.5px solid rgba(0,0,0,.05)"><button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button>${delBtn}</div>`;
   
   p.classList.remove("hidden");
   p.scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -994,10 +1121,11 @@ function renderOL(){
   const q=(document.getElementById("os-q").value||"").toLowerCase();
   const sf=document.getElementById("os-f").value;
   let ords=getO(curOM);
-  if(q)ords=ords.filter(o=>(o.name||"").toLowerCase().includes(q)||(o.note||"").toLowerCase().includes(q));
+  if(q)ords=ords.filter(o=>(o.name||"").toLowerCase().includes(q)||(o.note||"").toLowerCase().includes(q)||(o.detail||"").toLowerCase().includes(q));
   if(sf==="done")ords=ords.filter(o=>o.done);
   if(sf==="pending")ords=ords.filter(o=>!o.done);
   if(sf==="deposit")ords=ords.filter(o=>o.payment==="มัดจำ");
+  if(sf==="missing")ords=ords.filter(o=>/(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test((o.note||"") + (o.detail||"")));
   document.getElementById("order-main-list").innerHTML=ords.slice(0,120).map(oiH).join("") || `<div style='text-align:center;padding:20px;color:var(--muted);font-size:.8rem'>ไม่มีข้อมูลออเดอร์</div>`;
   document.getElementById("ol-ct").textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
 }
@@ -1037,6 +1165,35 @@ function rPurchase() {
   document.getElementById("pu-tot").textContent = fmt(tot);
   document.getElementById("pu-cnt").textContent = fN(pu.length);
   renderPU();
+  
+  // Charts
+  const types = {};
+  const months = Array(12).fill(0);
+  pu.forEach(p => {
+     const t = p.type || "อื่นๆ";
+     types[t] = (types[t] || 0) + p.totalPrice;
+     if(p.month >= 1 && p.month <= 12) months[p.month-1] += p.totalPrice;
+  });
+
+  if(ch_pur_type) ch_pur_type.destroy();
+  ch_pur_type = new Chart(document.getElementById("ch-pur-type"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(types),
+      datasets: [{ data: Object.values(types), backgroundColor: CL.map(c=>c+"cc"), borderWidth:0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "right", labels: { color: "rgba(45,26,8,.55)", font: {size: 10} } } } }
+  });
+
+  if(ch_pur_trend) ch_pur_trend.destroy();
+  ch_pur_trend = new Chart(document.getElementById("ch-pur-trend"), {
+    type: "bar",
+    data: {
+      labels: M_LABELS,
+      datasets: [{ label: "ค่าใช้จ่าย", data: months, backgroundColor: "rgba(224,80,80,.7)", borderRadius: 4 }]
+    },
+    options: { ...CC }
+  });
 }
 
 function renderPU() {
@@ -1078,7 +1235,7 @@ function savePurchase() {
   closeM('m-purchase');
   toast("บันทึกการสั่งของสำเร็จ");
   
-  sendToSheet("PURCHASE", rowData); // Send to Google Sheet
+  sendToSheet("PURCHASE", rowData);
 }
 
 // CORPORATE (B2B)
@@ -1090,6 +1247,24 @@ function rCorp(){
   document.getElementById("co-cnt").textContent=corp.length;
   document.getElementById("co-pct").textContent=q1r>0?(tot/q1r*100).toFixed(1)+"%":"0%";
   document.getElementById("co-tbl").innerHTML=`<table class="tbl"><thead><tr><th>วันที่</th><th>ลูกค้า</th><th>องค์กร</th><th>สินค้า</th><th>จำนวน</th><th>ยอด</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>${corp.map(c=>`<tr><td style="color:var(--muted)">${c.date}</td><td style="font-weight:600">${c.client}</td><td style="font-size:.71rem;color:var(--muted)">${c.org}</td><td><span class="pill p-o">${c.product}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${fmt(c.amount)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td><td>${c.isNew?`<button class="sli-del" onclick="delCorp(${DB[curYear].corp.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>`;
+  
+  // Charts
+  const clients = {};
+  corp.forEach(c => {
+     const name = c.client || c.org || "ไม่ระบุ";
+     clients[name] = (clients[name] || 0) + c.amount;
+  });
+  const sortedClients = Object.entries(clients).sort((a,b)=>b[1]-a[1]).slice(0, 10);
+  
+  if(ch_corp) ch_corp.destroy();
+  ch_corp = new Chart(document.getElementById("ch-corp"), {
+    type: "bar",
+    data: {
+      labels: sortedClients.map(x=>x[0]),
+      datasets: [{ label: "ยอด B2B", data: sortedClients.map(x=>x[1]), backgroundColor: "rgba(232,114,42,.8)", borderRadius: 4 }]
+    },
+    options: { ...CC, indexAxis: 'y' }
+  });
   
   document.getElementById("co-ins").innerHTML="Corporate ปี "+curYear+" = <b style='color:var(--orange)'>"+fmt(tot)+"</b><br><br>🎯 Target B2B เพิ่ม <b>2-3 เจ้า/เดือน</b><br>Avg ticket = <b>"+fmt(corp.length>0?tot/corp.length:0)+"</b>";
 }
@@ -1117,7 +1292,7 @@ function saveCorp() {
   closeM('m-corp');
   toast("บันทึกออเดอร์ B2B สำเร็จ");
   
-  sendToSheet("CORP", [ds, client, org, prod, qty, amt, note]); // Send to Google Sheet
+  sendToSheet("CORP", [ds, client, org, prod, qty, amt, note]);
 }
 
 // DELETE LOGIC
@@ -1168,76 +1343,131 @@ function renderPR(){
 
 // CUSTOMERS
 function rCusts(){
-  let all=[]; M_KEYS.forEach(m => all.push(...getO(m)));
+  const q=(document.getElementById("cu-q").value||"").toLowerCase();
+  const m=document.getElementById("cu-m") ? document.getElementById("cu-m").value : "";
+  
+  let all=[]; 
+  if (m) {
+      all = getO(m);
+  } else {
+      M_KEYS.forEach(k => all.push(...getO(k)));
+  }
+
   const cm={};
   all.forEach(o=>{const n=o.name||"?";if(!cm[n])cm[n]={name:n,total:0,count:0,products:{}};cm[n].total+=o.revenue;cm[n].count++;Object.entries(o.products||{}).forEach(([k,v])=>{cm[n].products[k]=(cm[n].products[k]||0)+v});});
-  const q=(document.getElementById("cu-q").value||"").toLowerCase();
+  
   let cs=Object.values(cm).sort((a,b)=>b.total-a.total);
   if(q)cs=cs.filter(c=>c.name.toLowerCase().includes(q));
+  
   document.getElementById("cust-list").innerHTML=cs.slice(0,60).map((c,i)=>{const tp=Object.entries(c.products).sort((a,b)=>b[1]-a[1])[0];return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.69rem;color:var(--muted);width:22px">${i+1}</span><div style="flex:1"><div style="font-size:.8rem;font-weight:600">${c.name}</div><div style="font-size:.65rem;color:var(--muted)">${c.count} orders${tp?` · ${tp[0]}×${tp[1]}`:""}</div></div><span style="font-family:'Space Mono',monospace;font-size:.78rem;color:var(--orange)">${fmt(c.total)}</span></div>`;}).join("") || "<div style='font-size:.78rem;color:var(--muted);padding:10px'>ไม่มีข้อมูลลูกคัา</div>";
   const rep=Object.values(cm).filter(c=>c.count>=2).sort((a,b)=>b.count-a.count);
   document.getElementById("repeat-list").innerHTML=rep.slice(0,15).map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.8rem;flex:1">${c.name}</span><span class="pill p-m">${c.count}x</span><span style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--orange)">${fmt(c.total)}</span></div>`).join("")||"<div style=\"color:var(--muted);padding:10px 0;font-size:.78rem\">ยังไม่มีข้อมูล</div>";
   const tot=Object.values(cm).length;
   const rep2=rep.length;
-  const q1r=getYearSummary().r;
-  document.getElementById("cust-ins").innerHTML=`<div class="str"><div class="sti"><span class="stl">ลูกค้าทั้งหมด</span><span class="stv" style="color:var(--sky)">${tot}</span></div><div class="sti"><span class="stl">ซื้อซ้ำ</span><span class="stv" style="color:var(--mint)">${rep2}</span></div><div class="sti"><span class="stl">Repeat Rate</span><span class="stv" style="color:var(--orange)">${tot>0?(rep2/tot*100).toFixed(1):0}%</span></div></div><div style="margin-top:9px;font-size:.76rem;color:var(--muted);line-height:1.9">💡 Top 10 สร้างยอด <b style="color:var(--orange)">${fmt(cs.slice(0,10).reduce((s,c)=>s+c.total,0))}</b> = ${q1r>0?(cs.slice(0,10).reduce((s,c)=>s+c.total,0)/q1r*100).toFixed(1):0}% ของปีนี้</div>`;
+  
+  let q1r = 0;
+  if (m) {
+      q1r = getMonthSummary(m).revenue;
+  } else {
+      q1r = getYearSummary().r;
+  }
+  
+  const top10Sum = cs.slice(0,10).reduce((s,c)=>s+c.total,0);
+  const insightPct = q1r > 0 ? (top10Sum/q1r*100).toFixed(1) : 0;
+  const timeLabel = m ? "เดือนนี้" : "ปีนี้";
+
+  document.getElementById("cust-ins").innerHTML=`<div class="str"><div class="sti"><span class="stl">ลูกค้าทั้งหมด</span><span class="stv" style="color:var(--sky)">${tot}</span></div><div class="sti"><span class="stl">ซื้อซ้ำ</span><span class="stv" style="color:var(--mint)">${rep2}</span></div><div class="sti"><span class="stl">Repeat Rate</span><span class="stv" style="color:var(--orange)">${tot>0?(rep2/tot*100).toFixed(1):0}%</span></div></div><div style="margin-top:9px;font-size:.76rem;color:var(--muted);line-height:1.9">💡 Top 10 สร้างยอด <b style="color:var(--orange)">${fmt(top10Sum)}</b> = ${insightPct}% ของ${timeLabel}</div>`;
+
+  if(ch_cust) ch_cust.destroy();
+  ch_cust = new Chart(document.getElementById("ch-cust"), {
+    type: "bar",
+    data: {
+      labels: cs.slice(0,10).map(c=>c.name),
+      datasets: [{ label: "ยอดสั่งซื้อ", data: cs.slice(0,10).map(c=>c.total), backgroundColor: "rgba(62,168,216,.8)", borderRadius: 4 }]
+    },
+    options: { ...CC }
+  });
 }
 
 // CSV UPLOAD
-function upCSV(type,inp){
+function upCSV(type,inp,targetYear){
+  const ty = targetYear || curYear;
   const file=inp.files[0];if(!file)return;
   const r=new FileReader();
   r.onload=e=>{
     const txt=e.target.result;
     if(type==="SHIP"){
       const es=parseShipCSV(txt);
-      DB[curYear].shipping=es;
-      toast("✓ ค่าส่งปี "+curYear+" : "+es.length+" รายการ");
-      const el=document.getElementById("st-ship");if(el)el.textContent="✓ "+es.length+" รายการ";
+      DB[ty].shipping=es;
+      toast(`✓ นำเข้าค่าส่งปี ${ty} : ${es.length} รายการ`);
     }else if(type==="CORP"){
       const es=parseCorpCSV(txt);
-      DB[curYear].corp=es;
-      toast("✓ Corporate "+curYear+" : "+es.length+" รายการ");
-      const el=document.getElementById("st-corp");if(el)el.textContent="✓ "+es.length+" รายการ";
+      DB[ty].corp=es;
+      toast(`✓ Corporate ปี ${ty} : ${es.length} รายการ`);
     }else if(type==="PURCHASE"){
       const es=parsePurchaseCSV(txt);
-      DB[curYear].purchases=es;
-      toast("✓ สั่งของ(ต้นทุน) "+curYear+" : "+es.length+" รายการ");
-      const el=document.getElementById("st-pur");if(el)el.textContent="✓ "+es.length+" รายการ";
+      DB[ty].purchases=es;
+      toast(`✓ สั่งของ(ต้นทุน) ปี ${ty} : ${es.length} รายการ`);
     }else{
       const ords=parseOrdCSV(txt,type);
-      DB[curYear][type]=ords;
-      if(DB[curYear].summary) delete DB[curYear].summary[type]; 
-      toast("✓ ปี "+curYear+" ออเดอร์ "+type+" "+ords.length+" รายการ");
-      const el=document.getElementById("st-"+type.toLowerCase());if(el)el.textContent="✓ "+ords.length+" orders";
+      DB[ty][type]=ords;
+      if(DB[ty].summary) delete DB[ty].summary[type]; 
+      toast(`✓ ออเดอร์ ${type} ปี ${ty} : ${ords.length} รายการ`);
     }
     persist();
-    rOverview();
-    if(curOM===type)rOTab();
-    if(document.getElementById("sec-shipping").classList.contains("active")&&type==="SHIP")rShip();
-    if(document.getElementById("sec-corporate").classList.contains("active")&&type==="CORP")rCorp();
-    if(document.getElementById("sec-purchase").classList.contains("active")&&type==="PURCHASE")rPurchase();
-    
+    if(ty === curYear) {
+      rOverview();
+      if(curOM===type)rOTab();
+      if(document.getElementById("sec-shipping").classList.contains("active")&&type==="SHIP")rShip();
+      if(document.getElementById("sec-corporate").classList.contains("active")&&type==="CORP")rCorp();
+      if(document.getElementById("sec-purchase").classList.contains("active")&&type==="PURCHASE")rPurchase();
+    }
     fbSave();
   };
   r.readAsText(file,"UTF-8");
 }
 
-function parseOrdCSV(txt,mk){const res=Papa.parse(txt,{header:true,skipEmptyLines:true});const out=[];res.data.forEach((row,i)=>{const name=(row["ชื่อลูกค้า"]||"").trim();if(!name)return;let rev=0;try{rev=parseFloat((row["รวมยอด"]||"0").replace(/,/g,""))||0;}catch(e){}if(rev<=0)return;const dt=Object.values(row)[0]||"";const prods={};ALLP.forEach(p=>{const v=row[p];if(!v)return;try{const q=parseInt(parseFloat(v.replace(",","")));if(q>0)prods[p]=q;}catch(e){}});let ship=0;try{ship=parseFloat((row["คิดค่าส่ง(บาท)"]||"0").replace(/,/g,""))||0;}catch(e){}out.push({id:mk+"_"+i,date:dt,name,products:prods,shipping_charged:ship,revenue:rev,payment:(row["โอนครบ/มัดจำ"]||"").trim(),detail:(row["รายละเอียด"]||"").trim(),packed:(row["กล่องใส่งาน"]||"").trim().toUpperCase()==="TRUE",done:(row["เสร็จแล้ว"]||"").trim().toUpperCase()==="TRUE",note:(row["หมายเหตุ"]||"").trim(),isUploaded:true});});return out;}
+function parseOrdCSV(txt,mk){
+  const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
+  const out=[];
+  res.data.forEach((row,i)=>{
+    const getV = (keys) => { for(let key in row) { for(let k of keys) { if(key.replace(/\s+/g,'').includes(k)) return row[key]; } } return ""; };
+    const name=getV(["ลูกค้า", "ชื่อ"]).trim();
+    if(!name)return;
+    let rev = parseNum(getV(["ยอด", "รวม"]));
+    if(rev<=0)return;
+    const dt=Object.values(row)[0]||"";
+    const prods={};
+    ALLP.forEach(p=>{
+      const v=row[p];
+      if(!v)return;
+      try{const q=parseInt(parseFloat(v.replace(/,/g,"")));if(q>0)prods[p]=q;}catch(e){}
+    });
+    let ship = parseNum(getV(["ค่าส่ง"]));
+    out.push({id:mk+"_"+i,date:dt,name,products:prods,shipping_charged:ship,revenue:rev,payment:getV(["ชำระ", "โอน", "มัดจำ"]).trim(),detail:getV(["รายละเอียด", "detail"]).trim(),packed:getV(["กล่องใส่งาน"]).trim().toUpperCase()==="TRUE",done:getV(["เสร็จ"]).trim().toUpperCase()==="TRUE",note:getV(["หมายเหตุ"]).trim(),isUploaded:true});
+  });
+  return out;
+}
 function parseShipCSV(txt){const res=Papa.parse(txt,{header:true,skipEmptyLines:true});return res.data.filter(r=>r["วันที่ส่ง"]&&r["ค่าส่งที่จ่าย"]).map(r=>({date:(r["วันที่ส่ง"]||"").trim(),cost:parseFloat((r["ค่าส่งที่จ่าย"]||"0").replace(/,/g,""))||0,note:"",isUploaded:true})).filter(e=>e.cost>0);}
 
 function parseCorpCSV(txt){
   const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
   return res.data.map(r=>{
-    const getV = (k) => { for(let key in r) if(key.trim()===k) return r[key]; return ""; };
+    const getV = (keys) => {
+      for(let key in r) {
+        let cleanKey = key.replace(/\s+/g,'').toLowerCase();
+        for(let k of keys) { if(cleanKey.includes(k.toLowerCase())) return r[key]; }
+      }
+      return "";
+    };
     return {
-      date: (getV("วันที่")||"").trim(),
-      client: (getV("ลูกค้า")||"").trim(),
-      org: (getV("องค์กร")||"").trim(),
-      product: (getV("สินค้า")||"").trim(),
-      qty: (getV("จำนวน")||"0").replace(/,/g,""),
-      amount: parseNum(getV("ยอด")),
-      note: (getV("หมายเหตุ")||"").trim()
+      date: (getV(["วันที่","date"])||"").trim(),
+      client: (getV(["ลูกค้า","ชื่อ","client"])||"").trim(),
+      org: (getV(["องค์กร","บริษัท","สังกัด","org"])||"").trim(),
+      product: (getV(["สินค้า","รายการ","product"])||"").trim(),
+      qty: (getV(["จำนวน","qty"])||"0").replace(/,/g,""),
+      amount: parseNum(getV(["ยอด","ราคา","รวม","amount"])),
+      note: (getV(["หมายเหตุ","note"])||"").trim()
     };
   }).filter(e=>e.amount>0 || e.client);
 }
@@ -1245,21 +1475,33 @@ function parseCorpCSV(txt){
 function parsePurchaseCSV(txt){
   const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
   return res.data.map(r=>{
-    const getV = (k) => { for(let key in r) if(key.trim()===k) return r[key]; return ""; };
+    const getV = (keys) => {
+      for(let key in r) {
+        let cleanKey = key.replace(/\s+/g,'').toLowerCase();
+        for(let k of keys) { if(cleanKey.includes(k.toLowerCase())) return r[key]; }
+      }
+      return "";
+    };
     return {
-      month: parseInt(getV("เดือน"))||0,
-      monthName: (getV("เดือนที่ซื้อ")||"").trim(),
-      name: (getV("สินค้า")||getV("รายการ")||"").trim(),
-      type: (getV("ประเภท")||"").trim(),
-      qty: parseNum(getV("จำนวนชิ้น")||getV("จำนวน")),
-      totalPrice: parseNum(getV("ราคารวมที่จ่าย")||getV("ยอดจ่าย")),
-      unitPrice: parseNum(getV("หารต่อ 1 หน่วย")||getV("ราคา/หน่วย")),
+      month: parseInt(getV(["เดือน","month"]))||0,
+      monthName: (getV(["ชื่อเดือน","เดือนที่ซื้อ"])||"").trim(),
+      name: (getV(["สินค้า","รายการ","name"])||"").trim(),
+      type: (getV(["ประเภท","หมวดหมู่","type"])||"").trim(),
+      qty: parseNum(getV(["จำนวนชิ้น","จำนวน","qty"])),
+      totalPrice: parseNum(getV(["ราคารวมที่จ่าย","ยอดจ่าย","รวม","total"])),
+      unitPrice: parseNum(getV(["หารต่อ 1 หน่วย","หารต่อหน่วย","หน่วยละ","unit"])),
       isUploaded: true
     };
   }).filter(e=>e.name);
 }
 
-function doUpload(inp){const type=document.getElementById("up-type").value;upCSV(type,inp);document.getElementById("up-st").textContent="✓ กำลัง parse...";setTimeout(()=>closeM("m-upload"),900);}
+function doUpload(inp){
+  const type=document.getElementById("up-type").value;
+  const yr=document.getElementById("m-upload-year").value;
+  upCSV(type,inp,yr);
+  document.getElementById("up-st").textContent="✓ กำลัง parse...";
+  setTimeout(()=>closeM("m-upload"),900);
+}
 function dropCSV(e){e.preventDefault();e.currentTarget.classList.remove("drag");const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);const fi=document.getElementById("up-f");fi.files=dt.files;doUpload(fi);}
 
 // EXPORT
@@ -1272,7 +1514,13 @@ function dl(blob,name){const a=document.createElement("a");a.href=URL.createObje
 function expOrders(f){const rows=o2rows(getO(curOM));if(f==="csv")toCSV(rows,`tinkle_orders_${curOM}_${curYear}`);else if(f==="xlsx")toXLSX([{name:curOM,rows}],"tinkle_orders_"+curOM+"_"+curYear);else toPDF(rows,`Orders ${curOM} ${curYear}`);}
 function expShip(f){const rows=allShip().map(e=>({วันที่:e.date,ค่าส่ง:e.cost,หมายเหตุ:e.note||""}));if(f==="csv")toCSV(rows,`tinkle_shipping_${curYear}`);else if(f==="xlsx")toXLSX([{name:"ค่าส่ง",rows}],`tinkle_shipping_${curYear}`);else toPDF(rows,`ค่าส่ง ${curYear}`);}
 function expProds(f){const q1p=q1P();const rows=Object.entries(q1p).sort((a,b)=>b[1]-a[1]).map(([p,t])=>({"สินค้า":p,"ยอดรวมปี":t,"Q1":sPQ(1,p)||0,"Q2":sPQ(2,p)||0,"Q3":sPQ(3,p)||0,"Q4":sPQ(4,p)||0}));if(f==="csv")toCSV(rows,`tinkle_products_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Products",rows}],`tinkle_products_${curYear}`);else toPDF(rows,`Products ${curYear}`);}
-function expCusts(f){let all=[]; M_KEYS.forEach(m => all.push(...getO(m)));const cm={};all.forEach(o=>{if(!cm[o.name])cm[o.name]={name:o.name,total:0,count:0};cm[o.name].total+=o.revenue;cm[o.name].count++;});const rows=Object.values(cm).sort((a,b)=>b.total-a.total).map((c,i)=>({"#":i+1,"ชื่อ":c.name,"ออเดอร์":c.count,"ยอดรวม":c.total}));if(f==="csv")toCSV(rows,`tinkle_customers_${curYear}`);else toXLSX([{name:"Customers",rows}],`tinkle_customers_${curYear}`);}
+function expCusts(f){
+  const m=document.getElementById("cu-m")?document.getElementById("cu-m").value:"";
+  let all=[]; if(m){all=getO(m);}else{M_KEYS.forEach(k=>all.push(...getO(k)));}
+  const cm={};all.forEach(o=>{if(!cm[o.name])cm[o.name]={name:o.name,total:0,count:0};cm[o.name].total+=o.revenue;cm[o.name].count++;});
+  const rows=Object.values(cm).sort((a,b)=>b.total-a.total).map((c,i)=>({"#":i+1,"ชื่อ":c.name,"ออเดอร์":c.count,"ยอดรวม":c.total}));
+  if(f==="csv")toCSV(rows,`tinkle_customers_${m||'ALL'}_${curYear}`);else toXLSX([{name:"Customers",rows}],`tinkle_customers_${m||'ALL'}_${curYear}`);
+}
 function expCorp(f){const rows=(DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,องค์กร:c.org,สินค้า:c.product,จำนวน:c.qty,ยอด:c.amount,หมายเหตุ:c.note}));if(f==="csv")toCSV(rows,`tinkle_corporate_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Corporate",rows}],`tinkle_corporate_${curYear}`);else toPDF(rows,`Corporate Orders ${curYear}`);}
 function expPurchase(f){const rows=(DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวนชิ้น:c.qty,ราคารวม:c.totalPrice,ต่อหน่วย:c.unitPrice}));if(f==="csv")toCSV(rows,`tinkle_purchases_${curYear}`);}
 function expAll(f){
