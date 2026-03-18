@@ -295,7 +295,6 @@ select.inp option{background:#fff;color:var(--text)}
     </select>
     <div class="fb-bar"><div class="fb-dot" id="fb-dot"></div><span id="fb-txt">ไม่ได้เชื่อม Cloud</span></div>
     
-    <!-- Add Manual Buttons -->
     <button class="btn btn-ghost btn-sm" onclick="openM('m-fb')" title="ตั้งค่าระบบ Cloud">⚙</button>
     <button class="btn btn-sky btn-sm" onclick="openM('m-upload')" title="นำเข้า CSV">📂</button>
     <button class="btn btn-orange btn-sm" onclick="openM('m-order')">＋ ออเดอร์</button>
@@ -452,7 +451,7 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- PURCHASE (สั่งของ/อุปกรณ์) -->
+<!-- PURCHASE -->
 <div class="section" id="sec-purchase">
   <div class="kpi-row">
     <div class="kpi kpi-r"><div class="kpi-icon">💸</div><div class="kpi-label">ยอดสั่งของรวม (ต้นทุน)</div><div class="kpi-value" style="color:var(--red)" id="pu-tot">—</div></div>
@@ -461,10 +460,13 @@ select.inp option{background:#fff;color:var(--text)}
   <div class="expbar"><span class="expbar-title">📤 Export:</span>
     <button class="btn btn-ghost btn-sm" onclick="expPurchase('csv')">CSV</button>
   </div>
-  <div class="g2">
+  
+  <div class="g3">
     <div class="card"><div class="card-title">📊 สัดส่วนประเภทค่าใช้จ่าย</div><div class="chb ch-lg"><canvas id="ch-pur-type"></canvas></div></div>
     <div class="card"><div class="card-title">📈 แนวโน้มค่าใช้จ่ายรายเดือน</div><div class="chb ch-lg"><canvas id="ch-pur-trend"></canvas></div></div>
+    <div class="card"><div class="card-title">🏆 Top 10 สินค้าที่สั่งซื้อเยอะสุด (ต้นทุน)</div><div class="chb ch-lg"><canvas id="ch-pur-items"></canvas></div></div>
   </div>
+  
   <div class="card">
     <div class="card-title">🛒 รายการสั่งซื้อของ (อุปกรณ์ / วัตถุดิบ)</div>
     <div class="srow">
@@ -524,7 +526,6 @@ select.inp option{background:#fff;color:var(--text)}
 <!-- SETTINGS -->
 <div class="section" id="sec-settings">
   <div class="g2">
-    <!-- Password settings card -->
     <div class="card">
       <div class="card-h">🔒 ตั้งค่ารหัสผ่าน (PIN)</div>
       <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">รหัสผ่านเริ่มต้นคือ <b>123456</b> (ตัวเลข 6 หลัก)</p>
@@ -680,8 +681,8 @@ select.inp option{background:#fff;color:var(--text)}
       <select class="inp" id="pu-type">
         <option value="ของที่ใช้ทำขาย">ของที่ใช้ทำขาย</option>
         <option value="อุปกรณ์แพ็ค">อุปกรณ์แพ็ค</option>
-        <option value="อุปกรณ์ทำของ">อุปกรณ์ทำของ</option>
-        <option value="ค่าซ่อม/บำรุงรักษา">ค่าซ่อม/บำรุงรักษา</option>
+        <option value="เครื่องมือ/อุปกรณ์">เครื่องมือ / อุปกรณ์</option>
+        <option value="ค่าซ่อม/บำรุงรักษา">ค่าซ่อม / บำรุงรักษา</option>
         <option value="จิปาถะอื่นๆ">จิปาถะอื่นๆ</option>
       </select>
     </div>
@@ -690,6 +691,7 @@ select.inp option{background:#fff;color:var(--text)}
       <div><label>ยอดจ่ายรวม (บาท) *</label><input class="inp" id="pu-totp" type="number" min="0" value="0" oninput="calcPu()"></div>
     </div>
     <div class="ffull"><label>ตกชิ้นละ (บาท)</label><input class="inp" id="pu-unit" readonly></div>
+    <div class="ffull"><label>หมายเหตุ / ร้านค้า / ชิปปิ้ง</label><input class="inp" id="pu-note" placeholder="เช่น สั่งจากจีน, Shopee ร้าน A"></div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeM('m-purchase')">ยกเลิก</button>
       <button class="btn btn-red" onclick="savePurchase()">💾 บันทึก</button>
@@ -830,28 +832,13 @@ const SEED = {
     "POCKET VINYL": 149
   },
   "2026": {
-    JAN: [
-      {id:"JAN_1", date:"1/1/2026", name:"Tanawin", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2, "SNOWGLOBE":1}, shipping_charged:0, revenue:1015, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:"ลูกค้ารีบ"},
-      {id:"JAN_2", date:"3/1/2026", name:"Prim", products:{"CD BOX":1}, shipping_charged:50, revenue:179, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-    ],
-    FEB: [
-      {id:"FEB_1", date:"2/2/2026", name:"Chua", products:{"ฟิล์มสไลด์ NFC":12}, shipping_charged:50, revenue:686, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-    ],
-    MAR: [
-      {id:"MAR_1", date:"1/3/2026", name:"จิระ", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2}, shipping_charged:50, revenue:626, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-    ],
-    shipping: [
-      {date:"3/1/2026", cost:225, note:""},{date:"4/1/2026", cost:175, note:""}
-    ],
-    corp: [
-      {date:"10/2/2026", client:"TARN", org:"บริษัทจำกัด", product:"VINYL HEART", qty:"51", amount:8000, note:"แถม 1", delivery:"ส่ง GRAB"}
-    ],
+    JAN: [],
+    FEB: [],
+    MAR: [],
+    shipping: [],
+    corp: [],
     purchases: [],
-    summary: {
-      JAN: {revenue: 82094, shipping_actual: 4977, orders: 96, cogs: 23627.81, net_profit: 54997.19, shipping_charged: 6485},
-      FEB: {revenue: 189164, shipping_actual: 6996, orders: 128, cogs: 66058.45, net_profit: 118608.55, shipping_charged: 9495},
-      MAR: {revenue: 59100, shipping_actual: 1554, orders: 68, cogs: 15264.5, net_profit: 43697.5, shipping_charged: 2970}
-    }
+    summary: {}
   }
 };
 
@@ -871,17 +858,10 @@ let DB = { "2024": {}, "2025": {}, "2026": {} };
 ["2024", "2025", "2026"].forEach(y => {
   DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
   M_KEYS.forEach(m => DB[y][m] = []);
-  if (y === "2026") {
-    M_KEYS.forEach(m => DB[y][m] = SEED["2026"][m] || []);
-    DB[y].shipping = [...SEED["2026"].shipping];
-    DB[y].corp = [...SEED["2026"].corp];
-    DB[y].purchases = [...(SEED["2026"].purchases || [])];
-    DB[y].summary = { ...SEED["2026"].summary };
-  }
 });
 
 let NO=[], NS=[], FB_DB=null, curOM="JAN";
-let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp, ch_corp, ch_pur_type, ch_pur_trend, ch_cust, ch_yoy;
+let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp, ch_corp, ch_pur_type, ch_pur_trend, ch_pur_items, ch_cust, ch_yoy;
 
 // HELPERS
 function parseNum(val) {
@@ -1339,10 +1319,16 @@ function rPurchase() {
   
   // Charts
   const types = {};
+  const items = {};
   const months = Array(12).fill(0);
+  
   pu.forEach(p => {
      const t = p.type || "อื่นๆ";
      types[t] = (types[t] || 0) + p.totalPrice;
+     
+     const n = p.name || "ไม่ระบุ";
+     items[n] = (items[n] || 0) + p.totalPrice;
+     
      if(p.month >= 1 && p.month <= 12) months[p.month-1] += p.totalPrice;
   });
 
@@ -1365,6 +1351,18 @@ function rPurchase() {
     },
     options: { ...CC }
   });
+
+  // New Chart: Top 10 Items Purchased
+  const sortedItems = Object.entries(items).sort((a,b)=>b[1]-a[1]).slice(0, 10);
+  if(ch_pur_items) ch_pur_items.destroy();
+  ch_pur_items = new Chart(document.getElementById("ch-pur-items"), {
+    type: "bar",
+    data: {
+      labels: sortedItems.map(x=>x[0]),
+      datasets: [{ label: "ยอดจ่าย (ต้นทุน)", data: sortedItems.map(x=>x[1]), backgroundColor: "rgba(224,80,80,.8)", borderRadius: 4 }]
+    },
+    options: { ...CC, indexAxis: 'y' }
+  });
 }
 
 function renderPU() {
@@ -1375,7 +1373,7 @@ function renderPU() {
   if(q) es = es.filter(e => (e.name||"").toLowerCase().includes(q) || (e.type||"").toLowerCase().includes(q));
   if(m) es = es.filter(e => e.month == m);
 
-  document.getElementById("pu-wrap").innerHTML = `<table class="tbl"><thead><tr><th>เดือน</th><th>รายการ</th><th>ประเภท</th><th>จำนวน</th><th>ยอดจ่าย (ต้นทุน)</th><th>ราคา/หน่วย</th><th></th></tr></thead><tbody>${es.map(c=>`<tr><td style="color:var(--muted)">${c.monthName||c.month}</td><td style="font-weight:600">${c.name}</td><td><span class="pill p-c">${c.type}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--red);font-weight:700">${fmt(c.totalPrice)}</td><td style="font-size:.69rem;color:var(--muted)">฿${(c.unitPrice||0).toFixed(2)}</td><td>${c.isNew?`<button class="sli-del" onclick="delPur(${DB[curYear].purchases.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>` || `<div style="text-align:center;padding:20px;color:var(--muted);font-size:.8rem">ยังไม่มีข้อมูลการสั่งของในปีนี้</div>`;
+  document.getElementById("pu-wrap").innerHTML = `<table class="tbl"><thead><tr><th>เดือน</th><th>รายการ</th><th>ประเภท</th><th>จำนวน</th><th>ยอดจ่าย (ต้นทุน)</th><th>ราคา/หน่วย</th><th>หมายเหตุ/ร้าน</th><th></th></tr></thead><tbody>${es.map(c=>`<tr><td style="color:var(--muted)">${c.monthName||c.month}</td><td style="font-weight:600">${c.name}</td><td><span class="pill p-c">${c.type}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--red);font-weight:700">${fmt(c.totalPrice)}</td><td style="font-size:.69rem;color:var(--muted)">฿${(c.unitPrice||0).toFixed(2)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td><td>${c.isNew?`<button class="sli-del" onclick="delPur(${DB[curYear].purchases.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>` || `<div style="text-align:center;padding:20px;color:var(--muted);font-size:.8rem">ยังไม่มีข้อมูลการสั่งของในปีนี้</div>`;
 }
 
 function calcPu() {
@@ -1392,13 +1390,20 @@ function savePurchase() {
   const qty = parseFloat(document.getElementById('pu-qty').value) || 0;
   const tot = parseFloat(document.getElementById('pu-totp').value) || 0;
   const unit = parseFloat(document.getElementById('pu-unit').value) || 0;
+  const note = document.getElementById('pu-note').value.trim();
   
   if(!name || qty <= 0) { toast("กรุณาใส่ชื่อรายการและจำนวน", "warn"); return; }
   
   if(!DB[curYear].purchases) DB[curYear].purchases = [];
   
-  const rowData = [m, mn, name, type, qty, tot, unit];
-  DB[curYear].purchases.push({ month: m, monthName: mn, name, type, qty, totalPrice: tot, unitPrice: unit, isNew: true });
+  const rowData = [m, mn, name, type, qty, tot, unit, note];
+  DB[curYear].purchases.push({ month: m, monthName: mn, name, type, qty, totalPrice: tot, unitPrice: unit, note: note, isNew: true });
+  
+  document.getElementById('pu-name').value = '';
+  document.getElementById('pu-qty').value = '1';
+  document.getElementById('pu-totp').value = '0';
+  document.getElementById('pu-unit').value = '';
+  document.getElementById('pu-note').value = '';
   
   persist(); 
   fbSave(); 
@@ -1534,7 +1539,7 @@ function rCusts(){
   
   document.getElementById("cust-list").innerHTML=cs.slice(0,60).map((c,i)=>{const tp=Object.entries(c.products).sort((a,b)=>b[1]-a[1])[0];return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.69rem;color:var(--muted);width:22px">${i+1}</span><div style="flex:1"><div style="font-size:.8rem;font-weight:600">${c.name}</div><div style="font-size:.65rem;color:var(--muted)">${c.count} orders${tp?` · ${tp[0]}×${tp[1]}`:""}</div></div><span style="font-family:'Space Mono',monospace;font-size:.78rem;color:var(--orange)">${fmt(c.total)}</span></div>`;}).join("") || "<div style='font-size:.78rem;color:var(--muted);padding:10px'>ไม่มีข้อมูลลูกคัา</div>";
   const rep=Object.values(cm).filter(c=>c.count>=2).sort((a,b)=>b.count-a.count);
-  document.getElementById("repeat-list").innerHTML=rep.slice(0,15).map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.8rem;flex:1">${c.name}</span><span class="pill p-m">${c.count}x</span><span style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--orange)">${fmt(c.total)}</span></div>`).join("")||"<div style=\"color:var(--muted);padding:10px 0;font-size:.78rem\">ยังไม่มีข้อมูล</div>";
+  document.getElementById("repeat-list").innerHTML=rep.slice(0,15).map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.8rem;flex:1">${c.name}</span><span class="pill p-m">${c.count}x</span><span style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--orange)">${fmt(c.total)}</span></div>`).join("")||"<div style='color:var(--muted);padding:10px 0;font-size:.78rem'>ยังไม่มีข้อมูล</div>";
   const tot=Object.values(cm).length;
   const rep2=rep.length;
   
@@ -1665,6 +1670,7 @@ function parsePurchaseCSV(txt){
       qty: parseNum(getV(["จำนวนชิ้น","จำนวน","qty"])),
       totalPrice: parseNum(getV(["ราคารวมที่จ่าย","ยอดจ่าย","รวม","total"])),
       unitPrice: parseNum(getV(["หารต่อ 1 หน่วย","หารต่อหน่วย","หน่วยละ","unit"])),
+      note: (getV(["หมายเหตุ","ร้านค้า","ชิปปิ้ง","note"])||"").trim(),
       isUploaded: true
     };
   }).filter(e=>e.name);
@@ -1683,7 +1689,17 @@ function dropCSV(e){e.preventDefault();e.currentTarget.classList.remove("drag");
 function o2rows(ords){return ords.map(o=>({วันที่:o.date,ชื่อลูกค้า:o.name,...Object.fromEntries(Object.entries(o.products||{}).map(([k,v])=>[k,v])),ค่าส่ง:o.shipping_charged,ยอดรวม:o.revenue,การชำระ:o.payment,เสร็จ:o.done?"TRUE":"FALSE",หมายเหตุ:o.note}));}
 function toCSV(rows,fname){if(!rows.length){toast("ไม่มีข้อมูล","warn");return;}const cols=Object.keys(rows[0]);const lines=[cols.join(","),...rows.map(r=>cols.map(c=>JSON.stringify(r[c]??"")).join(","))];const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});dl(blob,fname+".csv");toast("✓ Export CSV สำเร็จ");}
 function toXLSX(sheets,fname){const wb=XLSX.utils.book_new();sheets.forEach(({name,rows})=>{if(!rows.length)return;XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),name.slice(0,31));});XLSX.writeFile(wb,fname+".xlsx");toast("✓ Export Excel สำเร็จ");}
-function toPDF(rows,title){if(!rows.length){toast("ไม่มีข้อมูล","warn");return;}const cols=Object.keys(rows[0]);const thr=cols.map(c=>`<th style="padding:6px 9px;background:#e8722a;color:#fff;font-size:10px">${c}</th>`).join("");const trs=rows.map((r,i)=>`<tr style="background:${i%2?"#fdf6ec":"#fff"}">${cols.map(c=>`<td style="padding:5px 9px;font-size:10px;border-bottom:1px solid #faecd8">${r[c]??""}</td>`).join("")}</tr>`).join("");const w=window.open("","_blank");w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet"><style>body{font-family:'Noto Sans Thai',sans-serif;padding:20px}h2{color:#e8722a}table{border-collapse:collapse;width:100%}@media print{@page{margin:12mm}}</style></head><body><h2>✿ Tinkle Goodies — ${title}</h2><p style="color:#999;font-size:11px;margin-bottom:14px">${new Date().toLocaleDateString("th-TH")}</p><table><thead><tr>${thr}</tr></thead><tbody>${trs}</tbody></table>\x3C/script></body></html>`);w.document.close();toast("✓ เปิด PDF print preview");}
+function toPDF(rows,title){
+  if(!rows.length){toast("ไม่มีข้อมูล","warn");return;}
+  const cols=Object.keys(rows[0]);
+  const thr=cols.map(c=>"<th style='padding:6px 9px;background:#e8722a;color:#fff;font-size:10px'>" + c + "</th>").join("");
+  const trs=rows.map((r,i)=>"<tr style='background:" + (i%2?"#fdf6ec":"#fff") + "'>" + cols.map(c=>"<td style='padding:5px 9px;font-size:10px;border-bottom:1px solid #faecd8'>" + (r[c]??"") + "</td>").join("") + "</tr>").join("");
+  const w=window.open("","_blank");
+  const html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + title + "</title><link href='https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap' rel='stylesheet'><style>body{font-family:'Noto Sans Thai',sans-serif;padding:20px}h2{color:#e8722a}table{border-collapse:collapse;width:100%}@media print{@page{margin:12mm}}</style></head><body><h2>✿ Tinkle Goodies — " + title + "</h2><p style='color:#999;font-size:11px;margin-bottom:14px'>" + new Date().toLocaleDateString("th-TH") + "</p><table><thead><tr>" + thr + "</tr></thead><tbody>" + trs + "</tbody></table><scr" + "ipt>window.onload=()=>window.print();</scr" + "ipt></body></html>";
+  w.document.write(html);
+  w.document.close();
+  toast("✓ เปิด PDF print preview");
+}
 function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
 function expOrders(f){const rows=o2rows(getO(curOM));if(f==="csv")toCSV(rows,`tinkle_orders_${curOM}_${curYear}`);else if(f==="xlsx")toXLSX([{name:curOM,rows}],"tinkle_orders_"+curOM+"_"+curYear);else toPDF(rows,`Orders ${curOM} ${curYear}`);}
@@ -1697,7 +1713,7 @@ function expCusts(f){
   if(f==="csv")toCSV(rows,`tinkle_customers_${m||'ALL'}_${curYear}`);else toXLSX([{name:"Customers",rows}],`tinkle_customers_${m||'ALL'}_${curYear}`);
 }
 function expCorp(f){const rows=(DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,องค์กร:c.org,สินค้า:c.product,จำนวน:c.qty,"ต้นทุน/ชิ้น":c.unitCost||0,ภาษี:c.tax||0,ยอด:c.amount,หมายเหตุ:c.note}));if(f==="csv")toCSV(rows,`tinkle_corporate_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Corporate",rows}],`tinkle_corporate_${curYear}`);else toPDF(rows,`Corporate Orders ${curYear}`);}
-function expPurchase(f){const rows=(DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวนชิ้น:c.qty,ราคารวม:c.totalPrice,ต่อหน่วย:c.unitPrice}));if(f==="csv")toCSV(rows,`tinkle_purchases_${curYear}`);}
+function expPurchase(f){const rows=(DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวนชิ้น:c.qty,ราคารวม:c.totalPrice,ต่อหน่วย:c.unitPrice,หมายเหตุ:c.note||""}));if(f==="csv")toCSV(rows,`tinkle_purchases_${curYear}`);}
 function expAll(f){
   if(f==="json"){
     const data={ DB: DB, new_orders:NO, new_shipping:NS, exported:new Date().toISOString() };
@@ -1707,7 +1723,7 @@ function expAll(f){
     const sheets = M_KEYS.map(m => ({name: m, rows: o2rows(getO(m))})).filter(s => s.rows.length > 0);
     sheets.push({name: "ค่าส่ง", rows: allShip().map(e=>({วันที่:e.date,ค่าส่ง:e.cost,หมายเหตุ:e.note||""})) });
     sheets.push({name: "Corporate", rows: (DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,สินค้า:c.product,จำนวน:c.qty,"ต้นทุน/ชิ้น":c.unitCost||0,ภาษี:c.tax||0,ยอด:c.amount})) });
-    sheets.push({name: "สั่งของ(ต้นทุน)", rows: (DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวน:c.qty,ยอดรวม:c.totalPrice,ต่อหน่วย:c.unitPrice})) });
+    sheets.push({name: "สั่งของ(ต้นทุน)", rows: (DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวน:c.qty,ยอดรวม:c.totalPrice,ต่อหน่วย:c.unitPrice,หมายเหตุ:c.note||""})) });
     if(sheets.length) toXLSX(sheets, `tinkle_goodies_${curYear}`); else toast("ไม่มีข้อมูลในปีนี้","warn");
   }else if(f==="csv"){
     M_KEYS.forEach((m,i)=>setTimeout(()=>{
