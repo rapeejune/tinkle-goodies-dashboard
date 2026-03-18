@@ -802,10 +802,36 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
+<!-- CONFIRM MODAL -->
+<div class="overlay hidden" id="m-confirm" style="z-index:99999;">
+  <div class="modal" style="max-width:300px; text-align:center; padding: 30px 20px;">
+    <div style="font-size:3rem; margin-bottom:10px;">⚠️</div>
+    <div class="modal-title" id="m-confirm-text" style="color:var(--text); font-size:1rem;">ยืนยันการทำรายการ?</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;">
+      <button class="btn btn-ghost" onclick="closeM('m-confirm')">ยกเลิก</button>
+      <button class="btn btn-danger" onclick="executeConfirm()">ยืนยันลบ</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast-el"></div>
 
 <script>
 // --- GLOBAL SINGLE SCRIPT BLOCK ---
+
+// ── CUSTOM CONFIRM MODAL ──
+let confirmAction = null;
+function showConfirm(msg, action) {
+    const textEl = document.getElementById("m-confirm-text");
+    if (textEl) textEl.textContent = msg;
+    confirmAction = action;
+    openM('m-confirm');
+}
+
+function executeConfirm() {
+    if (confirmAction) confirmAction();
+    closeM('m-confirm');
+}
 
 // ── PIN SYSTEM ──
 let currentPin = "";
@@ -1049,6 +1075,9 @@ function toast(m,t="ok",d=2600){const el=document.getElementById("toast-el");if(
 function openM(id){
   const el = document.getElementById(id);
   if(el) el.classList.remove("hidden");
+  if(id==="m-upload") {
+     const upy = document.getElementById("m-upload-year"); if(upy) upy.value = curYear;
+  }
 }
 
 function closeM(id){
@@ -1062,7 +1091,8 @@ function pDate(d){if(!d)return 0;const p=d.split("/");return p.length===3?new Da
 const CC={plugins:{legend:{labels:{color:"rgba(45,26,8,.55)",font:{size:11}}}},scales:{x:{ticks:{color:"rgba(45,26,8,.45)",font:{size:10}},grid:{color:"rgba(45,26,8,.05)"}},y:{ticks:{color:"rgba(45,26,8,.45)",font:{size:10}},grid:{color:"rgba(45,26,8,.05)"}}},responsive:true,maintainAspectRatio:false};
 const CL=["#e8722a","#3ea8d8","#3dbfa8","#2da06a","#f59c4a","#7bc4e8","#7dd4c4","#68c89a","#c8820a","#e0907a"];
 
-// ── UI INITIALIZATION ──
+
+// --- UI & TABS ---
 function initUI() {
   const mHtml = M_KEYS.map((m,i) => `<button class="mbtn ${curOM===m?'active':''}" onclick="setOM('${m}',this)">${M_LABELS[i]}</button>`).join("");
   const togEl = document.getElementById("om-tog");
@@ -1103,7 +1133,7 @@ function goTab(n,btn){
   if(n==="customers") rCusts();
 }
 
-// ── EXPENSE LOGIC ──
+// --- EXPENSES ---
 function openExpenseM() {
     document.getElementById('ex-id').value = '';
     document.getElementById('ex-date').value = td();
@@ -1162,29 +1192,31 @@ function editExpense(id) {
 function delExpenseFromModal() {
     const id = document.getElementById('ex-id').value;
     if(!id) return;
-    if(!confirm("ต้องการลบรายการค่าใช้จ่ายนี้?")) return;
-    DB[curYear].expenses = DB[curYear].expenses.filter(e => e.id !== id);
-    persist(); fbSave(); rOverview(); closeM('m-expense'); toast("ลบรายการแล้ว", "warn");
-    const listTitle = document.getElementById("m-expense-list-title");
-    if(listTitle) {
-        const mKey = listTitle.dataset.month;
-        const elList = document.getElementById("m-expense-list");
-        if (mKey && elList && !elList.classList.contains('hidden')) showExpenseList(mKey);
-    }
+    showConfirm("ต้องการลบรายการค่าใช้จ่ายนี้?", () => {
+        DB[curYear].expenses = DB[curYear].expenses.filter(e => e.id !== id);
+        persist(); fbSave(); rOverview(); closeM('m-expense'); toast("ลบรายการแล้ว", "warn");
+        const listTitle = document.getElementById("m-expense-list-title");
+        if(listTitle) {
+            const mKey = listTitle.dataset.month;
+            const elList = document.getElementById("m-expense-list");
+            if (mKey && elList && !elList.classList.contains('hidden')) showExpenseList(mKey);
+        }
+    });
 }
 
 function delExpense(id) {
-   if(!confirm("ต้องการลบรายการค่าใช้จ่ายนี้?")) return;
-   if(DB[curYear].expenses) {
-       DB[curYear].expenses = DB[curYear].expenses.filter(e => e.id !== id);
-       persist(); fbSave(); rOverview();
-       const listTitle = document.getElementById("m-expense-list-title");
-       if(listTitle) {
-           const m = listTitle.dataset.month;
-           if(m) showExpenseList(m); 
+   showConfirm("ต้องการลบรายการค่าใช้จ่ายนี้?", () => {
+       if(DB[curYear].expenses) {
+           DB[curYear].expenses = DB[curYear].expenses.filter(e => e.id !== id);
+           persist(); fbSave(); rOverview();
+           const listTitle = document.getElementById("m-expense-list-title");
+           if(listTitle) {
+               const m = listTitle.dataset.month;
+               if(m) showExpenseList(m); 
+           }
+           toast("ลบรายการแล้ว", "warn");
        }
-       toast("ลบรายการแล้ว", "warn");
-   }
+   });
 }
 
 function showExpenseList(mKey) {
@@ -1224,6 +1256,7 @@ function showExpenseList(mKey) {
    }
 }
 
+// --- OVERVIEW ---
 function renderSummaryTable() {
    const tbody = M_KEYS.map((k, i) => {
        const s = getMonthSummary(k); 
@@ -1326,6 +1359,7 @@ function rOverview(){
   if(rOlEl) rOlEl.innerHTML=allYearOrds.slice(0,8).map(oiH).join("") || `<div style='font-size:.75rem;color:var(--muted);text-align:center;padding:20px 0'>ไม่มีรายละเอียดออเดอร์</div>`;
 }
 
+// --- ORDERS ---
 function oiH(o){
   const stCls = o.done ? "p-g" : "p-s"; const stTxt = o.done ? "✓ จัดส่งแล้ว" : "⏳ รอส่ง";
   const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
@@ -1490,6 +1524,17 @@ function openCreateOrder() {
   openM('m-order');
 }
 
+function getProdRowTemplate() {
+  const newOpts = Object.keys(TIERED_PRICES).map(p => {
+    let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
+    return `<option value="${p}">${p} (เริ่ม ฿${baseP})</option>`;
+  }).join("");
+  const legacyOpts = Object.keys(PRICE).filter(k => !TIERED_PRICES[k]).map(p => `<option value="${p}">${p} (เก่า)</option>`).join("");
+  
+  let html = `<option value="">-- เลือก --</option><optgroup label="สินค้าระบบใหม่ (ลดตามขั้นบันได)">${newOpts}</optgroup><optgroup label="รายการเก่า (Legacy)">${legacyOpts}</optgroup>`;
+  return `<div class="prod-row" style="display:flex;gap:5px"><select class="inp" style="flex:1" onchange="calcTot()">${html}</select><input class="inp" type="number" value="1" min="1" style="width:60px" oninput="calcTot()"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTot()">✕</button></div>`;
+}
+
 function addProdRowWithData(selName = "", qty = 1) {
     const newOpts = Object.keys(TIERED_PRICES).map(p => {
         let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
@@ -1506,11 +1551,126 @@ function addProdRowWithData(selName = "", qty = 1) {
     document.getElementById("prod-rows-container").insertAdjacentHTML('beforeend', rowHtml);
 }
 
+function buildPick() { 
+  const elFd = document.getElementById("fd"); if(elFd) elFd.value = td(); 
+  const elCont = document.getElementById("prod-rows-container"); if(elCont) elCont.innerHTML = getProdRowTemplate(); 
+  const fsInput = document.getElementById("fs");
+  if(fsInput) {
+      fsInput.value = 50;
+      fsInput.dataset.manualChange = "";
+      fsInput.style.background = "";
+      fsInput.style.color = "";
+  }
+}
+
+function addProdRow() { 
+    const elCont = document.getElementById("prod-rows-container");
+    if(elCont) elCont.insertAdjacentHTML('beforeend', getProdRowTemplate()); 
+}
+
+function calcTot() { 
+  let sum = 0; 
+  document.querySelectorAll(".prod-row").forEach(r => { 
+    const s = r.querySelector("select").value; 
+    const q = parseInt(r.querySelector("input").value) || 0; 
+    if(s && q > 0) sum += getPrice(s, q) * q;
+  }); 
+
+  const fsInput = document.getElementById("fs");
+  
+  if(fsInput) {
+      if (sum >= 1500) {
+         if (fsInput.value !== "0" && !fsInput.dataset.manualChange) {
+             fsInput.dataset.oldVal = fsInput.value; 
+         }
+         if (!fsInput.dataset.manualChange || fsInput.dataset.wasFree === "1") {
+            fsInput.value = 0;
+            fsInput.dataset.wasFree = "1";
+         }
+         fsInput.style.background = "var(--green3)";
+         fsInput.style.color = "var(--green)";
+         fsInput.style.borderColor = "var(--green)";
+         fsInput.title = "จัดส่งฟรีเมื่อยอดถึง 1,500 บาท";
+      } else {
+         if (fsInput.dataset.wasFree === "1" && !fsInput.dataset.manualChange) {
+             fsInput.value = fsInput.dataset.oldVal || 50;
+             fsInput.dataset.wasFree = "0";
+         }
+         fsInput.style.background = "";
+         fsInput.style.color = "";
+         fsInput.style.borderColor = "";
+         fsInput.title = "";
+      }
+      const elFtot = document.getElementById("ftot");
+      if(elFtot) elFtot.value = sum + parseFloat(fsInput.value || 0); 
+  }
+}
+
+function saveOrder() { 
+    const elId = document.getElementById('o-id');
+    const id = elId ? elId.value : "";
+    const elFd = document.getElementById("fd");
+    const elFn = document.getElementById("fn");
+    const elFtot = document.getElementById("ftot");
+    if(!elFd || !elFn || !elFtot) return;
+
+    let prods = {};
+    document.querySelectorAll(".prod-row").forEach(r => {
+        const s = r.querySelector("select").value;
+        const q = parseInt(r.querySelector("input").value) || 0;
+        if(s && q > 0) prods[s] = (prods[s]||0) + q;
+    });
+
+    let tags = [];
+    const fnote = document.getElementById("fnote") ? document.getElementById("fnote").value.trim() : "";
+    if(document.getElementById('chk-urgent') && document.getElementById('chk-urgent').checked) tags.push("งานด่วน");
+    if(document.getElementById('chk-nofile') && document.getElementById('chk-nofile').checked) tags.push("รอไฟล์");
+    let finalNote = tags.join(", ") + (tags.length > 0 && fnote ? " | " : "") + fnote;
+
+    let payment = (document.getElementById('chk-nopay') && document.getElementById('chk-nopay').checked) ? "ยังไม่จ่าย" : "โอนครบ";
+    
+    let dateStr = elFd.value ? elFd.value.split("-").reverse().join("/") : td().split("-").reverse().join("/");
+    let monthKey = M_KEYS[parseInt(elFd.value.split("-")[1])-1] || "JAN";
+
+    let oObj = {
+        date: dateStr,
+        name: elFn.value || "ไม่ระบุ",
+        revenue: parseFloat(elFtot.value) || 0,
+        shipping_charged: parseFloat(document.getElementById("fs") ? document.getElementById("fs").value : 0) || 0,
+        products: prods,
+        note: finalNote,
+        payment: payment
+    };
+
+    if (id) {
+        let found = false;
+        NO.forEach((o, i) => { if(o.id === id) { NO[i] = {...o, ...oObj}; found = true; } });
+        if (!found) {
+            ["2024","2025","2026","2027"].forEach(y => {
+                if(DB[y]) M_KEYS.forEach(m => {
+                    let idx = (DB[y][m]||[]).findIndex(x => x.id === id);
+                    if(idx !== -1) {
+                        DB[y][m][idx] = {...DB[y][m][idx], ...oObj};
+                        found = true;
+                    }
+                });
+            });
+        }
+        toast("อัปเดตออเดอร์สำเร็จ!");
+    } else {
+        NO.push({ id: "NO_"+Date.now(), isNew: true, month: monthKey, ...oObj, done: false });
+        toast("บันทึกออเดอร์ใหม่สำเร็จ!");
+    }
+
+    persist(); fbSave(); rOverview(); rOTab(); rCusts(); closeM('m-order');
+}
+
 function deleteOrder(id) {
-   if(!confirm("ต้องการลบออเดอร์นี้ใช่หรือไม่?")) return;
-   NO = NO.filter(x => x.id !== id);
-   persist(); fbSave(); rOverview(); rOTab(); closeM('m-odp');
-   toast("ลบออเดอร์เรียบร้อย");
+   showConfirm("ต้องการลบออเดอร์นี้ใช่หรือไม่?", () => {
+       NO = NO.filter(x => x.id !== id);
+       persist(); fbSave(); rOverview(); rOTab(); closeM('m-odp');
+       toast("ลบออเดอร์เรียบร้อย");
+   });
 }
 
 function setOM(m,btn){ 
@@ -1563,6 +1723,424 @@ function renderOL(){
   
   const elCt = document.getElementById("ol-ct");
   if(elCt) elCt.textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
+}
+
+// --- SHIPPING ---
+function saveShip() { 
+    const elFsd = document.getElementById("fsd");
+    const elFsc = document.getElementById("fsc");
+    const elFsn = document.getElementById("fsn");
+    if(!elFsd || !elFsc) return;
+
+    NS.push({
+        id:"NS_"+Date.now(), 
+        isNew:true, 
+        date:elFsd.value, 
+        cost:parseFloat(elFsc.value)||0, 
+        note:elFsn ? elFsn.value : ""
+    }); 
+    persist(); fbSave(); rOverview(); rShip(); closeM('m-ship'); toast("บันทึกค่าส่งแล้ว"); 
+}
+
+function rShip() { 
+    const sum = allShip().reduce((s,c)=>s+c.cost,0); 
+    const elPaid = document.getElementById("sh-paid"); if(elPaid) elPaid.textContent=fmt(sum); 
+    const sl = document.getElementById("ship-list"); 
+    if(sl) sl.innerHTML = allShip().map(s=>`<div class="sli"><div class="sli-d">${s.date}</div><div class="sli-n">${s.note||""}</div><div class="sli-a">${fmt(s.cost)}</div></div>`).join(""); 
+}
+
+// --- PURCHASE ---
+function openPurchaseM() {
+    const eId = document.getElementById('epu-id'); if(eId) eId.value = '';
+    const eName = document.getElementById('pu-name'); if(eName) eName.value = '';
+    const eType = document.getElementById('pu-type'); if(eType) eType.value = 'ของที่ใช้ทำขาย';
+    const eQty = document.getElementById('pu-qty'); if(eQty) eQty.value = '1';
+    const eTot = document.getElementById('pu-totp'); if(eTot) eTot.value = '0';
+    const eUnit = document.getElementById('pu-unit'); if(eUnit) eUnit.value = '';
+    const eNote = document.getElementById('pu-note'); if(eNote) eNote.value = '';
+    const eMm = document.getElementById('pu-mm'); if(eMm) eMm.value = new Date().getMonth() + 1;
+    const eMn = document.getElementById('pu-mn'); if(eMn) eMn.value = M_LABELS[new Date().getMonth()];
+    openM('m-purchase');
+}
+
+function calcPu() { 
+    const elQty = document.getElementById("pu-qty");
+    const elTotp = document.getElementById("pu-totp");
+    const elUnit = document.getElementById("pu-unit");
+    if(elQty && elTotp && elUnit) {
+        const q=parseFloat(elQty.value)||0; 
+        const t=parseFloat(elTotp.value)||0; 
+        elUnit.value = q>0?(t/q).toFixed(2):0; 
+    }
+}
+
+function calcPuE() { 
+    const elQty = document.getElementById("epu-qty");
+    const elTotp = document.getElementById("epu-totp");
+    const elUnit = document.getElementById("epu-unit");
+    if(elQty && elTotp && elUnit) {
+        const q=parseFloat(elQty.value)||0; 
+        const t=parseFloat(elTotp.value)||0; 
+        elUnit.value = q>0?(t/q).toFixed(2):0; 
+    }
+}
+
+function savePurchase() { 
+    const elMm = document.getElementById("pu-mm");
+    const elName = document.getElementById("pu-name");
+    const elType = document.getElementById("pu-type");
+    const elQty = document.getElementById("pu-qty");
+    const elTotp = document.getElementById("pu-totp");
+    const elNote = document.getElementById("pu-note");
+    if(!elMm || !elName || !elTotp) return;
+
+    DB[curYear].purchases.push({
+        id:"PU_"+Date.now(), 
+        month:parseInt(elMm.value), 
+        name:elName.value, 
+        type:elType ? elType.value : "ของที่ใช้ทำขาย", 
+        qty:parseFloat(elQty ? elQty.value : 1)||1, 
+        totalPrice:parseFloat(elTotp.value)||0, 
+        note:elNote ? elNote.value : ""
+    }); 
+    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-purchase'); toast("บันทึกต้นทุนแล้ว"); 
+}
+
+function rPurchase() { 
+  const elYr = document.getElementById("pu-yr-label"); if (elYr) elYr.textContent = curYear;
+  const elYrGrp = document.getElementById("pu-yr-label-group"); if (elYrGrp) elYrGrp.textContent = curYear;
+  let p = DB[curYear].purchases || [];
+  
+  const elM = document.getElementById("pu-m"); const mFilter = elM ? elM.value : "";
+  const elQ = document.getElementById("pu-q"); const qFilter = (elQ ? elQ.value || "" : "").toLowerCase();
+  
+  if (mFilter) p = p.filter(x => x.month == mFilter);
+  if (qFilter) p = p.filter(x => (x.name||"").toLowerCase().includes(qFilter) || (x.note||"").toLowerCase().includes(qFilter) || (x.type||"").toLowerCase().includes(qFilter));
+
+  const totalCost = p.reduce((s,x) => s + (x.totalPrice||0), 0);
+  const totalQty = p.reduce((s,x) => s + (x.qty||1), 0);
+  
+  const elTot = document.getElementById("pu-tot"); if(elTot) elTot.textContent = fmt(totalCost);
+  const elQtyTot = document.getElementById("pu-qty-tot"); if (elQtyTot) elQtyTot.textContent = fN(totalQty) + " ชิ้น";
+
+  // Pie Chart
+  let typeMap = {};
+  p.forEach(x => { typeMap[x.type||'อื่นๆ'] = (typeMap[x.type||'อื่นๆ']||0) + x.totalPrice; });
+  if(ch_pur_cat) ch_pur_cat.destroy();
+  const catCanvas = document.getElementById("ch-pur-cat");
+  if (catCanvas) {
+      ch_pur_cat = new Chart(catCanvas, { type: "doughnut", data: { labels: Object.keys(typeMap), datasets: [{ data: Object.values(typeMap), backgroundColor: CL, borderWidth: 0 }] }, options: { ...CC, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }});
+  }
+
+  // Bar Chart
+  let itemMap = {};
+  p.forEach(x => { itemMap[x.name] = (itemMap[x.name]||0) + (x.qty||1); });
+  let topItems = Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if(ch_pur_top) ch_pur_top.destroy();
+  const topCanvas = document.getElementById("ch-pur-top");
+  if (topCanvas) {
+      ch_pur_top = new Chart(topCanvas, { type: "bar", data: { labels: topItems.map(x=>x[0].slice(0,15)), datasets: [{ label: "จำนวนชิ้น", data: topItems.map(x=>x[1]), backgroundColor: "#e8722acc", borderRadius: 4 }] }, options: { ...CC, indexAxis: 'y', plugins: { legend: { display: false } } }});
+  }
+
+  // Grouped Table
+  let grouped = {};
+  p.forEach(x => {
+      let n = (x.name || "").trim().toUpperCase();
+      let dispName = (x.name || "").trim();
+      if(!grouped[n]) grouped[n] = { name: dispName, qty: 0, total: 0, type: x.type };
+      grouped[n].qty += (x.qty || 1);
+      grouped[n].total += (x.totalPrice || 0);
+  });
+  let groupedArr = Object.values(grouped);
+  const elGrpSort = document.getElementById("pu-grp-sort");
+  let grpSort = elGrpSort ? elGrpSort.value : "total_desc";
+  if (grpSort === "total_desc") groupedArr.sort((a,b) => b.total - a.total);
+  else if (grpSort === "qty_desc") groupedArr.sort((a,b) => b.qty - a.qty);
+  else if (grpSort === "name_asc") groupedArr.sort((a,b) => a.name.localeCompare(b.name, 'th'));
+
+  const elGrp = document.getElementById("pu-group-wrap");
+  if(elGrp) {
+     elGrp.innerHTML = `<table class="tbl"><tr><th>สินค้า / รายการ</th><th>หมวดหมู่</th><th>รวมจำนวน (ชิ้น)</th><th>ต้นทุนเฉลี่ย/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
+     groupedArr.map(x => {
+        let avgCost = x.qty ? (x.total / x.qty).toFixed(2) : x.total;
+        return `<tr>
+            <td style="font-weight:600">${x.name}</td>
+            <td style="font-size:0.65rem"><span class="pill p-c">${x.type||'อื่นๆ'}</span></td>
+            <td style="font-family:'Space Mono'">${fN(x.qty)}</td>
+            <td style="font-family:'Space Mono'; color:var(--sky)">฿${fN(avgCost)}</td>
+            <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.total)}</td>
+        </tr>`;
+     }).join("") + `</table>`;
+  }
+
+  // Raw Table
+  let displayP = [...p];
+  const elRawSort = document.getElementById("pu-sort");
+  let rawSort = elRawSort ? elRawSort.value : "newest";
+  if (rawSort === "newest") displayP.reverse();
+  else if (rawSort === "price_desc") displayP.sort((a,b) => b.totalPrice - a.totalPrice);
+  else if (rawSort === "qty_desc") displayP.sort((a,b) => b.qty - a.qty);
+
+  const elList = document.getElementById("pu-wrap"); 
+  if(elList) {
+    elList.innerHTML = `<table class="tbl"><tr><th>เดือน</th><th>หมวดหมู่</th><th>รายการสั่งซื้อ</th><th>จำนวนชิ้น</th><th>ต้นทุน/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
+    displayP.map(x => {
+      let unitCost = x.qty ? (x.totalPrice / x.qty).toFixed(2) : x.totalPrice;
+      return `<tr style="cursor:pointer" onclick="showPur('${x.id}')">
+        <td style="color:var(--muted)">${M_LABELS[x.month-1]||x.month}</td>
+        <td style="font-size:0.65rem"><span class="pill p-c">${x.type||'อื่นๆ'}</span></td>
+        <td style="font-weight:600">${x.name} ${getBadgeHTML(x.note)}</td>
+        <td style="font-family:'Space Mono'">${fN(x.qty||1)}</td>
+        <td style="font-family:'Space Mono'; color:var(--text2)">฿${unitCost}</td>
+        <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.totalPrice)}</td>
+      </tr>`;
+    }).join("") + `</table>`; 
+  }
+}
+
+function showPur(id) {
+    let p = DB[curYear].purchases.find(x => x.id === id);
+    if(!p) return;
+    const eId = document.getElementById('epu-id'); if(eId) eId.value = p.id;
+    const eName = document.getElementById('epu-name'); if(eName) eName.value = p.name || '';
+    const eType = document.getElementById('epu-type'); if(eType) eType.value = p.type || 'ของที่ใช้ทำขาย';
+    const eQty = document.getElementById('epu-qty'); if(eQty) eQty.value = p.qty || 1;
+    const eTotp = document.getElementById('epu-totp'); if(eTotp) eTotp.value = p.totalPrice || 0;
+    const eNote = document.getElementById('epu-note'); if(eNote) eNote.value = p.note || '';
+    calcPuE();
+    openM('m-pur-detail');
+}
+
+function updatePur() {
+    const elId = document.getElementById('epu-id'); if(!elId) return;
+    let id = elId.value;
+    let p = DB[curYear].purchases.find(x => x.id === id);
+    if(!p) return;
+    
+    const eName = document.getElementById('epu-name'); if(eName) p.name = eName.value.trim();
+    const eType = document.getElementById('epu-type'); if(eType) p.type = eType.value;
+    const eQty = document.getElementById('epu-qty'); if(eQty) p.qty = parseNum(eQty.value) || 1;
+    const eTotp = document.getElementById('epu-totp'); if(eTotp) p.totalPrice = parseNum(eTotp.value) || 0;
+    const eNote = document.getElementById('epu-note'); if(eNote) p.note = eNote.value.trim();
+    
+    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('อัปเดตรายการสำเร็จ');
+}
+
+function delPur() {
+    showConfirm('ต้องการลบรายการนี้ใช่หรือไม่?', () => {
+        const elId = document.getElementById('epu-id'); if(!elId) return;
+        let id = elId.value;
+        DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
+        persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
+    });
+}
+
+// --- CUSTOMERS ---
+function rCusts() {
+  const elYr = document.getElementById("cu-yr-label"); if(elYr) elYr.textContent = curYear;
+  const elM = document.getElementById("cu-m"); const mFilter = elM ? elM.value : "";
+  const elQ = document.getElementById("cu-q"); const qFilter = (elQ ? elQ.value || "" : "").toLowerCase();
+  
+  let orders = getO(mFilter);
+  
+  let custMap = {};
+  orders.forEach(o => {
+     if(!o.name) return;
+     let n = o.name.trim();
+     let nKey = n.toLowerCase();
+     if(!custMap[nKey]) custMap[nKey] = { name: n, spent: 0, count: 0, items: new Set(), dates: new Set() };
+     custMap[nKey].spent += o.revenue;
+     custMap[nKey].count += 1;
+     if(o.date) custMap[nKey].dates.add(o.date);
+     Object.keys(o.products||{}).forEach(p => custMap[nKey].items.add(p));
+  });
+
+  let custList = Object.values(custMap);
+  if (qFilter) {
+      custList = custList.filter(c => c.name.toLowerCase().includes(qFilter) || Array.from(c.dates).some(d => d.includes(qFilter)));
+  }
+
+  const elType = document.getElementById("cu-type"); const typeFilter = elType ? elType.value : "all";
+  if (typeFilter === "repeat") custList = custList.filter(c => c.count > 1);
+
+  const elSort = document.getElementById("cu-sort"); const sortFilter = elSort ? elSort.value : "spent_desc";
+  if (sortFilter === "spent_desc") custList.sort((a,b) => b.spent - a.spent);
+  else if (sortFilter === "spent_asc") custList.sort((a,b) => a.spent - b.spent);
+  else if (sortFilter === "freq_desc") custList.sort((a,b) => b.count - a.count);
+
+  const totalCust = custList.length;
+  const repeatCust = custList.filter(c => c.count > 1).length;
+  const totalSpent = custList.reduce((s,c) => s + c.spent, 0);
+  
+  const elTot = document.getElementById("cu-tot"); if(elTot) elTot.textContent = fN(totalCust) + " คน";
+  const elRep = document.getElementById("cu-rep"); if(elRep) elRep.textContent = fN(repeatCust) + " คน";
+  const elAvg = document.getElementById("cu-avg"); if(elAvg) elAvg.textContent = totalCust ? fmt(totalSpent / totalCust) : "฿0";
+
+  let topCust = [...custList].sort((a,b) => b.spent - a.spent).slice(0,10);
+  if(ch_cust_top) ch_cust_top.destroy();
+  const custTopCanvas = document.getElementById("ch-cust-top");
+  if(custTopCanvas) {
+      ch_cust_top = new Chart(custTopCanvas, { type: "bar", data: { labels: topCust.map(x=>x.name.slice(0,12)), datasets: [{ label: "ยอดใช้จ่าย", data: topCust.map(x=>x.spent), backgroundColor: "#a855f7cc", borderRadius: 4 }] }, options: { ...CC, indexAxis: 'y', plugins: { legend: { display: false } } }});
+  }
+
+  const el = document.getElementById("cu-wrap"); 
+  if(el) {
+      el.innerHTML = `<table class="tbl"><tr><th>วันที่สั่ง/รอบส่ง</th><th>ชื่อลูกค้า</th><th>ความถี่</th><th>สั่งอะไรไปบ้าง (ย่อ)</th><th>ยอดรวม (บาท)</th></tr>` + 
+      custList.map(c => `<tr>
+        <td style="color:var(--muted); font-size:0.7rem;">${Array.from(c.dates).join("<br>") || "-"}</td>
+        <td style="font-weight:600; cursor:pointer;" onclick="showCust('${c.name.replace(/'/g, "\\'")}')">${c.name} ${c.count>1 ? '<span class="pill p-g" style="font-size:0.55rem;padding:0 4px">👑 ซื้อซ้ำ</span>' : ''}</td>
+        <td style="font-family:'Space Mono'; color:var(--muted)">${c.count} ครั้ง</td>
+        <td style="font-size:0.65rem; color:var(--text2); max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${Array.from(c.items).join(", ")}">${Array.from(c.items).join(", ") || "-"}</td>
+        <td style="color:var(--purple);font-family:'Space Mono',monospace;font-weight:700">${fmt(c.spent)}</td>
+      </tr>`).join("") + `</table>`; 
+  }
+}
+
+function showCust(name) {
+    let orders = getO('ALL').filter(o => o.name === name);
+    if(!orders.length) return;
+    const mt = document.getElementById('mcust-title'); if(mt) mt.textContent = "👤 " + name;
+    let html = `<div style="margin-bottom:15px"><button class="btn btn-sm btn-ghost" onclick="renameCust('${name.replace(/'/g, "\\'")}')">✏️ เปลี่ยนชื่อลูกค้าคนนี้ (แก้ไขทุกออเดอร์)</button></div>`;
+    html += `<div style="font-weight:bold;margin-bottom:8px">ประวัติออเดอร์ (${orders.length} รายการ)</div>`;
+    html += `<div class="ol" style="max-height: 400px; overflow-y:auto;">` + orders.map(oiH).join("") + `</div>`;
+    const mb = document.getElementById('mcust-body'); if(mb) mb.innerHTML = html;
+    openM('m-cust-detail');
+}
+
+function renameCust(oldName) {
+    let newName = prompt(`กรอกชื่อใหม่เพื่อแทนที่ "${oldName}":`, oldName);
+    if(!newName || newName.trim() === "" || newName === oldName) return;
+    newName = newName.trim();
+    
+    let count = 0;
+    NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+    
+    ["2024","2025","2026","2027"].forEach(y => {
+        if(DB[y]) {
+            M_KEYS.forEach(m => {
+                (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+            });
+        }
+    });
+    
+    if(count > 0) {
+        persist(); fbSave(); rOverview(); rOTab(); rCusts();
+        showCust(newName);
+        toast(`เปลี่ยนชื่อสำเร็จ (อัปเดต ${count} ออเดอร์)`);
+    } else {
+        toast(`ไม่พบข้อมูลออเดอร์ของลูกค้านี้ให้เปลี่ยน`, "warn");
+    }
+}
+
+// --- CORPORATE ---
+function openCorpM() {
+    const eId = document.getElementById('co-id'); if(eId) eId.value = '';
+    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = td();
+    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = '';
+    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = '';
+    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = '';
+    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = '1';
+    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = '0';
+    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = '0';
+    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = '';
+    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 เพิ่มออเดอร์ Corporate (B2B)";
+    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'none';
+    openM('m-corp');
+}
+
+function editCorp(id) {
+    const c = (DB[curYear].corp || []).find(x => x.id === id);
+    if(!c) return;
+    const eId = document.getElementById('co-id'); if(eId) eId.value = c.id;
+    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = c.date || td();
+    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = c.client;
+    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = c.org;
+    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = c.product;
+    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = c.qty || 1;
+    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = c.amount || 0;
+    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = c.tax || 0;
+    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = c.note || '';
+    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 แก้ไขออเดอร์ Corporate";
+    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'block';
+    openM('m-corp');
+}
+
+function saveCorp() { 
+  const elId = document.getElementById('co-id');
+  const id = elId ? elId.value : "";
+  
+  const elClient = document.getElementById("co-client");
+  const elAmt = document.getElementById("co-amt");
+  const clientName = elClient ? elClient.value : "";
+  const amt = elAmt ? parseFloat(elAmt.value)||0 : 0;
+
+  if(!clientName || amt <= 0) { toast("กรุณาใส่ชื่อลูกค้าและยอดรวมให้ครบ", "warn"); return; }
+  
+  const elDate = document.getElementById("co-date");
+  const elOrg = document.getElementById("co-org");
+  const elProd = document.getElementById("co-prod");
+  const elQty = document.getElementById("co-qty");
+  const elTax = document.getElementById("co-tax");
+  const elNote = document.getElementById("co-note");
+
+  const data = {
+    date: elDate ? elDate.value : td(), 
+    client: clientName,
+    org: elOrg ? elOrg.value : "",
+    product: elProd ? elProd.value : "",
+    qty: parseFloat(elQty ? elQty.value : 1)||1,
+    amount: amt,
+    tax: parseFloat(elTax ? elTax.value : 0)||0,
+    note: elNote ? elNote.value : ""
+  };
+  
+  if(!DB[curYear].corp) DB[curYear].corp = [];
+  if (id) {
+      const idx = DB[curYear].corp.findIndex(x => x.id === id);
+      if (idx !== -1) DB[curYear].corp[idx] = { id, ...data };
+  } else {
+      DB[curYear].corp.push({ id: "CO_"+Date.now(), ...data });
+  }
+  
+  persist(); fbSave(); rCorp(); closeM('m-corp'); toast("บันทึก B2B แล้ว"); 
+}
+
+function delCorp() {
+    showConfirm('ต้องการลบออเดอร์ B2B นี้ใช่หรือไม่?', () => {
+        const elId = document.getElementById('co-id'); if(!elId) return;
+        const id = elId.value;
+        DB[curYear].corp = (DB[curYear].corp || []).filter(x => x.id !== id);
+        persist(); fbSave(); rCorp(); closeM('m-corp'); toast('ลบรายการสำเร็จ');
+    });
+}
+
+function rCorp() { 
+  const c = DB[curYear].corp || []; 
+  
+  const totalAmt = c.reduce((s, x) => s + (x.amount || 0), 0);
+  const totalTax = c.reduce((s, x) => s + (x.tax || 0), 0);
+  
+  const elTot = document.getElementById("co-tot"); if(elTot) elTot.textContent = fmt(totalAmt);
+  const elTax = document.getElementById("co-tax-tot"); if(elTax) elTax.textContent = fmt(totalTax);
+  const elCnt = document.getElementById("co-cnt"); if(elCnt) elCnt.textContent = fN(c.length) + " งาน";
+
+  const el = document.getElementById("co-tbl"); 
+  if(el) {
+    el.innerHTML = `<table class="tbl"><tr><th>วันที่</th><th>ลูกค้าองค์กร</th><th>รายการ</th><th>จำนวน</th><th>ราคา/ชิ้น</th><th>ภาษี</th><th>ยอด (บาท)</th></tr>` + 
+    c.map(x => {
+      const qty = x.qty || 1;
+      const unitPrice = x.amount / qty;
+      return `<tr style="cursor:pointer" onclick="editCorp('${x.id}')">
+        <td style="color:var(--muted)">${x.date||'-'}</td>
+        <td style="font-weight:600">${x.client} <span style="font-size:0.65rem;color:var(--text2)">${x.org?`(${x.org})`:''}</span></td>
+        <td>${x.product||'-'} ${getBadgeHTML(x.note)}</td>
+        <td style="font-family:'Space Mono'">${fN(qty)}</td>
+        <td style="font-family:'Space Mono'; color:var(--sky)">฿${fN(unitPrice)}</td>
+        <td style="font-family:'Space Mono'; color:var(--red)">${x.tax ? fmt(x.tax) : '-'}</td>
+        <td style="color:var(--orange);font-family:'Space Mono',monospace;font-weight:bold">${fmt(x.amount)}</td>
+      </tr>`;
+    }).join("") + `</table>`; 
+  }
 }
 
 // ── UPLOAD CSV SUMMARY ──
@@ -1744,562 +2322,6 @@ function doUpload(inp){
   if(tEl && yEl) upCSV(tEl.value, inp, yEl.value); 
 }
 
-// ── ADD/EDIT FORMS ──
-function getProdRowTemplate() {
-  const newOpts = Object.keys(TIERED_PRICES).map(p => {
-    let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
-    return `<option value="${p}">${p} (เริ่ม ฿${baseP})</option>`;
-  }).join("");
-  const legacyOpts = Object.keys(PRICE).filter(k => !TIERED_PRICES[k]).map(p => `<option value="${p}">${p} (เก่า)</option>`).join("");
-  
-  let html = `<option value="">-- เลือก --</option><optgroup label="สินค้าระบบใหม่ (ลดตามขั้นบันได)">${newOpts}</optgroup><optgroup label="รายการเก่า (Legacy)">${legacyOpts}</optgroup>`;
-  return `<div class="prod-row" style="display:flex;gap:5px"><select class="inp" style="flex:1" onchange="calcTot()">${html}</select><input class="inp" type="number" value="1" min="1" style="width:60px" oninput="calcTot()"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTot()">✕</button></div>`;
-}
-
-function buildPick() { 
-  const elFd = document.getElementById("fd"); if(elFd) elFd.value = td(); 
-  const elCont = document.getElementById("prod-rows-container"); if(elCont) elCont.innerHTML = getProdRowTemplate(); 
-  const fsInput = document.getElementById("fs");
-  if(fsInput) {
-      fsInput.value = 50;
-      fsInput.dataset.manualChange = "";
-      fsInput.style.background = "";
-      fsInput.style.color = "";
-  }
-}
-
-function openCreateOrder() {
-  document.getElementById('o-id').value = "";
-  document.getElementById('m-order-title').textContent = "＋ เพิ่มออเดอร์ใหม่";
-  document.getElementById('fn').value = "";
-  document.getElementById('ftot').value = 0;
-  document.getElementById('fnote').value = "";
-  document.getElementById('chk-urgent').checked = false;
-  document.getElementById('chk-nofile').checked = false;
-  document.getElementById('chk-nopay').checked = false;
-  buildPick();
-  openM('m-order');
-}
-
-function addProdRow() { 
-    const elCont = document.getElementById("prod-rows-container");
-    if(elCont) elCont.insertAdjacentHTML('beforeend', getProdRowTemplate()); 
-}
-
-function calcTot() { 
-  let sum = 0; 
-  document.querySelectorAll(".prod-row").forEach(r => { 
-    const s = r.querySelector("select").value; 
-    const q = parseInt(r.querySelector("input").value) || 0; 
-    if(s && q > 0) sum += getPrice(s, q) * q;
-  }); 
-
-  const fsInput = document.getElementById("fs");
-  
-  if(fsInput) {
-      if (sum >= 1500) {
-         if (fsInput.value !== "0" && !fsInput.dataset.manualChange) {
-             fsInput.dataset.oldVal = fsInput.value; 
-         }
-         if (!fsInput.dataset.manualChange || fsInput.dataset.wasFree === "1") {
-            fsInput.value = 0;
-            fsInput.dataset.wasFree = "1";
-         }
-         fsInput.style.background = "var(--green3)";
-         fsInput.style.color = "var(--green)";
-         fsInput.style.borderColor = "var(--green)";
-         fsInput.title = "จัดส่งฟรีเมื่อยอดถึง 1,500 บาท";
-      } else {
-         if (fsInput.dataset.wasFree === "1" && !fsInput.dataset.manualChange) {
-             fsInput.value = fsInput.dataset.oldVal || 50;
-             fsInput.dataset.wasFree = "0";
-         }
-         fsInput.style.background = "";
-         fsInput.style.color = "";
-         fsInput.style.borderColor = "";
-         fsInput.title = "";
-      }
-      const elFtot = document.getElementById("ftot");
-      if(elFtot) elFtot.value = sum + parseFloat(fsInput.value || 0); 
-  }
-}
-
-function saveOrder() { 
-    const elId = document.getElementById('o-id');
-    const id = elId ? elId.value : "";
-    const elFd = document.getElementById("fd");
-    const elFn = document.getElementById("fn");
-    const elFtot = document.getElementById("ftot");
-    if(!elFd || !elFn || !elFtot) return;
-
-    let prods = {};
-    document.querySelectorAll(".prod-row").forEach(r => {
-        const s = r.querySelector("select").value;
-        const q = parseInt(r.querySelector("input").value) || 0;
-        if(s && q > 0) prods[s] = (prods[s]||0) + q;
-    });
-
-    let tags = [];
-    const fnote = document.getElementById("fnote") ? document.getElementById("fnote").value.trim() : "";
-    if(document.getElementById('chk-urgent') && document.getElementById('chk-urgent').checked) tags.push("งานด่วน");
-    if(document.getElementById('chk-nofile') && document.getElementById('chk-nofile').checked) tags.push("รอไฟล์");
-    let finalNote = tags.join(", ") + (tags.length > 0 && fnote ? " | " : "") + fnote;
-
-    let payment = (document.getElementById('chk-nopay') && document.getElementById('chk-nopay').checked) ? "ยังไม่จ่าย" : "โอนครบ";
-    
-    let dateStr = elFd.value ? elFd.value.split("-").reverse().join("/") : td().split("-").reverse().join("/");
-    let monthKey = M_KEYS[parseInt(elFd.value.split("-")[1])-1] || "JAN";
-
-    let oObj = {
-        date: dateStr,
-        name: elFn.value || "ไม่ระบุ",
-        revenue: parseFloat(elFtot.value) || 0,
-        shipping_charged: parseFloat(document.getElementById("fs") ? document.getElementById("fs").value : 0) || 0,
-        products: prods,
-        note: finalNote,
-        payment: payment
-    };
-
-    if (id) {
-        let found = false;
-        NO.forEach((o, i) => { if(o.id === id) { NO[i] = {...o, ...oObj}; found = true; } });
-        if (!found) {
-            ["2024","2025","2026","2027"].forEach(y => {
-                if(DB[y]) M_KEYS.forEach(m => {
-                    let idx = (DB[y][m]||[]).findIndex(x => x.id === id);
-                    if(idx !== -1) {
-                        DB[y][m][idx] = {...DB[y][m][idx], ...oObj};
-                        found = true;
-                    }
-                });
-            });
-        }
-        toast("อัปเดตออเดอร์สำเร็จ!");
-    } else {
-        NO.push({ id: "NO_"+Date.now(), isNew: true, month: monthKey, ...oObj, done: false });
-        toast("บันทึกออเดอร์ใหม่สำเร็จ!");
-    }
-
-    persist(); fbSave(); rOverview(); rOTab(); rCusts(); closeM('m-order');
-}
-
-function saveShip() { 
-    const elFsd = document.getElementById("fsd");
-    const elFsc = document.getElementById("fsc");
-    const elFsn = document.getElementById("fsn");
-    if(!elFsd || !elFsc) return;
-
-    NS.push({
-        id:"NS_"+Date.now(), 
-        isNew:true, 
-        date:elFsd.value, 
-        cost:parseFloat(elFsc.value)||0, 
-        note:elFsn ? elFsn.value : ""
-    }); 
-    persist(); fbSave(); rOverview(); rShip(); closeM('m-ship'); toast("บันทึกค่าส่งแล้ว"); 
-}
-
-function rShip() { 
-    const sum = allShip().reduce((s,c)=>s+c.cost,0); 
-    const elPaid = document.getElementById("sh-paid"); if(elPaid) elPaid.textContent=fmt(sum); 
-    const sl = document.getElementById("ship-list"); 
-    if(sl) sl.innerHTML = allShip().map(s=>`<div class="sli"><div class="sli-d">${s.date}</div><div class="sli-n">${s.note||""}</div><div class="sli-a">${fmt(s.cost)}</div></div>`).join(""); 
-}
-
-function openPurchaseM() {
-    const eId = document.getElementById('epu-id'); if(eId) eId.value = '';
-    const eName = document.getElementById('pu-name'); if(eName) eName.value = '';
-    const eType = document.getElementById('pu-type'); if(eType) eType.value = 'ของที่ใช้ทำขาย';
-    const eQty = document.getElementById('pu-qty'); if(eQty) eQty.value = '1';
-    const eTot = document.getElementById('pu-totp'); if(eTot) eTot.value = '0';
-    const eNote = document.getElementById('pu-note'); if(eNote) eNote.value = '';
-    const eMm = document.getElementById('pu-mm'); if(eMm) eMm.value = new Date().getMonth() + 1;
-    openM('m-purchase');
-}
-
-function calcPu() { 
-    const elQty = document.getElementById("pu-qty");
-    const elTotp = document.getElementById("pu-totp");
-    const elUnit = document.getElementById("pu-unit");
-    if(elQty && elTotp && elUnit) {
-        const q=parseFloat(elQty.value)||0; 
-        const t=parseFloat(elTotp.value)||0; 
-        elUnit.value = q>0?(t/q).toFixed(2):0; 
-    }
-}
-
-function calcPuE() { 
-    const elQty = document.getElementById("epu-qty");
-    const elTotp = document.getElementById("epu-totp");
-    const elUnit = document.getElementById("epu-unit");
-    if(elQty && elTotp && elUnit) {
-        const q=parseFloat(elQty.value)||0; 
-        const t=parseFloat(elTotp.value)||0; 
-        elUnit.value = q>0?(t/q).toFixed(2):0; 
-    }
-}
-
-function savePurchase() { 
-    const elMm = document.getElementById("pu-mm");
-    const elName = document.getElementById("pu-name");
-    const elType = document.getElementById("pu-type");
-    const elQty = document.getElementById("pu-qty");
-    const elTotp = document.getElementById("pu-totp");
-    const elNote = document.getElementById("pu-note");
-    if(!elMm || !elName || !elTotp) return;
-
-    DB[curYear].purchases.push({
-        id:"PU_"+Date.now(), 
-        month:parseInt(elMm.value), 
-        name:elName.value, 
-        type:elType ? elType.value : "ของที่ใช้ทำขาย", 
-        qty:parseFloat(elQty ? elQty.value : 1)||1, 
-        totalPrice:parseFloat(elTotp.value)||0, 
-        note:elNote ? elNote.value : ""
-    }); 
-    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-purchase'); toast("บันทึกต้นทุนแล้ว"); 
-}
-
-// ── PURCHASE RENDER ──
-function rPurchase() { 
-  const elYr = document.getElementById("pu-yr-label"); if (elYr) elYr.textContent = curYear;
-  const elYrGrp = document.getElementById("pu-yr-label-group"); if (elYrGrp) elYrGrp.textContent = curYear;
-  let p = DB[curYear].purchases || [];
-  
-  const elM = document.getElementById("pu-m"); const mFilter = elM ? elM.value : "";
-  const elQ = document.getElementById("pu-q"); const qFilter = (elQ ? elQ.value || "" : "").toLowerCase();
-  
-  if (mFilter) p = p.filter(x => x.month == mFilter);
-  if (qFilter) p = p.filter(x => (x.name||"").toLowerCase().includes(qFilter) || (x.note||"").toLowerCase().includes(qFilter) || (x.type||"").toLowerCase().includes(qFilter));
-
-  const totalCost = p.reduce((s,x) => s + (x.totalPrice||0), 0);
-  const totalQty = p.reduce((s,x) => s + (x.qty||1), 0);
-  
-  const elTot = document.getElementById("pu-tot"); if(elTot) elTot.textContent = fmt(totalCost);
-  const elQtyTot = document.getElementById("pu-qty-tot"); if (elQtyTot) elQtyTot.textContent = fN(totalQty) + " ชิ้น";
-
-  // Pie Chart
-  let typeMap = {};
-  p.forEach(x => { typeMap[x.type||'อื่นๆ'] = (typeMap[x.type||'อื่นๆ']||0) + x.totalPrice; });
-  if(ch_pur_cat) ch_pur_cat.destroy();
-  const catCanvas = document.getElementById("ch-pur-cat");
-  if (catCanvas) {
-      ch_pur_cat = new Chart(catCanvas, { type: "doughnut", data: { labels: Object.keys(typeMap), datasets: [{ data: Object.values(typeMap), backgroundColor: CL, borderWidth: 0 }] }, options: { ...CC, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }});
-  }
-
-  // Bar Chart
-  let itemMap = {};
-  p.forEach(x => { itemMap[x.name] = (itemMap[x.name]||0) + (x.qty||1); });
-  let topItems = Object.entries(itemMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(ch_pur_top) ch_pur_top.destroy();
-  const topCanvas = document.getElementById("ch-pur-top");
-  if (topCanvas) {
-      ch_pur_top = new Chart(topCanvas, { type: "bar", data: { labels: topItems.map(x=>x[0].slice(0,15)), datasets: [{ label: "จำนวนชิ้น", data: topItems.map(x=>x[1]), backgroundColor: "#e8722acc", borderRadius: 4 }] }, options: { ...CC, indexAxis: 'y', plugins: { legend: { display: false } } }});
-  }
-
-  // Grouped Table
-  let grouped = {};
-  p.forEach(x => {
-      let n = (x.name || "").trim().toUpperCase();
-      let dispName = (x.name || "").trim();
-      if(!grouped[n]) grouped[n] = { name: dispName, qty: 0, total: 0, type: x.type };
-      grouped[n].qty += (x.qty || 1);
-      grouped[n].total += (x.totalPrice || 0);
-  });
-  let groupedArr = Object.values(grouped);
-  const elGrpSort = document.getElementById("pu-grp-sort");
-  let grpSort = elGrpSort ? elGrpSort.value : "total_desc";
-  if (grpSort === "total_desc") groupedArr.sort((a,b) => b.total - a.total);
-  else if (grpSort === "qty_desc") groupedArr.sort((a,b) => b.qty - a.qty);
-  else if (grpSort === "name_asc") groupedArr.sort((a,b) => a.name.localeCompare(b.name, 'th'));
-
-  const elGrp = document.getElementById("pu-group-wrap");
-  if(elGrp) {
-     elGrp.innerHTML = `<table class="tbl"><tr><th>สินค้า / รายการ</th><th>หมวดหมู่</th><th>รวมจำนวน (ชิ้น)</th><th>ต้นทุนเฉลี่ย/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
-     groupedArr.map(x => {
-        let avgCost = x.qty ? (x.total / x.qty).toFixed(2) : x.total;
-        return `<tr>
-            <td style="font-weight:600">${x.name}</td>
-            <td style="font-size:0.65rem"><span class="pill p-c">${x.type||'อื่นๆ'}</span></td>
-            <td style="font-family:'Space Mono'">${fN(x.qty)}</td>
-            <td style="font-family:'Space Mono'; color:var(--sky)">฿${fN(avgCost)}</td>
-            <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.total)}</td>
-        </tr>`;
-     }).join("") + `</table>`;
-  }
-
-  // Raw Table
-  let displayP = [...p];
-  const elRawSort = document.getElementById("pu-sort");
-  let rawSort = elRawSort ? elRawSort.value : "newest";
-  if (rawSort === "newest") displayP.reverse();
-  else if (rawSort === "price_desc") displayP.sort((a,b) => b.totalPrice - a.totalPrice);
-  else if (rawSort === "qty_desc") displayP.sort((a,b) => b.qty - a.qty);
-
-  const elList = document.getElementById("pu-wrap"); 
-  if(elList) {
-    elList.innerHTML = `<table class="tbl"><tr><th>เดือน</th><th>หมวดหมู่</th><th>รายการสั่งซื้อ</th><th>จำนวนชิ้น</th><th>ต้นทุน/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
-    displayP.map(x => {
-      let unitCost = x.qty ? (x.totalPrice / x.qty).toFixed(2) : x.totalPrice;
-      return `<tr style="cursor:pointer" onclick="showPur('${x.id}')">
-        <td style="color:var(--muted)">${M_LABELS[x.month-1]||x.month}</td>
-        <td style="font-size:0.65rem"><span class="pill p-c">${x.type||'อื่นๆ'}</span></td>
-        <td style="font-weight:600">${x.name} ${getBadgeHTML(x.note)}</td>
-        <td style="font-family:'Space Mono'">${fN(x.qty||1)}</td>
-        <td style="font-family:'Space Mono'; color:var(--text2)">฿${unitCost}</td>
-        <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.totalPrice)}</td>
-      </tr>`;
-    }).join("") + `</table>`; 
-  }
-}
-
-function showPur(id) {
-    let p = DB[curYear].purchases.find(x => x.id === id);
-    if(!p) return;
-    const eId = document.getElementById('epu-id'); if(eId) eId.value = p.id;
-    const eName = document.getElementById('epu-name'); if(eName) eName.value = p.name || '';
-    const eType = document.getElementById('epu-type'); if(eType) eType.value = p.type || 'ของที่ใช้ทำขาย';
-    const eQty = document.getElementById('epu-qty'); if(eQty) eQty.value = p.qty || 1;
-    const eTotp = document.getElementById('epu-totp'); if(eTotp) eTotp.value = p.totalPrice || 0;
-    const eNote = document.getElementById('epu-note'); if(eNote) eNote.value = p.note || '';
-    calcPuE();
-    openM('m-pur-detail');
-}
-
-function updatePur() {
-    const elId = document.getElementById('epu-id'); if(!elId) return;
-    let id = elId.value;
-    let p = DB[curYear].purchases.find(x => x.id === id);
-    if(!p) return;
-    
-    const eName = document.getElementById('epu-name'); if(eName) p.name = eName.value.trim();
-    const eType = document.getElementById('epu-type'); if(eType) p.type = eType.value;
-    const eQty = document.getElementById('epu-qty'); if(eQty) p.qty = parseNum(eQty.value) || 1;
-    const eTotp = document.getElementById('epu-totp'); if(eTotp) p.totalPrice = parseNum(eTotp.value) || 0;
-    const eNote = document.getElementById('epu-note'); if(eNote) p.note = eNote.value.trim();
-    
-    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('อัปเดตรายการสำเร็จ');
-}
-
-function delPur() {
-    if(!confirm('ต้องการลบรายการนี้ใช่หรือไม่?')) return;
-    const elId = document.getElementById('epu-id'); if(!elId) return;
-    let id = elId.value;
-    DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
-    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
-}
-
-// ── CUSTOMERS RENDER ──
-function rCusts() {
-  const elYr = document.getElementById("cu-yr-label"); if(elYr) elYr.textContent = curYear;
-  const elM = document.getElementById("cu-m"); const mFilter = elM ? elM.value : "";
-  const elQ = document.getElementById("cu-q"); const qFilter = (elQ ? elQ.value || "" : "").toLowerCase();
-  
-  let orders = getO(mFilter);
-  
-  // Aggregate
-  let custMap = {};
-  orders.forEach(o => {
-     if(!o.name) return;
-     let n = o.name.trim();
-     let nKey = n.toLowerCase();
-     if(!custMap[nKey]) custMap[nKey] = { name: n, spent: 0, count: 0, items: new Set(), dates: new Set() };
-     custMap[nKey].spent += o.revenue;
-     custMap[nKey].count += 1;
-     if(o.date) custMap[nKey].dates.add(o.date);
-     Object.keys(o.products||{}).forEach(p => custMap[nKey].items.add(p));
-  });
-
-  let custList = Object.values(custMap);
-  if (qFilter) {
-      custList = custList.filter(c => c.name.toLowerCase().includes(qFilter) || Array.from(c.dates).some(d => d.includes(qFilter)));
-  }
-
-  const elType = document.getElementById("cu-type"); const typeFilter = elType ? elType.value : "all";
-  if (typeFilter === "repeat") custList = custList.filter(c => c.count > 1);
-
-  const elSort = document.getElementById("cu-sort"); const sortFilter = elSort ? elSort.value : "spent_desc";
-  if (sortFilter === "spent_desc") custList.sort((a,b) => b.spent - a.spent);
-  else if (sortFilter === "spent_asc") custList.sort((a,b) => a.spent - b.spent);
-  else if (sortFilter === "freq_desc") custList.sort((a,b) => b.count - a.count);
-
-  const totalCust = custList.length;
-  const repeatCust = custList.filter(c => c.count > 1).length;
-  const totalSpent = custList.reduce((s,c) => s + c.spent, 0);
-  
-  const elTot = document.getElementById("cu-tot"); if(elTot) elTot.textContent = fN(totalCust) + " คน";
-  const elRep = document.getElementById("cu-rep"); if(elRep) elRep.textContent = fN(repeatCust) + " คน";
-  const elAvg = document.getElementById("cu-avg"); if(elAvg) elAvg.textContent = totalCust ? fmt(totalSpent / totalCust) : "฿0";
-
-  // Chart - Top Spenders
-  let topCust = [...custList].sort((a,b) => b.spent - a.spent).slice(0,10);
-  if(ch_cust_top) ch_cust_top.destroy();
-  const custTopCanvas = document.getElementById("ch-cust-top");
-  if(custTopCanvas) {
-      ch_cust_top = new Chart(custTopCanvas, { type: "bar", data: { labels: topCust.map(x=>x.name.slice(0,12)), datasets: [{ label: "ยอดใช้จ่าย", data: topCust.map(x=>x.spent), backgroundColor: "#a855f7cc", borderRadius: 4 }] }, options: { ...CC, indexAxis: 'y', plugins: { legend: { display: false } } }});
-  }
-
-  // Table
-  const el = document.getElementById("cu-wrap"); 
-  if(el) {
-      el.innerHTML = `<table class="tbl"><tr><th>วันที่สั่ง/รอบส่ง</th><th>ชื่อลูกค้า</th><th>ความถี่</th><th>สั่งอะไรไปบ้าง (ย่อ)</th><th>ยอดรวม (บาท)</th></tr>` + 
-      custList.map(c => `<tr>
-        <td style="color:var(--muted); font-size:0.7rem;">${Array.from(c.dates).join("<br>") || "-"}</td>
-        <td style="font-weight:600; cursor:pointer;" onclick="showCust('${c.name.replace(/'/g, "\\'")}')">${c.name} ${c.count>1 ? '<span class="pill p-g" style="font-size:0.55rem;padding:0 4px">👑 ซื้อซ้ำ</span>' : ''}</td>
-        <td style="font-family:'Space Mono'; color:var(--muted)">${c.count} ครั้ง</td>
-        <td style="font-size:0.65rem; color:var(--text2); max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${Array.from(c.items).join(", ")}">${Array.from(c.items).join(", ") || "-"}</td>
-        <td style="color:var(--purple);font-family:'Space Mono',monospace;font-weight:700">${fmt(c.spent)}</td>
-      </tr>`).join("") + `</table>`; 
-  }
-}
-
-function showCust(name) {
-    let orders = getO('ALL').filter(o => o.name === name);
-    if(!orders.length) return;
-    const mt = document.getElementById('mcust-title'); if(mt) mt.textContent = "👤 " + name;
-    let html = `<div style="margin-bottom:15px"><button class="btn btn-sm btn-ghost" onclick="renameCust('${name.replace(/'/g, "\\'")}')">✏️ เปลี่ยนชื่อลูกค้าคนนี้ (แก้ไขทุกออเดอร์)</button></div>`;
-    html += `<div style="font-weight:bold;margin-bottom:8px">ประวัติออเดอร์ (${orders.length} รายการ)</div>`;
-    html += `<div class="ol" style="max-height: 400px; overflow-y:auto;">` + orders.map(oiH).join("") + `</div>`;
-    const mb = document.getElementById('mcust-body'); if(mb) mb.innerHTML = html;
-    openM('m-cust-detail');
-}
-
-function renameCust(oldName) {
-    let newName = prompt(`กรอกชื่อใหม่เพื่อแทนที่ "${oldName}":`, oldName);
-    if(!newName || newName.trim() === "" || newName === oldName) return;
-    newName = newName.trim();
-    
-    let count = 0;
-    // Update in NO (New Orders)
-    NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
-    
-    // Update in DB
-    ["2024","2025","2026","2027"].forEach(y => {
-        if(DB[y]) {
-            M_KEYS.forEach(m => {
-                (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
-            });
-        }
-    });
-    
-    if(count > 0) {
-        persist(); fbSave(); rOverview(); rOTab(); rCusts();
-        showCust(newName);
-        toast(`เปลี่ยนชื่อสำเร็จ (อัปเดต ${count} ออเดอร์)`);
-    } else {
-        toast(`ไม่พบข้อมูลออเดอร์ของลูกค้านี้ให้เปลี่ยน`, "warn");
-    }
-}
-
-function openCorpM() {
-    const eId = document.getElementById('co-id'); if(eId) eId.value = '';
-    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = td();
-    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = '';
-    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = '';
-    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = '';
-    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = '1';
-    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = '0';
-    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = '0';
-    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = '';
-    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 เพิ่มออเดอร์ Corporate (B2B)";
-    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'none';
-    openM('m-corp');
-}
-
-function editCorp(id) {
-    const c = (DB[curYear].corp || []).find(x => x.id === id);
-    if(!c) return;
-    const eId = document.getElementById('co-id'); if(eId) eId.value = c.id;
-    const eDate = document.getElementById('co-date'); if(eDate) eDate.value = c.date || td();
-    const eClient = document.getElementById('co-client'); if(eClient) eClient.value = c.client;
-    const eOrg = document.getElementById('co-org'); if(eOrg) eOrg.value = c.org;
-    const eProd = document.getElementById('co-prod'); if(eProd) eProd.value = c.product;
-    const eQty = document.getElementById('co-qty'); if(eQty) eQty.value = c.qty || 1;
-    const eAmt = document.getElementById('co-amt'); if(eAmt) eAmt.value = c.amount || 0;
-    const eTax = document.getElementById('co-tax'); if(eTax) eTax.value = c.tax || 0;
-    const eNote = document.getElementById('co-note'); if(eNote) eNote.value = c.note || '';
-    const mTitle = document.getElementById('m-corp-title'); if(mTitle) mTitle.textContent = "🏢 แก้ไขออเดอร์ Corporate";
-    const bDel = document.getElementById('btn-del-corp'); if(bDel) bDel.style.display = 'block';
-    openM('m-corp');
-}
-
-function saveCorp() { 
-  const elId = document.getElementById('co-id');
-  const id = elId ? elId.value : "";
-  
-  const elClient = document.getElementById("co-client");
-  const elAmt = document.getElementById("co-amt");
-  const clientName = elClient ? elClient.value : "";
-  const amt = elAmt ? parseFloat(elAmt.value)||0 : 0;
-
-  if(!clientName || amt <= 0) { toast("กรุณาใส่ชื่อลูกค้าและยอดรวมให้ครบ", "warn"); return; }
-  
-  const elDate = document.getElementById("co-date");
-  const elOrg = document.getElementById("co-org");
-  const elProd = document.getElementById("co-prod");
-  const elQty = document.getElementById("co-qty");
-  const elTax = document.getElementById("co-tax");
-  const elNote = document.getElementById("co-note");
-
-  const data = {
-    date: elDate ? elDate.value : td(), 
-    client: clientName,
-    org: elOrg ? elOrg.value : "",
-    product: elProd ? elProd.value : "",
-    qty: parseFloat(elQty ? elQty.value : 1)||1,
-    amount: amt,
-    tax: parseFloat(elTax ? elTax.value : 0)||0,
-    note: elNote ? elNote.value : ""
-  };
-  
-  if(!DB[curYear].corp) DB[curYear].corp = [];
-  if (id) {
-      const idx = DB[curYear].corp.findIndex(x => x.id === id);
-      if (idx !== -1) DB[curYear].corp[idx] = { id, ...data };
-  } else {
-      DB[curYear].corp.push({ id: "CO_"+Date.now(), ...data });
-  }
-  
-  persist(); fbSave(); rCorp(); closeM('m-corp'); toast("บันทึก B2B แล้ว"); 
-}
-
-function delCorp() {
-    if(!confirm('ต้องการลบออเดอร์ B2B นี้ใช่หรือไม่?')) return;
-    const elId = document.getElementById('co-id'); if(!elId) return;
-    const id = elId.value;
-    DB[curYear].corp = (DB[curYear].corp || []).filter(x => x.id !== id);
-    persist(); fbSave(); rCorp(); closeM('m-corp'); toast('ลบรายการสำเร็จ');
-}
-
-function rCorp() { 
-  const c = DB[curYear].corp || []; 
-  
-  const totalAmt = c.reduce((s, x) => s + (x.amount || 0), 0);
-  const totalTax = c.reduce((s, x) => s + (x.tax || 0), 0);
-  
-  const elTot = document.getElementById("co-tot"); if(elTot) elTot.textContent = fmt(totalAmt);
-  const elTax = document.getElementById("co-tax-tot"); if(elTax) elTax.textContent = fmt(totalTax);
-  const elCnt = document.getElementById("co-cnt"); if(elCnt) elCnt.textContent = fN(c.length) + " งาน";
-
-  const el = document.getElementById("co-tbl"); 
-  if(el) {
-    el.innerHTML = `<table class="tbl"><tr><th>วันที่</th><th>ลูกค้าองค์กร</th><th>รายการ</th><th>จำนวน</th><th>ราคา/ชิ้น</th><th>ภาษี</th><th>ยอด (บาท)</th></tr>` + 
-    c.map(x => {
-      const qty = x.qty || 1;
-      const unitPrice = x.amount / qty;
-      return `<tr style="cursor:pointer" onclick="editCorp('${x.id}')">
-        <td style="color:var(--muted)">${x.date||'-'}</td>
-        <td style="font-weight:600">${x.client} <span style="font-size:0.65rem;color:var(--text2)">${x.org?`(${x.org})`:''}</span></td>
-        <td>${x.product||'-'} ${getBadgeHTML(x.note)}</td>
-        <td style="font-family:'Space Mono'">${fN(qty)}</td>
-        <td style="font-family:'Space Mono'; color:var(--sky)">฿${fN(unitPrice)}</td>
-        <td style="font-family:'Space Mono'; color:var(--red)">${x.tax ? fmt(x.tax) : '-'}</td>
-        <td style="color:var(--orange);font-family:'Space Mono',monospace;font-weight:bold">${fmt(x.amount)}</td>
-      </tr>`;
-    }).join("") + `</table>`; 
-  }
-}
-
 // ── EXPORT ──
 function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
 
@@ -2421,10 +2443,11 @@ async function fbLoad(){
   }catch(e){
     console.error("Firebase Load Error:", e);
     if (e.message && (e.message.includes('offline') || e.message.includes('Failed to get document'))) {
-      setFBS("err","❌ ออฟไลน์ (ใช้งานโหมด Local)");
-      toast("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ ทำงานในโหมด Local", "warn");
+      setFBS("err","❌ ใช้งานโหมดออฟไลน์");
+      toast("⚠️ ไม่สามารถเชื่อมต่อ Cloud ได้ (ระบบทำงานในโหมด Local)", "warn");
     } else {
-      setFBS("err","❌ ไม่มีสิทธิ์/เข้าถึงไม่ได้");
+      setFBS("err","❌ สิทธิ์การเข้าถึงถูกปฏิเสธ");
+      toast("⚠️ กรุณาตั้งค่า Rules ใน Firestore เป็น allow read, write: if true;", "err");
     }
   }
 }
@@ -2443,7 +2466,7 @@ async function fbSave(){
   }catch(e){
     console.error("Firebase Save Error:", e);
     setFBS("err","❌ เซฟไม่เข้า");
-    toast("❌ เซฟขึ้น Cloud ไม่สำเร็จ", "err");
+    toast("❌ เซฟขึ้น Cloud ไม่สำเร็จ กรุณาเช็กการเชื่อมต่อหรือ Rules", "err");
   }
 }
 
@@ -2500,7 +2523,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.querySelectorAll(".overlay").forEach(el => { 
   el.addEventListener("click", e => {
-    if (el.id !== "lock-screen" && e.target === el) el.classList.add("hidden");
+    if (el.id !== "lock-screen" && el.id !== "m-confirm" && e.target === el) el.classList.add("hidden");
   });
 });
 </script>
