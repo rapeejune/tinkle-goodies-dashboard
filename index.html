@@ -289,11 +289,11 @@ select.inp option{background:#fff;color:var(--text)}
     
     <button class="btn btn-ghost btn-sm" onclick="openM('m-fb')" title="ตั้งค่าระบบ Cloud">⚙</button>
     <button class="btn btn-sky btn-sm" onclick="openM('m-upload')" title="นำเข้า CSV">📂</button>
-    <button class="btn btn-purple btn-sm" onclick="openM('m-expense')">💸 จ่ายอื่นๆ</button>
+    <button class="btn btn-purple btn-sm" onclick="openExpenseM()">💸 จ่ายอื่นๆ</button>
     <button class="btn btn-orange btn-sm" onclick="openM('m-order')">＋ ออเดอร์</button>
     <button class="btn btn-mint btn-sm" onclick="openM('m-ship')">＋ ค่าส่ง</button>
     <button class="btn btn-red btn-sm" onclick="openM('m-purchase')">＋ สั่งของ</button>
-    <button class="btn btn-sky btn-sm" style="background:var(--sky2)" onclick="openM('m-corp')">＋ B2B</button>
+    <button class="btn btn-sky btn-sm" style="background:var(--sky2)" onclick="openCorpM()">＋ B2B</button>
   </div>
 </div>
 
@@ -573,8 +573,9 @@ select.inp option{background:#fff;color:var(--text)}
 <!-- EXPENSE MODAL -->
 <div class="overlay hidden" id="m-expense">
   <div class="modal" style="max-width:400px">
-    <div class="modal-title" style="color:var(--purple)">💸 บันทึกค่าใช้จ่ายส่วนตัว (ดึงเงินไปใช้)</div>
+    <div class="modal-title" id="m-expense-title" style="color:var(--purple)">💸 บันทึกค่าใช้จ่ายส่วนตัว (ดึงเงินไปใช้)</div>
     <button class="mclose" onclick="closeM('m-expense')">✕</button>
+    <input type="hidden" id="ex-id">
     <div class="frow">
       <div><label>วันที่</label><input class="inp" id="ex-date" type="date"></div>
       <div><label>เดือน (ระบบอิงตามปีปัจจุบัน)</label>
@@ -592,9 +593,12 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="ffull"><label>จำนวนเงิน (บาท) *</label><input class="inp" id="ex-amt" type="number" min="0" placeholder="0"></div>
     <div class="ffull"><label>หมายเหตุ</label><input class="inp" id="ex-note" placeholder="รายละเอียดเพิ่มเติม..."></div>
     
-    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeM('m-expense')">ยกเลิก</button>
-      <button class="btn btn-purple" onclick="saveExpense()">💾 บันทึกรายการ</button>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:space-between">
+      <button class="btn btn-danger btn-sm" id="btn-del-ex" style="display:none" onclick="delExpenseFromModal()">🗑 ลบ</button>
+      <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="closeM('m-expense')">ยกเลิก</button>
+          <button class="btn btn-purple" onclick="saveExpense()">💾 บันทึกรายการ</button>
+      </div>
     </div>
   </div>
 </div>
@@ -706,8 +710,9 @@ select.inp option{background:#fff;color:var(--text)}
 <!-- CORPORATE MODAL -->
 <div class="overlay hidden" id="m-corp">
   <div class="modal" style="max-width:440px">
-    <div class="modal-title">🏢 เพิ่มออเดอร์ Corporate (B2B)</div>
+    <div class="modal-title" id="m-corp-title">🏢 เพิ่มออเดอร์ Corporate (B2B)</div>
     <button class="mclose" onclick="closeM('m-corp')">✕</button>
+    <input type="hidden" id="co-id">
     <div class="frow">
       <div><label>วันที่ *</label><input class="inp" id="co-date" type="date"></div>
       <div><label>ชื่อลูกค้า *</label><input class="inp" id="co-client" placeholder="เช่น k.louk"></div>
@@ -722,9 +727,12 @@ select.inp option{background:#fff;color:var(--text)}
       <div><label>ภาษี (บาท)</label><input class="inp" id="co-tax" type="number" min="0" value="0"></div>
     </div>
     <div class="ffull"><label>หมายเหตุ</label><input class="inp" id="co-note" placeholder="เช่น มัดจำ, งานด่วน"></div>
-    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeM('m-corp')">ยกเลิก</button>
-      <button class="btn btn-mint" onclick="saveCorp()">💾 บันทึก</button>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:space-between">
+      <button class="btn btn-danger btn-sm" id="btn-del-corp" style="display:none" onclick="delCorp()">🗑 ลบ</button>
+      <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="closeM('m-corp')">ยกเลิก</button>
+          <button class="btn btn-mint" onclick="saveCorp()">💾 บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
@@ -892,11 +900,21 @@ const PRICE = {
 const ALLP = [...new Set([...Object.keys(TIERED_PRICES), ...Object.keys(PRICE), "โปสการ์ดฟิล์ม","KEY TAGS","การ์ดขูด","ฟิล์ม 3 ช่อง","FLOPPY DISK","SPIN FRAME","TAPE จริงๆ","ฟิล์มเปล่า 10 บาท","รูปฟิล์มเปล่า"])];
 
 let curYear = "2026";
-let DB = { "2024": {}, "2025": {}, "2026": {} };
-["2024", "2025", "2026"].forEach(y => {
-  DB[y] = { shipping: [], corp: [], purchases: [], expenses: [], summary: {} };
-  M_KEYS.forEach(m => DB[y][m] = []);
-});
+let DB = { "2024": {}, "2025": {}, "2026": {}, "2027": {} };
+
+// Deep Initialize DB function
+function deepInitDB(dbObj) {
+    ["2024", "2025", "2026", "2027"].forEach(y => {
+        if(!dbObj[y]) dbObj[y] = {};
+        if(!dbObj[y].shipping) dbObj[y].shipping = [];
+        if(!dbObj[y].corp) dbObj[y].corp = [];
+        if(!dbObj[y].purchases) dbObj[y].purchases = [];
+        if(!dbObj[y].expenses) dbObj[y].expenses = [];
+        if(!dbObj[y].summary) dbObj[y].summary = {};
+        M_KEYS.forEach(m => { if(!dbObj[y][m]) dbObj[y][m] = []; });
+    });
+}
+deepInitDB(DB);
 
 let NO=[], NS=[], FB_DB=null, curOM="JAN";
 let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp, ch_corp, ch_pur_cat, ch_pur_top, ch_cust_top, ch_yoy;
@@ -1012,13 +1030,7 @@ function loadP(){
   try{
     NO=JSON.parse(localStorage.getItem("tg_no")||"[]"); NS=JSON.parse(localStorage.getItem("tg_ns")||"[]");
     const lDB=JSON.parse(localStorage.getItem("tg_db"));
-    if(lDB) { 
-      DB = lDB; 
-      ["2024", "2025", "2026"].forEach(y => {
-        if(!DB[y]) DB[y] = { shipping: [], corp: [], purchases: [], expenses: [], summary: {} };
-        if(!DB[y].purchases) DB[y].purchases = []; if(!DB[y].expenses) DB[y].expenses = []; if(!DB[y].summary) DB[y].summary = {};
-      });
-    }
+    if(lDB) { DB = lDB; deepInitDB(DB); }
   }catch(e){}
 }
 const fmt=n=>"฿"+Math.round(n||0).toLocaleString();
@@ -1029,9 +1041,7 @@ function openM(id){
   document.getElementById(id).classList.remove("hidden");
   if(id==="m-order") buildPick();
   if(id==="m-ship") document.getElementById("fsd").value=td();
-  if(id==="m-corp") document.getElementById("co-date").value=td();
   if(id==="m-upload") document.getElementById("m-upload-year").value = curYear;
-  if(id==="m-expense") { document.getElementById("ex-date").value=td(); document.getElementById("ex-month").value = M_KEYS[new Date().getMonth()]; }
 }
 
 function closeM(id){document.getElementById(id).classList.add("hidden");}
@@ -1083,7 +1093,20 @@ function goTab(n,btn){
 }
 
 // ── EXPENSE LOGIC ──
+function openExpenseM() {
+    document.getElementById('ex-id').value = '';
+    document.getElementById('ex-date').value = td();
+    document.getElementById('ex-month').value = M_KEYS[new Date().getMonth()];
+    document.getElementById('ex-name').value = '';
+    document.getElementById('ex-amt').value = '';
+    document.getElementById('ex-note').value = '';
+    document.getElementById('m-expense-title').textContent = "💸 บันทึกค่าใช้จ่ายส่วนตัว";
+    document.getElementById('btn-del-ex').style.display = 'none';
+    openM('m-expense');
+}
+
 function saveExpense() {
+   const id = document.getElementById('ex-id').value;
    const date = document.getElementById('ex-date').value;
    const month = document.getElementById('ex-month').value;
    const name = document.getElementById('ex-name').value.trim();
@@ -1091,11 +1114,45 @@ function saveExpense() {
    const note = document.getElementById('ex-note').value.trim();
 
    if(!name || amt <= 0) { toast("กรุณาใส่ชื่อรายการและจำนวนเงิน", "warn"); return; }
-   if(!DB[curYear].expenses) DB[curYear].expenses = [];
-   DB[curYear].expenses.push({ id: "EX_"+Date.now(), date, month, name, amount: amt, note });
+   
+   if (id) {
+       const idx = DB[curYear].expenses.findIndex(e => e.id === id);
+       if (idx !== -1) DB[curYear].expenses[idx] = { id, date, month, name, amount: amt, note };
+   } else {
+       DB[curYear].expenses.push({ id: "EX_"+Date.now(), date, month, name, amount: amt, note });
+   }
 
-   document.getElementById('ex-name').value = ''; document.getElementById('ex-amt').value = ''; document.getElementById('ex-note').value = '';
    persist(); fbSave(); rOverview(); closeM('m-expense'); toast("บันทึกค่าใช้จ่ายส่วนตัวเรียบร้อย");
+   
+   // Refresh list modal if it's currently open
+   const mKey = document.getElementById("m-expense-list-title")?.dataset?.month;
+   if (mKey && !document.getElementById("m-expense-list").classList.contains('hidden')) {
+       showExpenseList(mKey);
+   }
+}
+
+function editExpense(id) {
+    const e = (DB[curYear].expenses || []).find(x => x.id === id);
+    if(!e) return;
+    document.getElementById('ex-id').value = e.id;
+    document.getElementById('ex-date').value = e.date || td();
+    document.getElementById('ex-month').value = e.month || M_KEYS[new Date().getMonth()];
+    document.getElementById('ex-name').value = e.name;
+    document.getElementById('ex-amt').value = e.amount;
+    document.getElementById('ex-note').value = e.note || '';
+    document.getElementById('m-expense-title').textContent = "💸 แก้ไขค่าใช้จ่ายส่วนตัว";
+    document.getElementById('btn-del-ex').style.display = 'block';
+    openM('m-expense');
+}
+
+function delExpenseFromModal() {
+    const id = document.getElementById('ex-id').value;
+    if(!id) return;
+    if(!confirm("ต้องการลบรายการค่าใช้จ่ายนี้?")) return;
+    DB[curYear].expenses = DB[curYear].expenses.filter(e => e.id !== id);
+    persist(); fbSave(); rOverview(); closeM('m-expense'); toast("ลบรายการแล้ว", "warn");
+    const mKey = document.getElementById("m-expense-list-title")?.dataset?.month;
+    if (mKey && !document.getElementById("m-expense-list").classList.contains('hidden')) showExpenseList(mKey);
 }
 
 function delExpense(id) {
@@ -1126,8 +1183,9 @@ function showExpenseList(mKey) {
                  <div style="font-weight:600; font-size:0.8rem">${e.name} ${mKey==='ALL'?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]}]</span>`:''}</div>
                  <div style="font-size:0.65rem; color:var(--muted)">📅 ${e.date || '-'} ${e.note ? `• 📝 ${e.note}` : ''}</div>
               </div>
-              <div style="display:flex; align-items:center; gap:10px">
+              <div style="display:flex; align-items:center; gap:8px">
                  <span style="font-family:'Space Mono',monospace; font-weight:700; color:var(--purple)">${fmt(e.amount)}</span>
+                 <button class="btn btn-ghost btn-sm" style="padding:2px 8px; font-size:0.65rem; border-color:var(--cream3);" onclick="editExpense('${e.id}')">✏️</button>
                  <button class="sli-del" onclick="delExpense('${e.id}')">✕</button>
               </div>
            </div>
@@ -1807,10 +1865,12 @@ function renameCust(oldName) {
     NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
     
     // Update in DB (All Years/Months)
-    ["2024","2025","2026"].forEach(y => {
-        M_KEYS.forEach(m => {
-            (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
-        });
+    ["2024","2025","2026","2027"].forEach(y => {
+        if(DB[y]) {
+            M_KEYS.forEach(m => {
+                (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+            });
+        }
     });
     
     if(count > 0) {
@@ -1822,28 +1882,69 @@ function renameCust(oldName) {
     }
 }
 
+function openCorpM() {
+    document.getElementById('co-id').value = '';
+    document.getElementById('co-date').value = td();
+    document.getElementById('co-client').value = '';
+    document.getElementById('co-org').value = '';
+    document.getElementById('co-prod').value = '';
+    document.getElementById('co-qty').value = '1';
+    document.getElementById('co-amt').value = '0';
+    document.getElementById('co-tax').value = '0';
+    document.getElementById('co-note').value = '';
+    document.getElementById('m-corp-title').textContent = "🏢 เพิ่มออเดอร์ Corporate (B2B)";
+    document.getElementById('btn-del-corp').style.display = 'none';
+    openM('m-corp');
+}
+
+function editCorp(id) {
+    const c = (DB[curYear].corp || []).find(x => x.id === id);
+    if(!c) return;
+    document.getElementById('co-id').value = c.id;
+    document.getElementById('co-date').value = c.date || td();
+    document.getElementById('co-client').value = c.client;
+    document.getElementById('co-org').value = c.org;
+    document.getElementById('co-prod').value = c.product;
+    document.getElementById('co-qty').value = c.qty || 1;
+    document.getElementById('co-amt').value = c.amount || 0;
+    document.getElementById('co-tax').value = c.tax || 0;
+    document.getElementById('co-note').value = c.note || '';
+    document.getElementById('m-corp-title').textContent = "🏢 แก้ไขออเดอร์ Corporate";
+    document.getElementById('btn-del-corp').style.display = 'block';
+    openM('m-corp');
+}
+
 function saveCorp() { 
-  DB[curYear].corp.push({
-    id:"CO_"+Date.now(), 
-    date:document.getElementById("co-date").value, 
-    client:document.getElementById("co-client").value,
-    org:document.getElementById("co-org").value,
-    product:document.getElementById("co-prod").value,
-    qty:parseFloat(document.getElementById("co-qty").value)||1,
-    amount:parseFloat(document.getElementById("co-amt").value)||0,
-    tax:parseFloat(document.getElementById("co-tax").value)||0,
-    note:document.getElementById("co-note").value
-  }); 
-  persist(); fbSave(); rCorp(); closeM('m-corp'); toast("บันทึก B2B แล้ว"); 
+  const id = document.getElementById('co-id').value;
+  const data = {
+    date: document.getElementById("co-date").value, 
+    client: document.getElementById("co-client").value,
+    org: document.getElementById("co-org").value,
+    product: document.getElementById("co-prod").value,
+    qty: parseFloat(document.getElementById("co-qty").value)||1,
+    amount: parseFloat(document.getElementById("co-amt").value)||0,
+    tax: parseFloat(document.getElementById("co-tax").value)||0,
+    note: document.getElementById("co-note").value
+  };
   
-  // Clear inputs after save
-  document.getElementById("co-client").value = '';
-  document.getElementById("co-org").value = '';
-  document.getElementById("co-prod").value = '';
-  document.getElementById("co-qty").value = '1';
-  document.getElementById("co-amt").value = '0';
-  document.getElementById("co-tax").value = '0';
-  document.getElementById("co-note").value = '';
+  if(!data.client || data.amount <= 0) { toast("กรุณาใส่ชื่อลูกค้าและยอดรวมให้ครบ", "warn"); return; }
+  
+  if(!DB[curYear].corp) DB[curYear].corp = [];
+  if (id) {
+      const idx = DB[curYear].corp.findIndex(x => x.id === id);
+      if (idx !== -1) DB[curYear].corp[idx] = { id, ...data };
+  } else {
+      DB[curYear].corp.push({ id: "CO_"+Date.now(), ...data });
+  }
+  
+  persist(); fbSave(); rCorp(); closeM('m-corp'); toast("บันทึก B2B แล้ว"); 
+}
+
+function delCorp() {
+    if(!confirm('ต้องการลบออเดอร์ B2B นี้ใช่หรือไม่?')) return;
+    const id = document.getElementById('co-id').value;
+    DB[curYear].corp = (DB[curYear].corp || []).filter(x => x.id !== id);
+    persist(); fbSave(); rCorp(); closeM('m-corp'); toast('ลบรายการสำเร็จ');
 }
 
 function rCorp() { 
@@ -1862,7 +1963,7 @@ function rCorp() {
     c.map(x => {
       const qty = x.qty || 1;
       const unitPrice = x.amount / qty;
-      return `<tr>
+      return `<tr style="cursor:pointer" onclick="editCorp('${x.id}')">
         <td style="color:var(--muted)">${x.date||'-'}</td>
         <td style="font-weight:600">${x.client} <span style="font-size:0.65rem;color:var(--text2)">${x.org?`(${x.org})`:''}</span></td>
         <td>${x.product||'-'} ${getBadgeHTML(x.note)}</td>
@@ -1960,16 +2061,17 @@ async function connectFB(cfg){
     const app=fb.initializeApp(cfg,"tg"+Date.now());
     FB_DB=fb.getFirestore(app);
     localStorage.setItem("tg_fbc",JSON.stringify(cfg));
-    setFBS("ok","✓ เชื่อมต่อแล้ว");
-    toast("เชื่อมต่อ Cloud สำเร็จ!");
+    setFBS("sync","กำลังเชื่อมต่อ...");
     await fbLoad();
   }catch(e){
-    setFBS("err","❌ Error");
+    console.error("Firebase Connect Error:", e);
+    setFBS("err","❌ เชื่อมต่อผิดพลาด");
   }
 }
 async function fbLoad(){
   if(!FB_DB)return;
   try{
+    setFBS("sync","กำลังดึงข้อมูล...");
     const fb=window._firebase;
     const snap=await fb.getDoc(fb.doc(FB_DB,"tinkle","data"));
     if(snap.exists()){
@@ -1977,22 +2079,34 @@ async function fbLoad(){
       if(d.no)NO=d.no;if(d.ns)NS=d.ns;
       if(d.db){
         DB=d.db; 
-        ["2024","2025","2026"].forEach(y=>{
-          if(!DB[y]) DB[y]={shipping:[],corp:[],purchases:[],expenses:[],summary:{}};
-        });
+        deepInitDB(DB);
       } 
-      persist(); rOverview(); rOTab(); rPurchase(); rCusts(); rCorp(); toast("✓ โหลดข้อมูลแล้ว");
+      persist(); rOverview(); rOTab(); rShip(); rPurchase(); rCusts(); rCorp(); 
+      setFBS("ok","✓ ซิงค์ข้อมูลล่าสุดแล้ว");
+      toast("✓ โหลดข้อมูลจาก Cloud สำเร็จ");
+    } else {
+      setFBS("ok","✓ Cloud ว่างเปล่า");
     }
-  }catch(e){}
+  }catch(e){
+    console.error("Firebase Load Error:", e);
+    setFBS("err","❌ ไม่มีสิทธิ์อ่านข้อมูล");
+    if(e.message && (e.message.includes("permission") || e.message.includes("Missing or insufficient"))) {
+        alert("⚠️ โหลดข้อมูล Cloud ล้มเหลวเนื่องจากติดสิทธิ์ Permission ของ Firebase\n\nวิธีแก้: ไปที่ Firebase Console -> Firestore Database -> Rules\nแล้วเปลี่ยนบรรทัดเป็น:\nallow read, write: if true;");
+    }
+  }
 }
 async function fbSave(){
   if(!FB_DB)return;
   try{
-    setFBS("sync","⟳ sync...");
+    setFBS("sync","⟳ กำลังเซฟ...");
     const fb=window._firebase;
     await fb.setDoc(fb.doc(FB_DB,"tinkle","data"),{no:NO,ns:NS,db:DB,upd:new Date().toISOString()},{merge:true});
-    setFBS("ok","✓ Synced");
-  }catch(e){}
+    setFBS("ok","✓ อัปเดต Cloud แล้ว");
+  }catch(e){
+    console.error("Firebase Save Error:", e);
+    setFBS("err","❌ เซฟไม่เข้า (ติดสิทธิ์)");
+    toast("❌ เซฟขึ้น Cloud ไม่สำเร็จ โปรดเช็ก Rules ของ Firestore", "err");
+  }
 }
 function fbFromModal(){connectFB({apiKey:document.getElementById("mfb-ak").value,authDomain:document.getElementById("mfb-ad").value,projectId:document.getElementById("mfb-pid").value});closeM('m-fb');}
 function saveFBCfg(){connectFB({apiKey:document.getElementById("fb-ak").value,authDomain:document.getElementById("fb-ad").value,projectId:document.getElementById("fb-pid").value});}
