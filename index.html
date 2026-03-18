@@ -227,15 +227,55 @@ select.inp option{background:#fff;color:var(--text)}
 .ib-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
 
 /* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:#fff;border:1.5px solid var(--green);border-radius:11px;padding:10px 16px;font-size:.78rem;color:var(--green);z-index:300;transform:translateY(14px);opacity:0;transition:all .3s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.1);font-weight:600}
+.toast{position:fixed;bottom:22px;right:22px;background:#fff;border:1.5px solid var(--green);border-radius:11px;padding:10px 16px;font-size:.78rem;color:var(--green);z-index:30000;transform:translateY(14px);opacity:0;transition:all .3s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.1);font-weight:600}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.warn{border-color:var(--orange);color:var(--orange)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOCK SCREEN */
+#lock-screen{position:fixed;inset:0;background:var(--cream);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background-image:radial-gradient(ellipse 70% 40% at 90% 5%,rgba(232,114,42,.07) 0%,transparent 60%),radial-gradient(ellipse 50% 35% at 5% 90%,rgba(62,168,216,.06) 0%,transparent 55%);}
+#lock-screen.hidden{display:none;pointer-events:none}
+.pin-display{margin:30px 0;display:flex;gap:14px;height:24px}
+.pin-dot{width:22px;height:22px;border-radius:50%;background:rgba(232,114,42,.2);transition:all .2s}
+.pin-dot.filled{background:var(--orange);box-shadow:0 0 12px rgba(232,114,42,.5);transform:scale(1.15)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.num-btn{width:75px;height:75px;border-radius:50%;border:2px solid var(--cream3);background:#fff;font-size:1.8rem;font-family:'Space Mono',monospace;color:var(--text);cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);user-select:none;}
+.num-btn:active{background:var(--orange3);border-color:var(--orange);transform:scale(0.92)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.shake{animation:shake .3s ease-in-out}
 </style>
 </head>
 <body>
+
+<!-- LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="brand-logo" style="width:64px;height:64px;font-size:1.8rem;margin-bottom:12px;box-shadow:var(--shadow2)">✿</div>
+  <h2 style="color:var(--orange);font-family:'Mitr',sans-serif;margin-bottom:5px">Tinkle Goodies</h2>
+  <p style="color:var(--muted);font-size:.85rem;font-weight:600">กรุณาใส่รหัสผ่าน 6 หลักเพื่อเข้าใช้งาน</p>
+  
+  <div class="pin-display" id="pin-display">
+     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+  </div>
+  
+  <div class="numpad">
+     <button class="num-btn" onclick="typePin('1')">1</button>
+     <button class="num-btn" onclick="typePin('2')">2</button>
+     <button class="num-btn" onclick="typePin('3')">3</button>
+     <button class="num-btn" onclick="typePin('4')">4</button>
+     <button class="num-btn" onclick="typePin('5')">5</button>
+     <button class="num-btn" onclick="typePin('6')">6</button>
+     <button class="num-btn" onclick="typePin('7')">7</button>
+     <button class="num-btn" onclick="typePin('8')">8</button>
+     <button class="num-btn" onclick="typePin('9')">9</button>
+     <button class="num-btn" style="background:transparent;border:none;box-shadow:none;font-weight:700;font-size:1.2rem;color:var(--muted)" onclick="clearPin()">C</button>
+     <button class="num-btn" onclick="typePin('0')">0</button>
+     <button class="num-btn" style="background:transparent;border:none;box-shadow:none;font-size:1.5rem;color:var(--red)" onclick="delPin()">⌫</button>
+  </div>
+</div>
+
 <div class="wrap">
 
 <div class="hdr">
@@ -484,9 +524,21 @@ select.inp option{background:#fff;color:var(--text)}
 <!-- SETTINGS -->
 <div class="section" id="sec-settings">
   <div class="g2">
+    <!-- Password settings card -->
+    <div class="card">
+      <div class="card-h">🔒 ตั้งค่ารหัสผ่าน (PIN)</div>
+      <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">รหัสผ่านเริ่มต้นคือ <b>123456</b> (ตัวเลข 6 หลัก)</p>
+      <div class="ffull"><label>รหัสผ่านปัจจุบัน</label><input type="password" class="inp" id="pin-old" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
+      <div class="ffull"><label>รหัสผ่านใหม่ (6 หลัก)</label><input type="password" class="inp" id="pin-new" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
+      <div class="ffull"><label>ยืนยันรหัสผ่านใหม่</label><input type="password" class="inp" id="pin-confirm" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-orange" onclick="changePin()">💾 เปลี่ยนรหัสผ่าน</button>
+      </div>
+    </div>
+    
     <div class="card">
       <div class="card-h">🔥 Firebase Cloud Sync</div>
-      <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">เชื่อมต่อ Firestore — ออเดอร์และไฟล์ CSV จะถูก sync ข้ามทุกเครื่องอัตโนมัติ</p>
+      <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">เชื่อมต่อ Firestore — ออเดอร์, รหัสผ่าน และไฟล์ CSV จะถูก sync ข้ามทุกเครื่องอัตโนมัติ</p>
       <div class="ffull"><label>API Key</label><input class="inp" id="fb-ak" placeholder="AIzaSy..."></div>
       <div class="ffull"><label>Auth Domain</label><input class="inp" id="fb-ad" placeholder="app.firebaseapp.com"></div>
       <div class="ffull"><label>Project ID</label><input class="inp" id="fb-pid" placeholder="your-project-id"></div>
@@ -505,6 +557,9 @@ select.inp option{background:#fff;color:var(--text)}
         <button class="btn btn-sky" onclick="saveSheetUrl()">💾 บันทึก URL</button>
       </div>
     </div>
+  </div>
+  
+  <div class="g2">
     <div class="card">
       <div class="card-h">📂 Import / Export ทั้งหมด</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
@@ -528,22 +583,23 @@ select.inp option{background:#fff;color:var(--text)}
         <button class="btn btn-danger btn-sm" onclick="clearNS()">🗑 ลบค่าส่งใหม่ทั้งหมด</button>
       </div>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูล</div>
     
-    <!-- Upload Year Selector -->
-    <div class="srow" style="margin-bottom: 14px; background: var(--cream2); padding: 10px; border-radius: 10px;">
-      <label style="align-self: center; margin: 0; color: var(--text2);">เลือกปีที่จะนำเข้าข้อมูล (ก่อนอัปโหลด):</label>
-      <select class="ssel" id="upload-year-sel" style="border-color:var(--orange); color:var(--orange); font-weight:700;">
-        <option value="2026">📅 2026</option>
-        <option value="2025">📅 2025</option>
-        <option value="2024">📅 2024</option>
-      </select>
-    </div>
+    <div class="card">
+      <div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูล</div>
+      
+      <!-- Upload Year Selector -->
+      <div class="srow" style="margin-bottom: 14px; background: var(--cream2); padding: 10px; border-radius: 10px;">
+        <label style="align-self: center; margin: 0; color: var(--text2);">เลือกปีที่จะนำเข้าข้อมูล (ก่อนอัปโหลด):</label>
+        <select class="ssel" id="upload-year-sel" style="border-color:var(--orange); color:var(--orange); font-weight:700;">
+          <option value="2026">📅 2026</option>
+          <option value="2025">📅 2025</option>
+          <option value="2024">📅 2024</option>
+        </select>
+      </div>
 
-    <p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">คลิกช่องด้านล่างเพื่อเลือกไฟล์ CSV ระบบจะอ่านและดึงข้อมูลให้อัตโนมัติ</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px" id="upload-grid"></div>
+      <p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">คลิกช่องด้านล่างเพื่อเลือกไฟล์ CSV ระบบจะอ่านและดึงข้อมูลให้อัตโนมัติ</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px" id="upload-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -688,6 +744,79 @@ select.inp option{background:#fff;color:var(--text)}
 <div class="toast" id="toast-el"></div>
 
 <script>
+// ── PIN SYSTEM ──
+let currentPin = "";
+let savedPin = localStorage.getItem("tg_pin") || "123456";
+
+function typePin(n) {
+  if (currentPin.length < 6) {
+    currentPin += n;
+    updatePinDisplay();
+    if (currentPin.length === 6) {
+      setTimeout(checkPin, 100);
+    }
+  }
+}
+function delPin() {
+  if (currentPin.length > 0) {
+    currentPin = currentPin.slice(0, -1);
+    updatePinDisplay();
+  }
+}
+function clearPin() {
+  currentPin = "";
+  updatePinDisplay();
+}
+function updatePinDisplay() {
+  const dots = document.querySelectorAll("#pin-display .pin-dot");
+  dots.forEach((dot, i) => {
+    if (i < currentPin.length) dot.classList.add("filled");
+    else dot.classList.remove("filled");
+  });
+}
+function checkPin() {
+  if (currentPin === savedPin) {
+    document.getElementById("lock-screen").classList.add("hidden");
+    toast("ปลดล็อกสำเร็จ!");
+  } else {
+    toast("รหัสผ่านไม่ถูกต้อง", "err");
+    clearPin();
+    const disp = document.getElementById("pin-display");
+    disp.classList.add("shake");
+    setTimeout(() => disp.classList.remove("shake"), 400);
+  }
+}
+
+function changePin() {
+  const oldP = document.getElementById("pin-old").value;
+  const newP = document.getElementById("pin-new").value;
+  const confP = document.getElementById("pin-confirm").value;
+  
+  if (oldP !== savedPin) { toast("รหัสผ่านปัจจุบันไม่ถูกต้อง", "err"); return; }
+  if (newP.length !== 6 || !/^\d{6}$/.test(newP)) { toast("รหัสผ่านใหม่ต้องเป็นตัวเลข 6 หลัก", "warn"); return; }
+  if (newP !== confP) { toast("รหัสผ่านใหม่ไม่ตรงกัน", "warn"); return; }
+  
+  savedPin = newP;
+  localStorage.setItem("tg_pin", savedPin);
+  
+  document.getElementById("pin-old").value = "";
+  document.getElementById("pin-new").value = "";
+  document.getElementById("pin-confirm").value = "";
+  toast("เปลี่ยนรหัสผ่านสำเร็จ!");
+  fbSave(); // Sync to cloud
+}
+
+// Handle physical keyboard for PIN
+document.addEventListener('keydown', (e) => {
+  const ls = document.getElementById('lock-screen');
+  if (ls && !ls.classList.contains('hidden')) {
+    if (/^[0-9]$/.test(e.key)) typePin(e.key);
+    if (e.key === 'Backspace') delPin();
+    if (e.key === 'Escape' || e.key === 'Delete') clearPin();
+  }
+});
+
+
 // ── DATA & CONFIGURATION ──
 const M_KEYS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 const M_LABELS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
@@ -1607,8 +1736,8 @@ function clearNS(){if(!confirm("ลบค่าส่งใหม่ทั้ง
 function getFBC(){try{return JSON.parse(localStorage.getItem("tg_fbc")||"null");}catch(e){return null;}}
 function setFBS(st,msg){const d=document.getElementById("fb-dot");d.className="fb-dot"+(st==="ok"?" ok":st==="sync"?" sync":st==="err"?" err":"");document.getElementById("fb-txt").textContent=msg;}
 async function connectFB(cfg){try{const fb=window._firebase;if(!fb)throw new Error("Firebase SDK ยังโหลดไม่เสร็จ — รอสักครู่");const appCfg={apiKey:cfg.apiKey,authDomain:cfg.authDomain,projectId:cfg.projectId};if(cfg.storageBucket)appCfg.storageBucket=cfg.storageBucket;if(cfg.appId)appCfg.appId=cfg.appId;const app=fb.initializeApp(appCfg,"tg"+(Date.now()));FB_DB=fb.getFirestore(app);localStorage.setItem("tg_fbc",JSON.stringify(cfg));setFBS("ok","✓ เชื่อมต่อแล้ว (Tinkle Cloud)");const st=document.getElementById("fb-cfg-st");if(st)st.textContent="✓ เชื่อมต่อระบบ Cloud สำเร็จ";toast("✓ เชื่อมต่อ Firebase สำเร็จ!");await fbLoad();}catch(e){setFBS("err","❌ "+e.message);const st=document.getElementById("fb-cfg-st");if(st)st.textContent="❌ "+e.message;toast(e.message,"err");}}
-async function fbLoad(){if(!FB_DB)return;try{const fb=window._firebase;const snap=await fb.getDoc(fb.doc(FB_DB,"tinkle","data"));if(snap.exists()){const d=snap.data();if(d.no)NO=d.no;if(d.ns)NS=d.ns;if(d.db){["2024","2025","2026"].forEach(y=>{if(d.db[y]){DB[y]={...DB[y],...d.db[y]};if(!DB[y].purchases)DB[y].purchases=[];}});}persist();rOverview();rOTab();if(document.getElementById("sec-purchase").classList.contains("active"))rPurchase();toast("✓ โหลดข้อมูลจาก Cloud แล้ว");}}catch(e){console.warn(e);}}
-async function fbSave(){if(!FB_DB)return;try{setFBS("sync","⟳ sync...");const fb=window._firebase;await fb.setDoc(fb.doc(FB_DB,"tinkle","data"),{no:NO,ns:NS,db:DB,upd:new Date().toISOString()},{merge:true});setFBS("ok","✓ Synced "+new Date().toLocaleTimeString("th-TH"));}catch(e){setFBS("err","Sync error");}}
+async function fbLoad(){if(!FB_DB)return;try{const fb=window._firebase;const snap=await fb.getDoc(fb.doc(FB_DB,"tinkle","data"));if(snap.exists()){const d=snap.data();if(d.no)NO=d.no;if(d.ns)NS=d.ns;if(d.db){["2024","2025","2026"].forEach(y=>{if(d.db[y]){DB[y]={...DB[y],...d.db[y]};if(!DB[y].purchases)DB[y].purchases=[];}});}if(d.pin){savedPin=d.pin;localStorage.setItem("tg_pin",savedPin);}persist();rOverview();rOTab();if(document.getElementById("sec-purchase").classList.contains("active"))rPurchase();toast("✓ โหลดข้อมูลจาก Cloud แล้ว");}}catch(e){console.warn(e);}}
+async function fbSave(){if(!FB_DB)return;try{setFBS("sync","⟳ sync...");const fb=window._firebase;await fb.setDoc(fb.doc(FB_DB,"tinkle","data"),{no:NO,ns:NS,db:DB,pin:savedPin,upd:new Date().toISOString()},{merge:true});setFBS("ok","✓ Synced "+new Date().toLocaleTimeString("th-TH"));}catch(e){setFBS("err","Sync error");}}
 function saveFBCfg(){const cfg={apiKey:document.getElementById("fb-ak").value.trim(),authDomain:document.getElementById("fb-ad").value.trim(),projectId:document.getElementById("fb-pid").value.trim()};if(!cfg.apiKey||!cfg.projectId){toast("กรุณาใส่ API Key และ Project ID","warn");return;}localStorage.setItem("tg_fbc",JSON.stringify(cfg));connectFB(cfg);document.getElementById("fb-cfg-st").textContent="⟳ กำลังเชื่อมต่อ...";}
 function fbFromModal(){document.getElementById("fb-ak").value=document.getElementById("mfb-ak").value;document.getElementById("fb-ad").value=document.getElementById("mfb-ad").value;document.getElementById("fb-pid").value=document.getElementById("mfb-pid").value;closeM("m-fb");saveFBCfg();}
 function disconnFB(){FB_DB=null;localStorage.removeItem("tg_fbc");setFBS("","ไม่ได้เชื่อม Cloud");toast("ยกเลิกแล้ว","warn");}
@@ -1623,6 +1752,11 @@ const DEFAULT_FB_CFG = {
 };
 
 document.addEventListener("DOMContentLoaded",()=>{
+  // Check unlock status for session
+  if (!sessionStorage.getItem('tg_unlocked')) {
+    document.getElementById('lock-screen').classList.remove('hidden');
+  }
+
   loadP();
   initUI();
   rOverview();
@@ -1644,7 +1778,15 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   }, 500);
 });
-document.querySelectorAll(".overlay").forEach(el=>{el.addEventListener("click",e=>{if(e.target===el)el.classList.add("hidden");});});
+
+// Auto close modals when clicking outside
+document.querySelectorAll(".overlay").forEach(el=>{
+  el.addEventListener("click",e=>{
+    // Prevent closing if it's the lock screen
+    if(el.id === "lock-screen") return;
+    if(e.target===el) el.classList.add("hidden");
+  });
+});
 </script>
 
 <script>
