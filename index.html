@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>✿ Tinkle Goodies — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Mitr:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -590,6 +592,10 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="frow">
       <div><label>สินค้า</label><input class="inp" id="co-prod" placeholder="เช่น CD BOX"></div>
       <div><label>จำนวนชิ้น</label><input class="inp" id="co-qty" type="number" min="1" value="1"></div>
+    </div>
+    <div class="frow">
+      <div><label>ต้นทุน/ชิ้น (บาท)</label><input class="inp" id="co-unit-cost" type="number" min="0" value="0"></div>
+      <div><label>ภาษี (บาท)</label><input class="inp" id="co-tax" type="number" min="0" value="0"></div>
     </div>
     <div class="frow">
       <div><label>ยอดรวม (บาท) *</label><input class="inp" id="co-amt" type="number" min="0" value="0"></div>
@@ -1282,7 +1288,7 @@ function rCorp(){
   document.getElementById("co-tot").textContent=fmt(tot);
   document.getElementById("co-cnt").textContent=corp.length;
   document.getElementById("co-pct").textContent=q1r>0?(tot/q1r*100).toFixed(1)+"%":"0%";
-  document.getElementById("co-tbl").innerHTML=`<table class="tbl"><thead><tr><th>วันที่</th><th>ลูกค้า</th><th>องค์กร</th><th>สินค้า</th><th>จำนวน</th><th>ยอด</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>${corp.map(c=>`<tr><td style="color:var(--muted)">${c.date}</td><td style="font-weight:600">${c.client}</td><td style="font-size:.71rem;color:var(--muted)">${c.org}</td><td><span class="pill p-o">${c.product}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${fmt(c.amount)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td><td>${c.isNew?`<button class="sli-del" onclick="delCorp(${DB[curYear].corp.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>`;
+  document.getElementById("co-tbl").innerHTML=`<table class="tbl"><thead><tr><th>วันที่</th><th>ลูกค้า</th><th>องค์กร</th><th>สินค้า</th><th>จำนวน</th><th>ต้นทุน/ชิ้น</th><th>ภาษี</th><th>ยอด</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>${corp.map(c=>`<tr><td style="color:var(--muted)">${c.date}</td><td style="font-weight:600">${c.client}</td><td style="font-size:.71rem;color:var(--muted)">${c.org}</td><td><span class="pill p-o">${c.product}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--red)">${fmt(c.unitCost||0)}</td><td style="font-family:'Space Mono',monospace;color:var(--red)">${fmt(c.tax||0)}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${fmt(c.amount)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td><td>${c.isNew?`<button class="sli-del" onclick="delCorp(${DB[curYear].corp.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>`;
   
   // Charts
   const clients = {};
@@ -1315,12 +1321,14 @@ function saveCorp() {
   const org = document.getElementById('co-org').value.trim();
   const prod = document.getElementById('co-prod').value.trim();
   const qty = document.getElementById('co-qty').value.trim() || "1";
+  const unitCost = parseFloat(document.getElementById('co-unit-cost').value) || 0;
+  const tax = parseFloat(document.getElementById('co-tax').value) || 0;
   const amt = parseFloat(document.getElementById('co-amt').value) || 0;
   const note = document.getElementById('co-note').value.trim();
   const deliv = document.getElementById('co-del').value.trim();
   
   if(!DB[curYear].corp) DB[curYear].corp = [];
-  DB[curYear].corp.push({ date: ds, client, org, product: prod, qty, amount: amt, note, delivery: deliv, isNew: true });
+  DB[curYear].corp.push({ date: ds, client, org, product: prod, qty, unitCost, tax, amount: amt, note, delivery: deliv, isNew: true });
   
   persist(); 
   fbSave(); 
@@ -1328,7 +1336,7 @@ function saveCorp() {
   closeM('m-corp');
   toast("บันทึกออเดอร์ B2B สำเร็จ");
   
-  sendToSheet("CORP", [ds, client, org, prod, qty, amt, note]);
+  sendToSheet("CORP", [ds, client, org, prod, qty, unitCost, tax, amt, note]);
 }
 
 // DELETE LOGIC
@@ -1502,6 +1510,8 @@ function parseCorpCSV(txt){
       org: (getV(["องค์กร","บริษัท","สังกัด","org"])||"").trim(),
       product: (getV(["สินค้า","รายการ","product"])||"").trim(),
       qty: (getV(["จำนวน","qty"])||"0").replace(/,/g,""),
+      unitCost: parseNum(getV(["ต้นทุน","cost","ชิ้น"])),
+      tax: parseNum(getV(["ภาษี","tax"])),
       amount: parseNum(getV(["ยอด","ราคา","รวม","amount"])),
       note: (getV(["หมายเหตุ","note"])||"").trim()
     };
@@ -1557,7 +1567,7 @@ function expCusts(f){
   const rows=Object.values(cm).sort((a,b)=>b.total-a.total).map((c,i)=>({"#":i+1,"ชื่อ":c.name,"ออเดอร์":c.count,"ยอดรวม":c.total}));
   if(f==="csv")toCSV(rows,`tinkle_customers_${m||'ALL'}_${curYear}`);else toXLSX([{name:"Customers",rows}],`tinkle_customers_${m||'ALL'}_${curYear}`);
 }
-function expCorp(f){const rows=(DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,องค์กร:c.org,สินค้า:c.product,จำนวน:c.qty,ยอด:c.amount,หมายเหตุ:c.note}));if(f==="csv")toCSV(rows,`tinkle_corporate_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Corporate",rows}],`tinkle_corporate_${curYear}`);else toPDF(rows,`Corporate Orders ${curYear}`);}
+function expCorp(f){const rows=(DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,องค์กร:c.org,สินค้า:c.product,จำนวน:c.qty,"ต้นทุน/ชิ้น":c.unitCost||0,ภาษี:c.tax||0,ยอด:c.amount,หมายเหตุ:c.note}));if(f==="csv")toCSV(rows,`tinkle_corporate_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Corporate",rows}],`tinkle_corporate_${curYear}`);else toPDF(rows,`Corporate Orders ${curYear}`);}
 function expPurchase(f){const rows=(DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวนชิ้น:c.qty,ราคารวม:c.totalPrice,ต่อหน่วย:c.unitPrice}));if(f==="csv")toCSV(rows,`tinkle_purchases_${curYear}`);}
 function expAll(f){
   if(f==="json"){
@@ -1567,7 +1577,7 @@ function expAll(f){
   }else if(f==="xlsx"){
     const sheets = M_KEYS.map(m => ({name: m, rows: o2rows(getO(m))})).filter(s => s.rows.length > 0);
     sheets.push({name: "ค่าส่ง", rows: allShip().map(e=>({วันที่:e.date,ค่าส่ง:e.cost,หมายเหตุ:e.note||""})) });
-    sheets.push({name: "Corporate", rows: (DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,สินค้า:c.product,ยอด:c.amount})) });
+    sheets.push({name: "Corporate", rows: (DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,สินค้า:c.product,จำนวน:c.qty,"ต้นทุน/ชิ้น":c.unitCost||0,ภาษี:c.tax||0,ยอด:c.amount})) });
     sheets.push({name: "สั่งของ(ต้นทุน)", rows: (DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวน:c.qty,ยอดรวม:c.totalPrice,ต่อหน่วย:c.unitPrice})) });
     if(sheets.length) toXLSX(sheets, `tinkle_goodies_${curYear}`); else toast("ไม่มีข้อมูลในปีนี้","warn");
   }else if(f==="csv"){
