@@ -203,6 +203,10 @@ select.inp option{background:#fff;color:var(--text)}
 .expbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--cream2);border-radius:11px;border:1.5px solid var(--cream3);align-items:center}
 .expbar-title{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 
+/* GOAL RING */
+.ring-wrap{display:flex;align-items:center;gap:15px;margin-bottom:12px}
+.ring-svg{width:70px;height:70px;max-width:100%;flex-shrink:0}
+
 /* STAT ROW */
 .str{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px}
 .sti{display:flex;flex-direction:column;gap:2px}
@@ -282,7 +286,7 @@ select.inp option{background:#fff;color:var(--text)}
     <button class="btn btn-ghost btn-sm" onclick="openM('m-fb')" title="ตั้งค่าระบบ Cloud">⚙</button>
     <button class="btn btn-sky btn-sm" onclick="openM('m-upload')" title="นำเข้า CSV">📂</button>
     <button class="btn btn-purple btn-sm" onclick="openExpenseM()">💸 จ่ายอื่นๆ</button>
-    <button class="btn btn-orange btn-sm" onclick="openM('m-order')">＋ ออเดอร์</button>
+    <button class="btn btn-orange btn-sm" onclick="openCreateOrder()">＋ ออเดอร์</button>
     <button class="btn btn-mint btn-sm" onclick="openM('m-ship')">＋ ค่าส่ง</button>
     <button class="btn btn-red btn-sm" onclick="openM('m-purchase')">＋ สั่งของ</button>
     <button class="btn btn-sky btn-sm" style="background:var(--sky2)" onclick="openCorpM()">＋ B2B</button>
@@ -325,7 +329,7 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="card">
       <div class="card-title">🎯 Progress to 1,500,000 บาท</div>
       <div class="ring-wrap">
-        <svg class="ring-svg" viewBox="0 0 110 110">
+        <svg class="ring-svg" viewBox="0 0 110 110" width="80" height="80">
           <circle cx="55" cy="55" r="44" fill="none" stroke="var(--cream2)" stroke-width="9"/>
           <circle cx="55" cy="55" r="44" fill="none" stroke="url(#rg)" stroke-width="9"
             id="ring-arc" stroke-dasharray="276" stroke-dashoffset="230" stroke-linecap="round" transform="rotate(-90 55 55)"/>
@@ -380,7 +384,6 @@ select.inp option{background:#fff;color:var(--text)}
       <div style="margin-top:7px;font-size:.67rem;color:var(--muted)" id="ol-ct"></div>
     </div>
   </div>
-  <div class="dpanel hidden" id="odp"><div class="card-h" id="odp-title"></div><div id="odp-body"></div></div>
 </div>
 
 <!-- SHIPPING -->
@@ -571,8 +574,9 @@ select.inp option{background:#fff;color:var(--text)}
     <input type="hidden" id="ex-id">
     <div class="frow">
       <div><label>วันที่</label><input class="inp" id="ex-date" type="date"></div>
-      <div><label>เดือน (ระบบอิงตามปีปัจจุบัน)</label>
+      <div><label>เดือน</label>
         <select class="inp" id="ex-month">
+          <option value="ALL">รวมทั้งปี (ไม่ระบุเดือน)</option>
           <option value="JAN">มกราคม</option><option value="FEB">กุมภาพันธ์</option>
           <option value="MAR">มีนาคม</option><option value="APR">เมษายน</option>
           <option value="MAY">พฤษภาคม</option><option value="JUN">มิถุนายน</option>
@@ -614,6 +618,15 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
+<!-- ORDER DETAIL (QUICK VIEW) MODAL -->
+<div class="overlay hidden" id="m-odp">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title" id="odp-title"></div>
+    <button class="mclose" onclick="closeM('m-odp')">✕</button>
+    <div id="odp-body"></div>
+  </div>
+</div>
+
 <!-- PURCHASE EDIT MODAL -->
 <div class="overlay hidden" id="m-pur-detail">
   <div class="modal" style="max-width:440px">
@@ -646,11 +659,12 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- ORDER MODAL -->
+<!-- ORDER FULL EDIT/CREATE MODAL -->
 <div class="overlay hidden" id="m-order">
   <div class="modal">
-    <div class="modal-title">＋ เพิ่มออเดอร์ใหม่</div>
+    <div class="modal-title" id="m-order-title">＋ เพิ่มออเดอร์ใหม่</div>
     <button class="mclose" onclick="closeM('m-order')">✕</button>
+    <input type="hidden" id="o-id">
     <div class="frow"><div><label>ชื่อลูกค้า *</label><input class="inp" id="fn" placeholder="เช่น Mint"></div><div><label>วันที่</label><input class="inp" id="fd" type="date"></div></div>
     <div class="frow">
       <div><label>การจัดส่ง</label>
@@ -673,6 +687,18 @@ select.inp option{background:#fff;color:var(--text)}
           <button class="btn btn-sm btn-ghost" style="padding:2px 8px; font-size:0.6rem;" onclick="addProdRow()">+ เพิ่มสินค้า</button>
        </label>
        <div id="prod-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-top:5px;"></div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:11px; margin-top:15px; flex-wrap:wrap;">
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-urgent"> <span class="pill" style="background:#fff3cd;color:#d9534f;border:1px solid #d9534f">🔥 งานด่วน</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-nofile"> <span class="pill" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb">⚠️ รอไฟล์/ยังไม่ส่ง</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; cursor:pointer;">
+        <input type="checkbox" id="chk-nopay"> <span class="pill" style="background:#fff3cd;color:#856404;border:1px solid #ffeeba">💳 ค้างชำระ / มัดจำ</span>
+      </label>
     </div>
 
     <div class="frow" style="margin-top:9px">
@@ -727,39 +753,6 @@ select.inp option{background:#fff;color:var(--text)}
           <button class="btn btn-ghost" onclick="closeM('m-corp')">ยกเลิก</button>
           <button class="btn btn-mint" onclick="saveCorp()">💾 บันทึก</button>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- PURCHASE CREATE MODAL -->
-<div class="overlay hidden" id="m-purchase">
-  <div class="modal" style="max-width:440px">
-    <div class="modal-title">🛒 เพิ่มรายการสั่งของ (อุปกรณ์/ต้นทุน)</div>
-    <button class="mclose" onclick="closeM('m-purchase')">✕</button>
-    <div class="frow">
-      <div><label>เดือน (เลข 1-12) *</label><input class="inp" id="pu-mm" type="number" min="1" max="12" value="1"></div>
-      <div><label>เดือนที่ซื้อ (ชื่อเดือน)</label><input class="inp" id="pu-mn" placeholder="เช่น มกราคม"></div>
-    </div>
-    <div class="ffull"><label>ชื่อรายการ / สินค้า *</label><input class="inp" id="pu-name" placeholder="เช่น กล่องพัสดุ 0"></div>
-    <div class="ffull">
-      <label>ประเภท</label>
-      <select class="inp" id="pu-type">
-        <option value="ของที่ใช้ทำขาย">ของที่ใช้ทำขาย</option>
-        <option value="อุปกรณ์แพ็ค">อุปกรณ์แพ็ค</option>
-        <option value="เครื่องมือ/อุปกรณ์">เครื่องมือ / อุปกรณ์</option>
-        <option value="ค่าซ่อม/บำรุงรักษา">ค่าซ่อม / บำรุงรักษา</option>
-        <option value="จิปาถะอื่นๆ">จิปาถะอื่นๆ</option>
-      </select>
-    </div>
-    <div class="frow">
-      <div><label>จำนวนชิ้น *</label><input class="inp" id="pu-qty" type="number" min="1" value="1" oninput="calcPu()"></div>
-      <div><label>ยอดจ่ายรวม (บาท) *</label><input class="inp" id="pu-totp" type="number" min="0" value="0" oninput="calcPu()"></div>
-    </div>
-    <div class="ffull"><label>ตกชิ้นละ (บาท)</label><input class="inp" id="pu-unit" readonly></div>
-    <div class="ffull"><label>หมายเหตุ / ร้านค้า / ชิปปิ้ง</label><input class="inp" id="pu-note" placeholder="เช่น สั่งจากจีน, Shopee ร้าน A"></div>
-    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeM('m-purchase')">ยกเลิก</button>
-      <button class="btn btn-red" onclick="savePurchase()">💾 บันทึก</button>
     </div>
   </div>
 </div>
@@ -1052,7 +1045,17 @@ function toast(m,t="ok",d=2600){const el=document.getElementById("toast-el");if(
 function openM(id){
   const el = document.getElementById(id);
   if(el) el.classList.remove("hidden");
-  if(id==="m-order") buildPick();
+  if(id==="m-order") {
+      document.getElementById('o-id').value = "";
+      document.getElementById('m-order-title').textContent = "＋ เพิ่มออเดอร์ใหม่";
+      document.getElementById('fn').value = "";
+      document.getElementById('ftot').value = 0;
+      document.getElementById('fnote').value = "";
+      document.getElementById('chk-urgent').checked = false;
+      document.getElementById('chk-nofile').checked = false;
+      document.getElementById('chk-nopay').checked = false;
+      buildPick();
+  }
   if(id==="m-ship") {
      const fsd = document.getElementById("fsd"); if(fsd) fsd.value=td();
   }
@@ -1065,10 +1068,7 @@ function closeM(id){
   const el = document.getElementById(id);
   if(el) el.classList.add("hidden");
 }
-function closeOD() { 
-  const odp = document.getElementById('odp');
-  if(odp) odp.classList.add('hidden'); 
-}
+
 function td(){return new Date().toISOString().split("T")[0];}
 function pDate(d){if(!d)return 0;const p=d.split("/");return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0;}
 
@@ -1216,7 +1216,7 @@ function showExpenseList(mKey) {
        html = exps.map(e => `
            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--cream2)">
               <div>
-                 <div style="font-weight:600; font-size:0.8rem">${e.name} ${mKey==='ALL'?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]}]</span>`:''}</div>
+                 <div style="font-weight:600; font-size:0.8rem">${e.name} ${mKey==='ALL'?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]||'รวมทั้งปี'}]</span>`:''}</div>
                  <div style="font-size:0.65rem; color:var(--muted)">📅 ${e.date || '-'} ${e.note ? `• 📝 ${e.note}` : ''}</div>
               </div>
               <div style="display:flex; align-items:center; gap:10px">
@@ -1355,7 +1355,7 @@ function oiH(o){
 
 function showOD(id){
   let o = null; [...M_KEYS, "NEW"].forEach(m => { if(!o) o = getO(m).find(x => x.id === id); }); if(!o) return;
-  const p=document.getElementById("odp"); 
+  const p=document.getElementById("m-odp"); 
   if(!p) return;
   
   const pr=Object.entries(o.products||{}).map(([k,v])=>`<span class="pill p-o">${k} ×${v}</span>`).join(" ");
@@ -1400,19 +1400,20 @@ function showOD(id){
            <input type="text" class="inp" id="edit-o-note" value="${cleanNote}" style="padding:6px; font-size:0.75rem;" placeholder="เช่น ห่อของขวัญ">
         </div>
         <div style="margin-top:10px; text-align:right;">
-           <button class="btn btn-sm btn-orange" onclick="updateOrder('${o.id}')">💾 บันทึกสถานะ</button>
+           <button class="btn btn-sm btn-mint" style="margin-right:5px;" onclick="updateOrderStat('${o.id}')">💾 บันทึกสถานะ</button>
+           <button class="btn btn-sm btn-orange" onclick="openEditOrderFull('${o.id}')">✏️ แก้ไขข้อมูลทั้งหมด</button>
         </div>
     </div>
 
     <div style="display:flex; justify-content:space-between; margin-top:10px;">
-       <button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button>
+       <button class="btn btn-ghost btn-sm" onclick="closeM('m-odp')">ปิดหน้านี้</button>
        ${o.isNew ? `<button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')">🗑 ลบออเดอร์</button>` : ''}
     </div>`;
   }
-  p.classList.remove("hidden"); p.scrollIntoView({behavior:"smooth",block:"nearest"});
+  p.classList.remove("hidden");
 }
 
-function updateOrder(id) {
+function updateOrderStat(id) {
    let o = null;
    [...M_KEYS, "NEW"].forEach(m => {
       let list = m === "NEW" ? NO : (DB[curYear][m] || []);
@@ -1442,10 +1443,71 @@ function updateOrder(id) {
    toast("อัปเดตข้อมูลออเดอร์เรียบร้อย");
 }
 
+function openEditOrderFull(id) {
+    closeM('m-odp');
+    let o = null;
+    ["2024","2025","2026","2027"].forEach(y => {
+        if(DB[y]) M_KEYS.forEach(m => {
+            let found = (DB[y][m]||[]).find(x => x.id === id);
+            if(found) o = found;
+        });
+    });
+    if(!o) o = NO.find(x => x.id === id);
+    if(!o) return;
+
+    document.getElementById('o-id').value = o.id;
+    document.getElementById('fn').value = o.name || '';
+
+    if(o.date) {
+        let p = o.date.split("/");
+        if(p.length === 3) document.getElementById('fd').value = `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+
+    const container = document.getElementById("prod-rows-container");
+    container.innerHTML = "";
+    if (o.products && Object.keys(o.products).length > 0) {
+        Object.entries(o.products).forEach(([pName, pQty]) => {
+            addProdRowWithData(pName, pQty);
+        });
+    } else {
+        addProdRowWithData();
+    }
+
+    document.getElementById('fs').value = o.shipping_charged || 0;
+    document.getElementById('ftot').value = o.revenue || 0;
+
+    let rawNote = (o.note || "").replace(/(งานด่วน|ด่วน|รอไฟล์|รอรูป|ยังไม่ส่ง|ยังไม่มี)/gi, '').replace(/\|/g,'').replace(/^,|,$/g,'').trim();
+    document.getElementById('fnote').value = rawNote;
+
+    let fullText = (o.note||"") + " " + (o.detail||"");
+    document.getElementById('chk-urgent').checked = /(งานด่วน|ด่วน)/i.test(fullText);
+    document.getElementById('chk-nofile').checked = /(ยังไม่ส่ง|รอไฟล์|รอรูป|ยังไม่มี)/i.test(fullText);
+    document.getElementById('chk-nopay').checked = o.payment === "มัดจำ" || /(มัดจำ|ค้างชำระ|ยังไม่จ่าย)/i.test(o.payment||"");
+
+    document.getElementById('m-order-title').textContent = "✏️ แก้ไขข้อมูลออเดอร์";
+    openM('m-order');
+}
+
+function addProdRowWithData(selName = "", qty = 1) {
+    const newOpts = Object.keys(TIERED_PRICES).map(p => {
+        let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
+        let sel = p === selName ? "selected" : "";
+        return `<option value="${p}" ${sel}>${p} (เริ่ม ฿${baseP})</option>`;
+    }).join("");
+    const legacyOpts = Object.keys(PRICE).filter(k => !TIERED_PRICES[k]).map(p => {
+        let sel = p === selName ? "selected" : "";
+        return `<option value="${p}" ${sel}>${p} (เก่า)</option>`;
+    }).join("");
+
+    let html = `<option value="">-- เลือก --</option><optgroup label="สินค้าระบบใหม่ (ลดตามขั้นบันได)">${newOpts}</optgroup><optgroup label="รายการเก่า (Legacy)">${legacyOpts}</optgroup>`;
+    let rowHtml = `<div class="prod-row" style="display:flex;gap:5px"><select class="inp" style="flex:1" onchange="calcTot()">${html}</select><input class="inp" type="number" value="${qty}" min="1" style="width:60px" oninput="calcTot()"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTot()">✕</button></div>`;
+    document.getElementById("prod-rows-container").insertAdjacentHTML('beforeend', rowHtml);
+}
+
 function deleteOrder(id) {
    if(!confirm("ต้องการลบออเดอร์นี้ใช่หรือไม่?")) return;
    NO = NO.filter(x => x.id !== id);
-   persist(); fbSave(); rOverview(); rOTab(); closeOD();
+   persist(); fbSave(); rOverview(); rOTab(); closeM('m-odp');
    toast("ลบออเดอร์เรียบร้อย");
 }
 
@@ -1462,7 +1524,7 @@ function rOTab(){
   
   let pr = 0;
   if (curOM === "NEW" || curOM === "ALL") {
-     pr = ords.reduce((s,o)=>s+((o.revenue||0)*0.65), 0); // rough estimate
+     pr = ords.reduce((s,o)=>s+((o.revenue||0)*0.65), 0);
   } else {
      const mSum = getMonthSummary(curOM);
      pr = mSum.net_profit || 0;
@@ -1530,7 +1592,7 @@ function upCSVSummary(inp) {
                shipping_charged: parseNum(row["ค่าส่งที่เก็บลูกค้า"])
            };
            
-           const expAmt = parseNum(row["ดึงไปใช้ส่วนตัว"] || row["ดึงไปใช้"] || row["ค่าใช้จ่ายส่วนตัว"] || row["ค่าใช้จ่ายอื่นๆ"] || row["ส่วนตัว"]);
+           const expAmt = parseNum(row["ดึงไปใช้ส่วนตัว"] || row["ดึงไปใช้"] || row["ค่าใช้จ่ายส่วนตัว"] || row["ค่าใช้จ่ายอื่นๆ"] || row["ส่วนตัว"] || row["เงินเดือน"]);
            if (expAmt > 0) {
                if (!DB[targetYear].expenses) DB[targetYear].expenses = [];
                DB[targetYear].expenses = DB[targetYear].expenses.filter(ex => ex.id !== "EX_CSV_"+mKey);
@@ -1669,87 +1731,63 @@ function doUpload(inp){
   if(tEl && yEl) upCSV(tEl.value, inp, yEl.value); 
 }
 
-// ── ADD/EDIT FORMS ──
-function getProdRowTemplate() {
-  const newOpts = Object.keys(TIERED_PRICES).map(p => {
-    let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
-    return `<option value="${p}">${p} (เริ่ม ฿${baseP})</option>`;
-  }).join("");
-  const legacyOpts = Object.keys(PRICE).filter(k => !TIERED_PRICES[k]).map(p => `<option value="${p}">${p} (เก่า)</option>`).join("");
-  
-  let html = `<option value="">-- เลือก --</option><optgroup label="สินค้าระบบใหม่ (ลดตามขั้นบันได)">${newOpts}</optgroup><optgroup label="รายการเก่า (Legacy)">${legacyOpts}</optgroup>`;
-  return `<div class="prod-row" style="display:flex;gap:5px"><select class="inp" style="flex:1" onchange="calcTot()">${html}</select><input class="inp" type="number" value="1" min="1" style="width:60px" oninput="calcTot()"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTot()">✕</button></div>`;
-}
-
-function buildPick() { 
-  const elFd = document.getElementById("fd"); if(elFd) elFd.value = td(); 
-  const elCont = document.getElementById("prod-rows-container"); if(elCont) elCont.innerHTML = getProdRowTemplate(); 
-  const fsInput = document.getElementById("fs");
-  if(fsInput) {
-      fsInput.value = 50;
-      fsInput.dataset.manualChange = "";
-      fsInput.style.background = "";
-      fsInput.style.color = "";
-  }
-}
-function addProdRow() { 
-    const elCont = document.getElementById("prod-rows-container");
-    if(elCont) elCont.insertAdjacentHTML('beforeend', getProdRowTemplate()); 
-}
-
-function calcTot() { 
-  let sum = 0; 
-  document.querySelectorAll(".prod-row").forEach(r => { 
-    const s = r.querySelector("select").value; 
-    const q = parseInt(r.querySelector("input").value) || 0; 
-    if(s && q > 0) sum += getPrice(s, q) * q;
-  }); 
-
-  const fsInput = document.getElementById("fs");
-  
-  if(fsInput) {
-      if (sum >= 1500) {
-         if (fsInput.value !== "0" && !fsInput.dataset.manualChange) {
-             fsInput.dataset.oldVal = fsInput.value; 
-         }
-         if (!fsInput.dataset.manualChange || fsInput.dataset.wasFree === "1") {
-            fsInput.value = 0;
-            fsInput.dataset.wasFree = "1";
-         }
-         fsInput.style.background = "var(--green3)";
-         fsInput.style.color = "var(--green)";
-         fsInput.style.borderColor = "var(--green)";
-         fsInput.title = "จัดส่งฟรีเมื่อยอดถึง 1,500 บาท";
-      } else {
-         if (fsInput.dataset.wasFree === "1" && !fsInput.dataset.manualChange) {
-             fsInput.value = fsInput.dataset.oldVal || 50;
-             fsInput.dataset.wasFree = "0";
-         }
-         fsInput.style.background = "";
-         fsInput.style.color = "";
-         fsInput.style.borderColor = "";
-         fsInput.title = "";
-      }
-      const elFtot = document.getElementById("ftot");
-      if(elFtot) elFtot.value = sum + parseFloat(fsInput.value || 0); 
-  }
-}
-
 function saveOrder() { 
+    const elId = document.getElementById('o-id');
+    const id = elId ? elId.value : "";
     const elFd = document.getElementById("fd");
     const elFn = document.getElementById("fn");
     const elFtot = document.getElementById("ftot");
     if(!elFd || !elFn || !elFtot) return;
+
+    let prods = {};
+    document.querySelectorAll(".prod-row").forEach(r => {
+        const s = r.querySelector("select").value;
+        const q = parseInt(r.querySelector("input").value) || 0;
+        if(s && q > 0) prods[s] = (prods[s]||0) + q;
+    });
+
+    let tags = [];
+    const fnote = document.getElementById("fnote") ? document.getElementById("fnote").value.trim() : "";
+    if(document.getElementById('chk-urgent') && document.getElementById('chk-urgent').checked) tags.push("งานด่วน");
+    if(document.getElementById('chk-nofile') && document.getElementById('chk-nofile').checked) tags.push("รอไฟล์");
+    let finalNote = tags.join(", ") + (tags.length > 0 && fnote ? " | " : "") + fnote;
+
+    let payment = (document.getElementById('chk-nopay') && document.getElementById('chk-nopay').checked) ? "ยังไม่จ่าย" : "โอนครบ";
     
-    NO.push({
-        id:"NO_"+Date.now(), 
-        isNew:true, 
-        date:elFd.value.split("-").reverse().join("/"), 
-        name:elFn.value||"ไม่ระบุ", 
-        revenue:parseFloat(elFtot.value)||0, 
-        month:M_KEYS[parseInt(elFd.value.split("-")[1])-1]||"JAN"
-    }); 
-    persist(); fbSave(); rOverview(); rOTab(); closeM('m-order'); toast("บันทึกออเดอร์แล้ว"); 
+    let dateStr = elFd.value ? elFd.value.split("-").reverse().join("/") : td().split("-").reverse().join("/");
+    let monthKey = M_KEYS[parseInt(elFd.value.split("-")[1])-1] || "JAN";
+
+    let oObj = {
+        date: dateStr,
+        name: elFn.value || "ไม่ระบุ",
+        revenue: parseFloat(elFtot.value) || 0,
+        shipping_charged: parseFloat(document.getElementById("fs") ? document.getElementById("fs").value : 0) || 0,
+        products: prods,
+        note: finalNote,
+        payment: payment
+    };
+
+    if (id) {
+        let found = false;
+        NO.forEach((o, i) => { if(o.id === id) { NO[i] = {...o, ...oObj}; found = true; } });
+        if (!found) {
+            ["2024","2025","2026","2027"].forEach(y => {
+                if(DB[y]) M_KEYS.forEach(m => {
+                    let idx = (DB[y][m]||[]).findIndex(x => x.id === id);
+                    if(idx !== -1) {
+                        DB[y][m][idx] = {...DB[y][m][idx], ...oObj};
+                        found = true;
+                    }
+                });
+            });
+        }
+        toast("อัปเดตออเดอร์สำเร็จ!");
+    } else {
+        NO.push({ id: "NO_"+Date.now(), isNew: true, month: monthKey, ...oObj, done: false });
+        toast("บันทึกออเดอร์ใหม่สำเร็จ!");
+    }
+
+    persist(); fbSave(); rOverview(); rOTab(); rCusts(); closeM('m-order');
 }
 
 function saveShip() { 
