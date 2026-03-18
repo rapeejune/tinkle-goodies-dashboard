@@ -86,7 +86,8 @@ body{
 .kpi-m{background:linear-gradient(135deg,#f0fdf9,var(--mint3));border-color:rgba(61,191,168,.2)}
 .kpi-g{background:linear-gradient(135deg,#f0fdf4,var(--green3));border-color:rgba(45,160,106,.2)}
 .kpi-r{background:linear-gradient(135deg,#fff5f5,var(--red3));border-color:rgba(224,80,80,.2)}
-.kpi-p{background:linear-gradient(135deg,#faf5ff,var(--purple3));border-color:rgba(168,85,247,.2)}
+.kpi-p{background:linear-gradient(135deg,#faf5ff,var(--purple3));border-color:rgba(168,85,247,.2); transition:transform 0.2s;}
+.kpi-p:hover{transform:scale(1.02);}
 .kpi-c{background:linear-gradient(135deg,var(--cream),var(--cream2));border-color:var(--cream3)}
 .kpi::after{content:'';position:absolute;bottom:-14px;right:-8px;width:64px;height:64px;border-radius:50%;background:var(--kg,rgba(232,114,42,.1));filter:blur(16px)}
 .kpi-icon{position:absolute;top:13px;right:13px;font-size:1.25rem;opacity:.3}
@@ -321,9 +322,9 @@ select.inp option{background:#fff;color:var(--text)}
       <div class="kpi-icon">✨</div><div class="kpi-label">กำไรสุทธิ (ตามตาราง)</div><div class="kpi-value" style="color:var(--green)" id="kv-profit">฿—</div>
       <div class="kpi-sub">margin <span id="kv-margin"></span> <span id="kv-prof-yoy" style="margin-left:6px;font-weight:bold;"></span></div>
     </div>
-    <div class="kpi kpi-p" style="--kg:rgba(168,85,247,.12)">
+    <div class="kpi kpi-p" style="--kg:rgba(168,85,247,.12); cursor:pointer;" onclick="showExpenseList('ALL')" title="คลิกดูรายละเอียด">
       <div class="kpi-icon">💸</div><div class="kpi-label">ดึงไปใช้ (ส่วนตัว)</div><div class="kpi-value" style="color:var(--purple)" id="kv-expense">฿—</div>
-      <div class="kpi-sub" style="color:var(--muted)" id="kv-expense-sub">ค่าใช้จ่ายอื่นๆ</div>
+      <div class="kpi-sub" style="color:var(--muted)" id="kv-expense-sub">คลิกเพื่อดูรายละเอียด 👆</div>
     </div>
     <div class="kpi kpi-c"><div class="kpi-icon">🎯</div><div class="kpi-label">เป้า 1.5M</div><div class="kpi-value" style="color:var(--orange)" id="kv-gpct">—%</div><div class="kpi-sub" id="kv-gleft">เหลืออีก —</div></div>
   </div>
@@ -422,6 +423,13 @@ select.inp option{background:#fff;color:var(--text)}
 
   <div class="card">
     <div class="card-title">📦 สรุปยอดรวมแยกตามชื่อสินค้า (จัดกลุ่ม) ปี <span id="pu-yr-label-group"></span></div>
+    <div class="srow">
+      <select class="ssel" id="pu-grp-sort" onchange="rPurchase()">
+         <option value="total_desc">เรียงตามยอดรวม (มากไปน้อย)</option>
+         <option value="qty_desc">เรียงตามจำนวนชิ้น (มากไปน้อย)</option>
+         <option value="name_asc">เรียงตามชื่อสินค้า (A-Z)</option>
+      </select>
+    </div>
     <div class="tbl-wrap" id="pu-group-wrap"></div>
   </div>
 
@@ -434,6 +442,11 @@ select.inp option{background:#fff;color:var(--text)}
          <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option><option value="4">เม.ย.</option>
          <option value="5">พ.ค.</option><option value="6">มิ.ย.</option><option value="7">ก.ค.</option><option value="8">ส.ค.</option>
          <option value="9">ก.ย.</option><option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+      </select>
+      <select class="ssel" id="pu-sort" onchange="rPurchase()">
+         <option value="newest">ล่าสุด</option>
+         <option value="price_desc">ยอดรวม (มากไปน้อย)</option>
+         <option value="qty_desc">จำนวนชิ้น (มากไปน้อย)</option>
       </select>
     </div>
     <div class="tbl-wrap" id="pu-wrap"></div>
@@ -452,14 +465,24 @@ select.inp option{background:#fff;color:var(--text)}
     <div class="card" style="margin-bottom:0">
       <div class="card-title">📋 ฐานข้อมูลลูกค้า ปี <span id="cu-yr-label"></span></div>
       <div class="srow">
-        <input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อลูกค้า..." oninput="rCusts()">
+        <input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อลูกค้า หรือ วันที่..." oninput="rCusts()">
         <select class="ssel" id="cu-m" onchange="rCusts()">
            <option value="ALL">รวมทั้งปี</option>
            <option value="JAN">ม.ค.</option><option value="FEB">ก.พ.</option><option value="MAR">มี.ค.</option><option value="APR">เม.ย.</option>
            <option value="MAY">พ.ค.</option><option value="JUN">มิ.ย.</option><option value="JUL">ก.ค.</option><option value="AUG">ส.ค.</option>
            <option value="SEP">ก.ย.</option><option value="OCT">ต.ค.</option><option value="NOV">พ.ย.</option><option value="DEC">ธ.ค.</option>
         </select>
+        <select class="ssel" id="cu-sort" onchange="rCusts()">
+           <option value="spent_desc">เรียงตามยอดซื้อ (มากไปน้อย)</option>
+           <option value="spent_asc">เรียงตามยอดซื้อ (น้อยไปมาก)</option>
+           <option value="freq_desc">เรียงตามความถี่ (มากไปน้อย)</option>
+        </select>
+        <select class="ssel" id="cu-type" onchange="rCusts()">
+           <option value="all">ลูกค้าทั้งหมด</option>
+           <option value="repeat">เฉพาะซื้อซ้ำ 👑</option>
+        </select>
       </div>
+      <p style="font-size:0.7rem; color:var(--muted); margin-bottom:8px;">💡 คลิกที่ชื่อเพื่อดูประวัติออเดอร์ หรือเปลี่ยนชื่อลูกค้า</p>
       <div class="tbl-wrap" style="max-height: 500px; overflow-y: auto;" id="cu-wrap"></div>
     </div>
     <div>
@@ -585,6 +608,47 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
+<!-- CUSTOMER DETAIL MODAL -->
+<div class="overlay hidden" id="m-cust-detail">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title" id="mcust-title" style="color:var(--purple)">ข้อมูลลูกค้า</div>
+    <button class="mclose" onclick="closeM('m-cust-detail')">✕</button>
+    <div id="mcust-body" style="max-height: 60vh; overflow-y: auto;"></div>
+  </div>
+</div>
+
+<!-- PURCHASE EDIT MODAL -->
+<div class="overlay hidden" id="m-pur-detail">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">แก้ไขรายการสั่งของ (ต้นทุน)</div>
+    <button class="mclose" onclick="closeM('m-pur-detail')">✕</button>
+    <input type="hidden" id="epu-id">
+    <div class="ffull"><label>ชื่อรายการ / สินค้า *</label><input class="inp" id="epu-name"></div>
+    <div class="ffull">
+      <label>ประเภท</label>
+      <select class="inp" id="epu-type">
+        <option value="ของที่ใช้ทำขาย">ของที่ใช้ทำขาย</option>
+        <option value="อุปกรณ์แพ็ค">อุปกรณ์แพ็ค</option>
+        <option value="เครื่องมือ/อุปกรณ์">เครื่องมือ / อุปกรณ์</option>
+        <option value="ค่าซ่อม/บำรุงรักษา">ค่าซ่อม / บำรุงรักษา</option>
+        <option value="จิปาถะอื่นๆ">จิปาถะอื่นๆ</option>
+      </select>
+    </div>
+    <div class="frow">
+      <div><label>จำนวนชิ้น *</label><input class="inp" id="epu-qty" type="number" min="1"></div>
+      <div><label>ยอดจ่ายรวม (บาท) *</label><input class="inp" id="epu-totp" type="number" min="0"></div>
+    </div>
+    <div class="ffull"><label>หมายเหตุ / ร้านค้า / ชิปปิ้ง</label><input class="inp" id="epu-note"></div>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:space-between">
+      <button class="btn btn-danger btn-sm" onclick="delPur()">🗑 ลบรายการนี้</button>
+      <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="closeM('m-pur-detail')">ยกเลิก</button>
+          <button class="btn btn-orange" onclick="updatePur()">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ORDER MODAL -->
 <div class="overlay hidden" id="m-order">
   <div class="modal">
@@ -665,7 +729,7 @@ select.inp option{background:#fff;color:var(--text)}
   </div>
 </div>
 
-<!-- PURCHASE MODAL -->
+<!-- PURCHASE CREATE MODAL -->
 <div class="overlay hidden" id="m-purchase">
   <div class="modal" style="max-width:440px">
     <div class="modal-title">🛒 เพิ่มรายการสั่งของ (อุปกรณ์/ต้นทุน)</div>
@@ -1124,7 +1188,7 @@ function rOverview(){
   
   const elSub = document.getElementById("kv-expense-sub");
   if(elSub) {
-     elSub.innerHTML = `ค่าใช้จ่ายอื่นๆ <span style="color:${netSave >= 0 ? 'var(--green)' : 'var(--red)'};font-weight:bold;margin-left:6px">เหลือเก็บ: ${fmt(netSave)}</span>`;
+     elSub.innerHTML = `คลิกเพื่อดูรายละเอียด <span style="color:${netSave >= 0 ? 'var(--green)' : 'var(--red)'};font-weight:bold;margin-left:6px">เหลือเก็บ: ${fmt(netSave)}</span>`;
   }
   
   const arc=276,off=arc-arc*pct/100;
@@ -1154,7 +1218,7 @@ function rOverview(){
 }
 
 function oiH(o){
-  const stCls = o.done ? "p-g" : "p-s"; const stTxt = o.done ? "✓ เสร็จ" : "⏳ ค้าง";
+  const stCls = o.done ? "p-g" : "p-s"; const stTxt = o.done ? "✓ จัดส่งแล้ว" : "⏳ รอส่ง";
   const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
   
   let tags = [];
@@ -1166,7 +1230,7 @@ function oiH(o){
 
   let tagsHtml = tags.length > 0 ? `<div style="margin-top:4px; display:flex; gap:4px; flex-wrap:wrap;">${tags.join("")}</div>` : '';
 
-  return `<div class="oi" onclick="showOD('${o.id}')"><div class="oi-av">${(o.name||"?")[0]}</div><div class="oi-info"><div class="oi-name">${o.name||"—"} <span class="pill ${stCls}" style="font-size:.55rem;padding:0px 6px">${stTxt}</span></div><div class="oi-det">${pr}</div>${tagsHtml}</div><div class="oi-r"><div class="oi-amt">${fmt(o.revenue)}</div></div></div>`;
+  return `<div class="oi" onclick="showOD('${o.id}')"><div class="oi-av">${(o.name||"?")[0]}</div><div class="oi-info"><div class="oi-name">${o.name||"—"} <span class="pill ${stCls}" style="font-size:.55rem;padding:0px 6px">${stTxt}</span></div><div class="oi-det">${pr}</div>${tagsHtml}</div><div class="oi-r"><div style="font-size:0.6rem; color:var(--muted); text-align:right;">${o.date||''}</div><div class="oi-amt">${fmt(o.revenue)}</div></div></div>`;
 }
 
 function showOD(id){
@@ -1182,7 +1246,7 @@ function showOD(id){
 
   const elBody = document.getElementById("odp-body");
   if (elBody) {
-    elBody.innerHTML=`<div class="str"><div class="sti"><span class="stl">ยอดรวม</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div></div>
+    elBody.innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv" style="font-size:0.8rem">${o.date||'-'}</span></div><div class="sti"><span class="stl">ยอดรวม</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div></div>
     <div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr}</div>
     
     <div style="background:var(--cream2); padding:12px; border-radius:10px; margin-top:10px; font-size:0.8rem;">
@@ -1191,16 +1255,16 @@ function showOD(id){
            <div>
               <label>สถานะงาน</label>
               <select class="inp" id="edit-o-done" style="padding:4px; font-size:0.75rem;">
-                 <option value="false" ${!o.done ? 'selected' : ''}>⏳ ค้างส่ง / กำลังทำ</option>
-                 <option value="true" ${o.done ? 'selected' : ''}>✓ เสร็จ / ส่งแล้ว</option>
+                 <option value="false" ${!o.done ? 'selected' : ''}>⏳ รอจัดส่ง / กำลังทำ</option>
+                 <option value="true" ${o.done ? 'selected' : ''}>✓ จัดส่งแล้ว</option>
               </select>
            </div>
            <div>
               <label>การชำระเงิน</label>
               <select class="inp" id="edit-o-pay" style="padding:4px; font-size:0.75rem;">
-                 <option value="โอนครบ" ${payStatus.includes('ครบ') ? 'selected' : ''}>✅ โอนครบ</option>
+                 <option value="โอนแล้ว" ${payStatus.includes('โอนแล้ว') || payStatus.includes('ครบ') ? 'selected' : ''}>✅ โอนแล้ว/โอนครบ</option>
                  <option value="มัดจำ" ${payStatus.includes('มัดจำ') ? 'selected' : ''}>💳 มัดจำ</option>
-                 <option value="ยังไม่จ่าย" ${!payStatus.includes('ครบ') && !payStatus.includes('มัดจำ') ? 'selected' : ''}>❌ ยังไม่จ่าย</option>
+                 <option value="ยังไม่จ่าย" ${!payStatus.includes('โอนแล้ว') && !payStatus.includes('ครบ') && !payStatus.includes('มัดจำ') ? 'selected' : ''}>❌ ยังไม่จ่าย</option>
               </select>
            </div>
         </div>
@@ -1412,12 +1476,20 @@ function parseOrdCSV(txt,mk){
     let rev = parseNum(getV(["ยอด", "รวม", "revenue", "total"]));
     if(rev<=0)return;
     const dt = getV(["วันที่", "date"]).trim() || Object.values(row)[0] || "";
+    
+    // Improved done & payment check logic
+    const rawDetail = getV(["รายละเอียด", "detail", "สถานะ", "status"]).trim();
+    const isDone = rawDetail.includes("จัดส่งแล้ว") || rawDetail.includes("ส่งแล้ว") || getV(["เสร็จ", "จัดส่ง"]).trim().toUpperCase()==="TRUE";
+    
+    let paymentStat = getV(["ชำระ", "โอน", "มัดจำ", "payment"]).trim();
+    if (!paymentStat && rawDetail.includes("โอนแล้ว")) paymentStat = "โอนแล้ว";
+
     const prods = {};
     ALLP.forEach(p=>{
       const v = row[p]; if(!v)return;
       try{const q=parseInt(parseFloat(v.toString().replace(/,/g,"")));if(q>0)prods[p]=q;}catch(e){}
     });
-    out.push({id:mk+"_"+i, date:dt, name, products:prods, shipping_charged:parseNum(getV(["ค่าส่ง", "shipping"])), revenue:rev, isUploaded:true});
+    out.push({id:mk+"_"+i, date:dt, name, products:prods, shipping_charged:parseNum(getV(["ค่าส่ง", "shipping"])), revenue:rev, payment:paymentStat, detail:rawDetail, done:isDone, isUploaded:true});
   });
   return out;
 }
@@ -1577,7 +1649,13 @@ function rPurchase() {
       grouped[n].qty += (x.qty || 1);
       grouped[n].total += (x.totalPrice || 0);
   });
-  let groupedArr = Object.values(grouped).sort((a,b) => b.total - a.total);
+  let groupedArr = Object.values(grouped);
+  
+  let grpSort = document.getElementById("pu-grp-sort") ? document.getElementById("pu-grp-sort").value : "total_desc";
+  if (grpSort === "total_desc") groupedArr.sort((a,b) => b.total - a.total);
+  else if (grpSort === "qty_desc") groupedArr.sort((a,b) => b.qty - a.qty);
+  else if (grpSort === "name_asc") groupedArr.sort((a,b) => a.name.localeCompare(b.name, 'th'));
+
   const elGrp = document.getElementById("pu-group-wrap");
   if(elGrp) {
      elGrp.innerHTML = `<table class="tbl"><tr><th>สินค้า / รายการ</th><th>หมวดหมู่</th><th>รวมจำนวน (ชิ้น)</th><th>ต้นทุนเฉลี่ย/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
@@ -1594,11 +1672,17 @@ function rPurchase() {
   }
 
   // 2. Table (Raw Log)
+  let displayP = [...p];
+  let rawSort = document.getElementById("pu-sort") ? document.getElementById("pu-sort").value : "newest";
+  if (rawSort === "newest") displayP.reverse();
+  else if (rawSort === "price_desc") displayP.sort((a,b) => b.totalPrice - a.totalPrice);
+  else if (rawSort === "qty_desc") displayP.sort((a,b) => b.qty - a.qty);
+
   const el = document.getElementById("pu-wrap"); 
   if(el) el.innerHTML = `<table class="tbl"><tr><th>เดือน</th><th>หมวดหมู่</th><th>รายการสั่งซื้อ</th><th>จำนวนชิ้น</th><th>ต้นทุน/ชิ้น</th><th>ยอดรวม (บาท)</th></tr>` + 
-    p.map(x => {
+    displayP.map(x => {
       let unitCost = x.qty ? (x.totalPrice / x.qty).toFixed(2) : x.totalPrice;
-      return `<tr>
+      return `<tr style="cursor:pointer" onclick="showPur('${x.id}')">
         <td style="color:var(--muted)">${M_LABELS[x.month-1]||x.month}</td>
         <td style="font-size:0.65rem"><span class="pill p-c">${x.type||'อื่นๆ'}</span></td>
         <td style="font-weight:600">${x.name} ${getBadgeHTML(x.note)}</td>
@@ -1607,6 +1691,37 @@ function rPurchase() {
         <td style="color:var(--red);font-family:'Space Mono',monospace;font-weight:700">${fmt(x.totalPrice)}</td>
       </tr>`;
     }).join("") + `</table>`; 
+}
+
+function showPur(id) {
+    let p = DB[curYear].purchases.find(x => x.id === id);
+    if(!p) return;
+    document.getElementById('epu-id').value = p.id;
+    document.getElementById('epu-name').value = p.name || '';
+    document.getElementById('epu-type').value = p.type || 'ของที่ใช้ทำขาย';
+    document.getElementById('epu-qty').value = p.qty || 1;
+    document.getElementById('epu-totp').value = p.totalPrice || 0;
+    document.getElementById('epu-note').value = p.note || '';
+    openM('m-pur-detail');
+}
+
+function updatePur() {
+    let id = document.getElementById('epu-id').value;
+    let p = DB[curYear].purchases.find(x => x.id === id);
+    if(!p) return;
+    p.name = document.getElementById('epu-name').value.trim();
+    p.type = document.getElementById('epu-type').value;
+    p.qty = parseNum(document.getElementById('epu-qty').value) || 1;
+    p.totalPrice = parseNum(document.getElementById('epu-totp').value) || 0;
+    p.note = document.getElementById('epu-note').value.trim();
+    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('อัปเดตรายการสำเร็จ');
+}
+
+function delPur() {
+    if(!confirm('ต้องการลบรายการนี้ใช่หรือไม่?')) return;
+    let id = document.getElementById('epu-id').value;
+    DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
+    persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
 }
 
 // ── CUSTOMERS RENDER ──
@@ -1623,17 +1738,25 @@ function rCusts() {
      if(!o.name) return;
      let n = o.name.trim();
      let nKey = n.toLowerCase();
-     if(!custMap[nKey]) custMap[nKey] = { name: n, spent: 0, count: 0, items: new Set(), lastDate: "" };
+     if(!custMap[nKey]) custMap[nKey] = { name: n, spent: 0, count: 0, items: new Set(), dates: new Set() };
      custMap[nKey].spent += o.revenue;
      custMap[nKey].count += 1;
-     custMap[nKey].lastDate = o.date;
+     if(o.date) custMap[nKey].dates.add(o.date);
      Object.keys(o.products||{}).forEach(p => custMap[nKey].items.add(p));
   });
 
   let custList = Object.values(custMap);
-  if (qFilter) custList = custList.filter(c => c.name.toLowerCase().includes(qFilter));
-  
-  custList.sort((a,b) => b.spent - a.spent); // Sort by spending
+  if (qFilter) {
+      custList = custList.filter(c => c.name.toLowerCase().includes(qFilter) || Array.from(c.dates).some(d => d.includes(qFilter)));
+  }
+
+  const typeFilter = document.getElementById("cu-type") ? document.getElementById("cu-type").value : "all";
+  if (typeFilter === "repeat") custList = custList.filter(c => c.count > 1);
+
+  const sortFilter = document.getElementById("cu-sort") ? document.getElementById("cu-sort").value : "spent_desc";
+  if (sortFilter === "spent_desc") custList.sort((a,b) => b.spent - a.spent);
+  else if (sortFilter === "spent_asc") custList.sort((a,b) => a.spent - b.spent);
+  else if (sortFilter === "freq_desc") custList.sort((a,b) => b.count - a.count);
 
   const totalCust = custList.length;
   const repeatCust = custList.filter(c => c.count > 1).length;
@@ -1644,7 +1767,7 @@ function rCusts() {
   const elAvg = document.getElementById("cu-avg"); if(elAvg) elAvg.textContent = totalCust ? fmt(totalSpent / totalCust) : "฿0";
 
   // Chart - Top Spenders
-  let topCust = custList.slice(0,10);
+  let topCust = [...custList].sort((a,b) => b.spent - a.spent).slice(0,10);
   if(ch_cust_top) ch_cust_top.destroy();
   const custTopCanvas = document.getElementById("ch-cust-top");
   if(custTopCanvas) {
@@ -1653,13 +1776,50 @@ function rCusts() {
 
   // Table
   const el = document.getElementById("cu-wrap"); 
-  if(el) el.innerHTML = `<table class="tbl"><tr><th>ชื่อลูกค้า</th><th>ความถี่</th><th>สั่งอะไรไปบ้าง (ย่อ)</th><th>ยอดรวม (บาท)</th></tr>` + 
+  if(el) el.innerHTML = `<table class="tbl"><tr><th>วันที่สั่ง/รอบส่ง</th><th>ชื่อลูกค้า</th><th>ความถี่</th><th>สั่งอะไรไปบ้าง (ย่อ)</th><th>ยอดรวม (บาท)</th></tr>` + 
     custList.map(c => `<tr>
-      <td style="font-weight:600">${c.name} ${c.count>1 ? '<span class="pill p-g" style="font-size:0.55rem;padding:0 4px">👑 ซื้อซ้ำ</span>' : ''}</td>
+      <td style="color:var(--muted); font-size:0.7rem;">${Array.from(c.dates).join("<br>") || "-"}</td>
+      <td style="font-weight:600; cursor:pointer;" onclick="showCust('${c.name.replace(/'/g, "\\'")}')">${c.name} ${c.count>1 ? '<span class="pill p-g" style="font-size:0.55rem;padding:0 4px">👑 ซื้อซ้ำ</span>' : ''}</td>
       <td style="font-family:'Space Mono'; color:var(--muted)">${c.count} ครั้ง</td>
       <td style="font-size:0.65rem; color:var(--text2); max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${Array.from(c.items).join(", ")}">${Array.from(c.items).join(", ") || "-"}</td>
       <td style="color:var(--purple);font-family:'Space Mono',monospace;font-weight:700">${fmt(c.spent)}</td>
     </tr>`).join("") + `</table>`; 
+}
+
+function showCust(name) {
+    let orders = getO('ALL').filter(o => o.name === name);
+    if(!orders.length) return;
+    document.getElementById('mcust-title').textContent = "👤 " + name;
+    let html = `<div style="margin-bottom:15px"><button class="btn btn-sm btn-ghost" onclick="renameCust('${name.replace(/'/g, "\\'")}')">✏️ เปลี่ยนชื่อลูกค้าคนนี้ (แก้ไขทุกออเดอร์)</button></div>`;
+    html += `<div style="font-weight:bold;margin-bottom:8px">ประวัติออเดอร์ (${orders.length} รายการ)</div>`;
+    html += `<div class="ol" style="max-height: 400px; overflow-y:auto;">` + orders.map(oiH).join("") + `</div>`;
+    document.getElementById('mcust-body').innerHTML = html;
+    openM('m-cust-detail');
+}
+
+function renameCust(oldName) {
+    let newName = prompt(`กรอกชื่อใหม่เพื่อแทนที่ "${oldName}":`, oldName);
+    if(!newName || newName.trim() === "" || newName === oldName) return;
+    newName = newName.trim();
+    
+    let count = 0;
+    // Update in NO (New Orders)
+    NO.forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+    
+    // Update in DB (All Years/Months)
+    ["2024","2025","2026"].forEach(y => {
+        M_KEYS.forEach(m => {
+            (DB[y][m]||[]).forEach(o => { if(o.name === oldName) { o.name = newName; count++; } });
+        });
+    });
+    
+    if(count > 0) {
+        persist(); fbSave(); rOverview(); rOTab(); rCusts();
+        showCust(newName);
+        toast(`เปลี่ยนชื่อสำเร็จ (อัปเดต ${count} ออเดอร์)`);
+    } else {
+        toast(`ไม่พบข้อมูลออเดอร์ของลูกค้านี้ให้เปลี่ยน`, "warn");
+    }
 }
 
 function saveCorp() { 
