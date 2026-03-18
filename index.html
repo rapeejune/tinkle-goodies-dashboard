@@ -10,29 +10,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
---cream:#fdf6ec;--cream2:#faecd8;--cream3:#f0ddc0;
---orange:#e8722a;--orange2:#f59c4a;--orange3:#fde8d0;
---sky:#3ea8d8;--sky2:#7bc4e8;--sky3:#ddf1fb;
---mint:#3dbfa8;--mint2:#7dd4c4;--mint3:#d6f5ef;
---green:#2da06a;--green3:#d2f4e5;
---red:#e05050;--red3:#fde8e8;
---gold:#c8820a;
---text:#2d1a08;--text2:#6b4423;
---muted:rgba(45,26,8,.45);
---border:rgba(232,114,42,.18);
---card:#ffffff;
---shadow:0 2px 16px rgba(232,114,42,.10);
---shadow2:0 6px 32px rgba(232,114,42,.14);
+  --cream:#fdf6ec;--cream2:#faecd8;--cream3:#f0ddc0;
+  --orange:#e8722a;--orange2:#f59c4a;--orange3:#fde8d0;
+  --sky:#3ea8d8;--sky2:#7bc4e8;--sky3:#ddf1fb;
+  --mint:#3dbfa8;--mint2:#7dd4c4;--mint3:#d6f5ef;
+  --green:#2da06a;--green3:#d2f4e5;
+  --red:#e05050;--red3:#fde8e8;
+  --gold:#c8820a;
+  --text:#2d1a08;--text2:#6b4423;
+  --muted:rgba(45,26,8,.45);
+  --border:rgba(232,114,42,.18);
+  --card:#ffffff;
+  --shadow:0 2px 16px rgba(232,114,42,.10);
+  --shadow2:0 6px 32px rgba(232,114,42,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-background:var(--cream);color:var(--text);
-font-family:'Noto Sans Thai',sans-serif;min-height:100vh;
-background-image:
-radial-gradient(ellipse 70% 40% at 90% 5%,rgba(232,114,42,.07) 0%,transparent 60%),
-radial-gradient(ellipse 50% 35% at 5% 90%,rgba(62,168,216,.06) 0%,transparent 55%),
-radial-gradient(circle at 1px 1px,rgba(232,114,42,.06) 1px,transparent 0);
-background-size:auto,auto,26px 26px;
+  background:var(--cream);color:var(--text);
+  font-family:'Noto Sans Thai',sans-serif;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 90% 5%,rgba(232,114,42,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 35% at 5% 90%,rgba(62,168,216,.06) 0%,transparent 55%),
+    radial-gradient(circle at 1px 1px,rgba(232,114,42,.06) 1px,transparent 0);
+  background-size:auto,auto,26px 26px;
 }
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--orange2);border-radius:6px}
@@ -57,6 +57,8 @@ background-size:auto,auto,26px 26px;
 .btn-mint:hover{background:#32a892;transform:translateY(-1px)}
 .btn-ghost{background:#fff;color:var(--text2);border:1.5px solid var(--cream3)}
 .btn-ghost:hover{background:var(--cream2);border-color:var(--orange2)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(224,80,80,.25)}
+.btn-red:hover{background:#c83c3c;transform:translateY(-1px)}
 .btn-sm{padding:6px 12px;font-size:.72rem}
 .btn-danger{background:var(--red3);color:var(--red);border:1px solid rgba(224,80,80,.2)}
 
@@ -235,332 +237,396 @@ select.inp option{background:#fff;color:var(--text)}
 <div class="wrap">
 
 <div class="hdr">
-<div class="brand">
-<div class="brand-logo">✿</div>
-<div>
-<div class="brand-name">Tinkle Goodies</div>
-<div class="brand-sub">Sales Dashboard 2026</div>
-</div>
-</div>
-<div class="hdr-actions">
-<!-- Year Selector -->
-<select class="ssel" id="year-sel" onchange="changeYear(this.value)" style="border-color:var(--orange); color:var(--orange); font-weight:700; background:var(--orange3)">
-<option value="2026">📅 2026</option>
-<option value="2025">📅 2025</option>
-<option value="2024">📅 2024</option>
-</select>
-<div class="fb-bar"><div class="fb-dot" id="fb-dot"></div><span id="fb-txt">ไม่ได้เชื่อม Cloud</span></div>
-<button class="btn btn-ghost btn-sm" onclick="openM('m-fb')">⚙ Firebase</button>
-<button class="btn btn-sky btn-sm" onclick="openM('m-upload')">📂 นำเข้า CSV</button>
-<button class="btn btn-orange btn-sm" onclick="openM('m-order')">＋ ออเดอร์</button>
-<button class="btn btn-mint btn-sm" onclick="openM('m-ship')">＋ ค่าส่ง</button>
-</div>
+  <div class="brand">
+    <div class="brand-logo">✿</div>
+    <div>
+      <div class="brand-name">Tinkle Goodies</div>
+      <div class="brand-sub">Sales Dashboard 2026</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <!-- Year Selector -->
+    <select class="ssel" id="year-sel" onchange="changeYear(this.value)" style="border-color:var(--orange); color:var(--orange); font-weight:700; background:var(--orange3); margin-right:5px">
+      <option value="2026">📅 2026</option>
+      <option value="2025">📅 2025</option>
+      <option value="2024">📅 2024</option>
+    </select>
+    <div class="fb-bar"><div class="fb-dot" id="fb-dot"></div><span id="fb-txt">ไม่ได้เชื่อม Cloud</span></div>
+    
+    <!-- Add Manual Buttons -->
+    <button class="btn btn-ghost btn-sm" onclick="openM('m-fb')" title="ตั้งค่าระบบ Cloud">⚙</button>
+    <button class="btn btn-sky btn-sm" onclick="openM('m-upload')" title="นำเข้า CSV">📂</button>
+    <button class="btn btn-orange btn-sm" onclick="openM('m-order')">＋ ออเดอร์</button>
+    <button class="btn btn-mint btn-sm" onclick="openM('m-ship')">＋ ค่าส่ง</button>
+    <button class="btn btn-red btn-sm" onclick="openM('m-purchase')">＋ สั่งของ</button>
+    <button class="btn btn-sky btn-sm" style="background:var(--sky2)" onclick="openM('m-corp')">＋ B2B</button>
+  </div>
 </div>
 
 <div class="tabs">
-<button class="tab active" onclick="goTab('overview',this)">📊 ภาพรวม</button>
-<button class="tab" onclick="goTab('orders',this)">📦 ออเดอร์</button>
-<button class="tab" onclick="goTab('shipping',this)">🚚 ค่าส่ง</button>
-<button class="tab" onclick="goTab('products',this)">📈 สินค้า</button>
-<button class="tab" onclick="goTab('purchase',this)">🛒 สั่งของ (ต้นทุน)</button>
-<button class="tab" onclick="goTab('customers',this)">👥 ลูกค้า</button>
-<button class="tab" onclick="goTab('corporate',this)">🏢 Corporate</button>
-<button class="tab" onclick="goTab('settings',this)">⚙ ตั้งค่า</button>
+  <button class="tab active" onclick="goTab('overview',this)">📊 ภาพรวม</button>
+  <button class="tab" onclick="goTab('orders',this)">📦 ออเดอร์</button>
+  <button class="tab" onclick="goTab('shipping',this)">🚚 ค่าส่ง</button>
+  <button class="tab" onclick="goTab('products',this)">📈 สินค้า</button>
+  <button class="tab" onclick="goTab('purchase',this)">🛒 สั่งของ (ต้นทุน)</button>
+  <button class="tab" onclick="goTab('customers',this)">👥 ลูกค้า</button>
+  <button class="tab" onclick="goTab('corporate',this)">🏢 Corporate</button>
+  <button class="tab" onclick="goTab('settings',this)">⚙ ตั้งค่า</button>
 </div>
 
 <!-- OVERVIEW -->
 <div class="section active" id="sec-overview">
-<div class="kpi-row">
-<div class="kpi kpi-o" style="--kg:rgba(232,114,42,.15)"><div class="kpi-icon">💰</div><div class="kpi-label">ยอดขายรวม</div><div class="kpi-value" style="color:var(--orange)" id="kv-rev">฿—</div><div class="kpi-sub" id="ksub-rev">ทั้งปี</div></div>
-<div class="kpi kpi-s" style="--kg:rgba(62,168,216,.12)"><div class="kpi-icon">📦</div><div class="kpi-label">ออเดอร์รวม</div><div class="kpi-value" style="color:var(--sky)" id="kv-ord">—</div><div class="kpi-sub" id="ksub-ord">ม.ค.–ธ.ค.</div></div>
-<div class="kpi kpi-m" style="--kg:rgba(61,191,168,.12)"><div class="kpi-icon">🧾</div><div class="kpi-label">AOV เฉลี่ย</div><div class="kpi-value" style="color:var(--mint)" id="kv-aov">฿—</div><div class="kpi-sub">ต่อออเดอร์</div></div>
-<div class="kpi kpi-g" style="--kg:rgba(45,160,106,.12)"><div class="kpi-icon">✨</div><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green)" id="kv-profit">฿—</div><div class="kpi-sub" id="kv-margin">margin —%</div></div>
-<div class="kpi kpi-c"><div class="kpi-icon">🎯</div><div class="kpi-label">เป้า 1.5M</div><div class="kpi-value" style="color:var(--orange)" id="kv-gpct">—%</div><div class="kpi-sub" id="kv-gleft">เหลืออีก —</div></div>
-</div>
-<div class="g2l">
-<div class="card">
-<div class="card-title">🎯 Progress to 1,500,000 บาท</div>
-<div class="ring-wrap">
-<svg class="ring-svg" viewBox="0 0 110 110">
-<circle cx="55" cy="55" r="44" fill="none" stroke="var(--cream2)" stroke-width="9"/>
-<circle cx="55" cy="55" r="44" fill="none" stroke="url(#rg)" stroke-width="9"
-id="ring-arc" stroke-dasharray="276" stroke-dashoffset="230" stroke-linecap="round" transform="rotate(-90 55 55)"/>
-<defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
-<stop offset="0%" stop-color="#e8722a"/><stop offset="100%" stop-color="#3ea8d8"/>
-</linearGradient></defs>
-<text x="55" y="51" text-anchor="middle" fill="#2d1a08" font-family="Space Mono" font-size="13" font-weight="700" id="ring-txt">—%</text>
-<text x="55" y="65" text-anchor="middle" fill="rgba(45,26,8,.4)" font-size="7">ของเป้า</text>
-</svg>
-<div style="flex:1"><div id="mbars"></div><div style="margin-top:9px;font-size:.73rem;color:var(--muted);line-height:1.9" id="g-advice"></div></div>
-</div>
-</div>
-<div class="card"><div class="card-title">📊 ยอดขาย vs กำไร</div><div class="chb"><canvas id="ch-monthly"></canvas></div></div>
-</div>
-<div class="g2">
-<div class="card"><div class="card-title">🏅 Top สินค้าแห่งปี</div><div class="chb"><canvas id="ch-topprod"></canvas></div></div>
-<div class="card"><div class="card-title">📋 ออเดอร์ล่าสุด</div><div id="recent-ol" class="ol"></div></div>
-</div>
+  <div class="kpi-row">
+    <div class="kpi kpi-o" style="--kg:rgba(232,114,42,.15)"><div class="kpi-icon">💰</div><div class="kpi-label">ยอดขายรวม</div><div class="kpi-value" style="color:var(--orange)" id="kv-rev">฿—</div><div class="kpi-sub" id="ksub-rev">ทั้งปี</div></div>
+    <div class="kpi kpi-s" style="--kg:rgba(62,168,216,.12)"><div class="kpi-icon">📦</div><div class="kpi-label">ออเดอร์รวม</div><div class="kpi-value" style="color:var(--sky)" id="kv-ord">—</div><div class="kpi-sub" id="ksub-ord">ม.ค.–ธ.ค.</div></div>
+    <div class="kpi kpi-m" style="--kg:rgba(61,191,168,.12)"><div class="kpi-icon">🧾</div><div class="kpi-label">AOV เฉลี่ย</div><div class="kpi-value" style="color:var(--mint)" id="kv-aov">฿—</div><div class="kpi-sub">ต่อออเดอร์</div></div>
+    <div class="kpi kpi-g" style="--kg:rgba(45,160,106,.12)"><div class="kpi-icon">✨</div><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green)" id="kv-profit">฿—</div><div class="kpi-sub" id="kv-margin">margin —%</div></div>
+    <div class="kpi kpi-c"><div class="kpi-icon">🎯</div><div class="kpi-label">เป้า 1.5M</div><div class="kpi-value" style="color:var(--orange)" id="kv-gpct">—%</div><div class="kpi-sub" id="kv-gleft">เหลืออีก —</div></div>
+  </div>
+  <div class="g2l">
+    <div class="card">
+      <div class="card-title">🎯 Progress to 1,500,000 บาท</div>
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="44" fill="none" stroke="var(--cream2)" stroke-width="9"/>
+          <circle cx="55" cy="55" r="44" fill="none" stroke="url(#rg)" stroke-width="9"
+            id="ring-arc" stroke-dasharray="276" stroke-dashoffset="230" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#e8722a"/><stop offset="100%" stop-color="#3ea8d8"/>
+          </linearGradient></defs>
+          <text x="55" y="51" text-anchor="middle" fill="#2d1a08" font-family="Space Mono" font-size="13" font-weight="700" id="ring-txt">—%</text>
+          <text x="55" y="65" text-anchor="middle" fill="rgba(45,26,8,.4)" font-size="7">ของเป้า</text>
+        </svg>
+        <div style="flex:1"><div id="mbars"></div><div style="margin-top:9px;font-size:.73rem;color:var(--muted);line-height:1.9" id="g-advice"></div></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">📊 ยอดขาย vs กำไร</div><div class="chb"><canvas id="ch-monthly"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-title">🏅 Top สินค้าแห่งปี</div><div class="chb"><canvas id="ch-topprod"></canvas></div></div>
+    <div class="card"><div class="card-title">📋 ออเดอร์ล่าสุด</div><div id="recent-ol" class="ol"></div></div>
+  </div>
 </div>
 
 <!-- ORDERS -->
 <div class="section" id="sec-orders">
-<div class="mtog" id="om-tog"></div>
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expOrders('csv')">CSV</button>
-<button class="btn btn-ghost btn-sm" onclick="expOrders('xlsx')">Excel</button>
-<button class="btn btn-ghost btn-sm" onclick="expOrders('pdf')">PDF</button>
-</div>
-<div class="g2l">
-<div>
-<div class="kpi-row" style="grid-template-columns:1fr 1fr;gap:11px">
-<div class="kpi kpi-o"><div class="kpi-label">ยอดรวม</div><div class="kpi-value" style="color:var(--orange);font-size:1.2rem" id="om-rev">—</div></div>
-<div class="kpi kpi-s"><div class="kpi-label">ออเดอร์</div><div class="kpi-value" style="color:var(--sky);font-size:1.2rem" id="om-cnt">—</div></div>
-<div class="kpi kpi-m"><div class="kpi-label">AOV</div><div class="kpi-value" style="color:var(--mint);font-size:1.2rem" id="om-aov">—</div></div>
-<div class="kpi kpi-g"><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green);font-size:1.2rem" id="om-prof">—</div></div>
-</div>
-<div class="card"><div class="card-title">📦 สินค้าเดือนนี้</div><div class="chb ch-sm"><canvas id="ch-mprod"></canvas></div></div>
-</div>
-<div class="card" style="margin-bottom:0">
-<div class="card-title">📋 รายการ</div>
-<div class="srow">
-<input class="sinp" id="os-q" placeholder="🔍 ค้นหาชื่อ / หมายเหตุ..." oninput="renderOL()">
-<select class="ssel" id="os-f" onchange="renderOL()">
-<option value="">ทุกสถานะ</option>
-<option value="done">✓ เสร็จแล้ว</option>
-<option value="pending">⏳ ยังไม่เสร็จ</option>
-<option value="deposit">💳 มัดจำ</option>
-</select>
-</div>
-<div class="ol" id="order-main-list"></div>
-<div style="margin-top:7px;font-size:.67rem;color:var(--muted)" id="ol-ct"></div>
-</div>
-</div>
-<div class="dpanel hidden" id="odp"><div class="card-h" id="odp-title"></div><div id="odp-body"></div></div>
+  <div class="mtog" id="om-tog"></div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expOrders('csv')">CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="expOrders('xlsx')">Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="expOrders('pdf')">PDF</button>
+  </div>
+  <div class="g2l">
+    <div>
+      <div class="kpi-row" style="grid-template-columns:1fr 1fr;gap:11px">
+        <div class="kpi kpi-o"><div class="kpi-label">ยอดรวม</div><div class="kpi-value" style="color:var(--orange);font-size:1.2rem" id="om-rev">—</div></div>
+        <div class="kpi kpi-s"><div class="kpi-label">ออเดอร์</div><div class="kpi-value" style="color:var(--sky);font-size:1.2rem" id="om-cnt">—</div></div>
+        <div class="kpi kpi-m"><div class="kpi-label">AOV</div><div class="kpi-value" style="color:var(--mint);font-size:1.2rem" id="om-aov">—</div></div>
+        <div class="kpi kpi-g"><div class="kpi-label">กำไรสุทธิ</div><div class="kpi-value" style="color:var(--green);font-size:1.2rem" id="om-prof">—</div></div>
+      </div>
+      <div class="card"><div class="card-title">📦 สินค้าเดือนนี้</div><div class="chb ch-sm"><canvas id="ch-mprod"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📋 รายการ</div>
+      <div class="srow">
+        <input class="sinp" id="os-q" placeholder="🔍 ค้นหาชื่อ / หมายเหตุ..." oninput="renderOL()">
+        <select class="ssel" id="os-f" onchange="renderOL()">
+          <option value="">ทุกสถานะ</option>
+          <option value="done">✓ เสร็จแล้ว</option>
+          <option value="pending">⏳ ยังไม่เสร็จ</option>
+          <option value="deposit">💳 มัดจำ</option>
+        </select>
+      </div>
+      <div class="ol" id="order-main-list"></div>
+      <div style="margin-top:7px;font-size:.67rem;color:var(--muted)" id="ol-ct"></div>
+    </div>
+  </div>
+  <div class="dpanel hidden" id="odp"><div class="card-h" id="odp-title"></div><div id="odp-body"></div></div>
 </div>
 
 <!-- SHIPPING -->
 <div class="section" id="sec-shipping">
-<div class="kpi-row">
-<div class="kpi kpi-s"><div class="kpi-icon">📤</div><div class="kpi-label">จ่ายจริงรวม</div><div class="kpi-value" style="color:var(--sky)" id="sh-paid">—</div></div>
-<div class="kpi kpi-o"><div class="kpi-icon">💵</div><div class="kpi-label">เก็บจากลูกค้า</div><div class="kpi-value" style="color:var(--orange)" id="sh-chg">—</div></div>
-<div class="kpi kpi-g"><div class="kpi-icon">📈</div><div class="kpi-label">กำไร/ขาดทุนค่าส่ง</div><div class="kpi-value" style="color:var(--green)" id="sh-prof">—</div></div>
-<div class="kpi kpi-m"><div class="kpi-icon">📅</div><div class="kpi-label">รายการทั้งหมด</div><div class="kpi-value" style="color:var(--mint)" id="sh-days">—</div></div>
-</div>
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expShip('csv')">CSV</button>
-<button class="btn btn-ghost btn-sm" onclick="expShip('xlsx')">Excel</button>
-<button class="btn btn-ghost btn-sm" onclick="expShip('pdf')">PDF</button>
-</div>
-<div class="g2">
-<div class="card"><div class="card-title">📈 ค่าส่งรายวัน</div><div class="chb ch-lg"><canvas id="ch-ship"></canvas></div></div>
-<div class="card" style="margin-bottom:0">
-<div class="card-title">📋 บันทึกค่าส่ง</div>
-<div class="srow">
-<input class="sinp" id="sh-q" placeholder="🔍 ค้นหาวันที่..." oninput="renderSL()">
-<select class="ssel" id="sh-mf" onchange="renderSL()"></select>
-</div>
-<div style="max-height:380px;overflow-y:auto" id="ship-list"></div>
-<div style="margin-top:9px;font-size:.76rem;color:var(--muted)">รวม: <b style="color:var(--sky)" id="sh-ftot">—</b></div>
-</div>
-</div>
+  <div class="kpi-row">
+    <div class="kpi kpi-s"><div class="kpi-icon">📤</div><div class="kpi-label">จ่ายจริงรวม</div><div class="kpi-value" style="color:var(--sky)" id="sh-paid">—</div></div>
+    <div class="kpi kpi-o"><div class="kpi-icon">💵</div><div class="kpi-label">เก็บจากลูกค้า</div><div class="kpi-value" style="color:var(--orange)" id="sh-chg">—</div></div>
+    <div class="kpi kpi-g"><div class="kpi-icon">📈</div><div class="kpi-label">กำไร/ขาดทุนค่าส่ง</div><div class="kpi-value" style="color:var(--green)" id="sh-prof">—</div></div>
+    <div class="kpi kpi-m"><div class="kpi-icon">📅</div><div class="kpi-label">รายการทั้งหมด</div><div class="kpi-value" style="color:var(--mint)" id="sh-days">—</div></div>
+  </div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expShip('csv')">CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="expShip('xlsx')">Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="expShip('pdf')">PDF</button>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-title">📈 ค่าส่งรายวัน</div><div class="chb ch-lg"><canvas id="ch-ship"></canvas></div></div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📋 บันทึกค่าส่ง</div>
+      <div class="srow">
+        <input class="sinp" id="sh-q" placeholder="🔍 ค้นหาวันที่..." oninput="renderSL()">
+        <select class="ssel" id="sh-mf" onchange="renderSL()"></select>
+      </div>
+      <div style="max-height:380px;overflow-y:auto" id="ship-list"></div>
+      <div style="margin-top:9px;font-size:.76rem;color:var(--muted)">รวม: <b style="color:var(--sky)" id="sh-ftot">—</b></div>
+    </div>
+  </div>
 </div>
 
 <!-- PRODUCTS -->
 <div class="section" id="sec-products">
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expProds('csv')">CSV</button>
-<button class="btn btn-ghost btn-sm" onclick="expProds('xlsx')">Excel</button>
-<button class="btn btn-ghost btn-sm" onclick="expProds('pdf')">PDF</button>
-</div>
-<div class="g2">
-<div class="card">
-<div class="card-title">🏆 Ranking สินค้า</div>
-<div class="srow"><input class="sinp" id="pr-q" placeholder="🔍 ค้นหาสินค้า..." oninput="renderPR()"></div>
-<div class="tbl-wrap" id="pr-wrap"></div>
-</div>
-<div class="card"><div class="card-title">💎 Margin & ต้นทุน</div><div id="margin-list"></div></div>
-</div>
-<div class="card"><div class="card-title">📊 เปรียบเทียบยอดขายรายไตรมาส (Q1 - Q4)</div><div class="chb ch-lg"><canvas id="ch-cmp"></canvas></div></div>
-<div class="g2">
-<div class="card"><div class="card-h">🚀 ควร Push</div><div id="push-list"></div></div>
-<div class="card"><div class="card-h">⚠️ ควร Review</div><div id="review-list"></div></div>
-</div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expProds('csv')">CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="expProds('xlsx')">Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="expProds('pdf')">PDF</button>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">🏆 Ranking สินค้า</div>
+      <div class="srow"><input class="sinp" id="pr-q" placeholder="🔍 ค้นหาสินค้า..." oninput="renderPR()"></div>
+      <div class="tbl-wrap" id="pr-wrap"></div>
+    </div>
+    <div class="card"><div class="card-title">💎 Margin & ต้นทุน</div><div id="margin-list"></div></div>
+  </div>
+  <div class="card"><div class="card-title">📊 เปรียบเทียบยอดขายรายไตรมาส (Q1 - Q4)</div><div class="chb ch-lg"><canvas id="ch-cmp"></canvas></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-h">🚀 ควร Push</div><div id="push-list"></div></div>
+    <div class="card"><div class="card-h">⚠️ ควร Review</div><div id="review-list"></div></div>
+  </div>
 </div>
 
 <!-- PURCHASE (สั่งของ/อุปกรณ์) -->
 <div class="section" id="sec-purchase">
-<div class="kpi-row">
-<div class="kpi kpi-r"><div class="kpi-icon">💸</div><div class="kpi-label">ยอดสั่งของรวม (ต้นทุน)</div><div class="kpi-value" style="color:var(--red)" id="pu-tot">—</div></div>
-<div class="kpi kpi-s"><div class="kpi-icon">📋</div><div class="kpi-label">จำนวนรายการ</div><div class="kpi-value" style="color:var(--sky)" id="pu-cnt">—</div></div>
-</div>
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expPurchase('csv')">CSV</button>
-</div>
-<div class="card">
-<div class="card-title">🛒 รายการสั่งซื้อของ (อุปกรณ์ / วัตถุดิบ)</div>
-<div class="srow">
-<input class="sinp" id="pu-q" placeholder="🔍 ค้นหาสินค้า / ประเภท..." oninput="renderPU()">
-<select class="ssel" id="pu-m" onchange="renderPU()"></select>
-</div>
-<div class="tbl-wrap" id="pu-wrap"></div>
-</div>
+  <div class="kpi-row">
+    <div class="kpi kpi-r"><div class="kpi-icon">💸</div><div class="kpi-label">ยอดสั่งของรวม (ต้นทุน)</div><div class="kpi-value" style="color:var(--red)" id="pu-tot">—</div></div>
+    <div class="kpi kpi-s"><div class="kpi-icon">📋</div><div class="kpi-label">จำนวนรายการ</div><div class="kpi-value" style="color:var(--sky)" id="pu-cnt">—</div></div>
+  </div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expPurchase('csv')">CSV</button>
+  </div>
+  <div class="card">
+    <div class="card-title">🛒 รายการสั่งซื้อของ (อุปกรณ์ / วัตถุดิบ)</div>
+    <div class="srow">
+      <input class="sinp" id="pu-q" placeholder="🔍 ค้นหาสินค้า / ประเภท..." oninput="renderPU()">
+      <select class="ssel" id="pu-m" onchange="renderPU()"></select>
+    </div>
+    <div class="tbl-wrap" id="pu-wrap"></div>
+  </div>
 </div>
 
 <!-- CUSTOMERS -->
 <div class="section" id="sec-customers">
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expCusts('csv')">CSV</button>
-<button class="btn btn-ghost btn-sm" onclick="expCusts('xlsx')">Excel</button>
-</div>
-<div class="g2">
-<div class="card">
-<div class="card-title">👑 Top Customers</div>
-<div class="srow"><input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อ..." oninput="renderCusts()"></div>
-<div id="cust-list" style="max-height:500px;overflow-y:auto"></div>
-</div>
-<div>
-<div class="card"><div class="card-title">🔁 ลูกค้าซื้อซ้ำ</div><div id="repeat-list" style="max-height:230px;overflow-y:auto"></div></div>
-<div class="card"><div class="card-title">💡 Insights</div><div id="cust-ins"></div></div>
-</div>
-</div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expCusts('csv')">CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="expCusts('xlsx')">Excel</button>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">👑 Top Customers</div>
+      <div class="srow"><input class="sinp" id="cu-q" placeholder="🔍 ค้นหาชื่อ..." oninput="renderCusts()"></div>
+      <div id="cust-list" style="max-height:500px;overflow-y:auto"></div>
+    </div>
+    <div>
+      <div class="card"><div class="card-title">🔁 ลูกค้าซื้อซ้ำ</div><div id="repeat-list" style="max-height:230px;overflow-y:auto"></div></div>
+      <div class="card"><div class="card-title">💡 Insights</div><div id="cust-ins"></div></div>
+    </div>
+  </div>
 </div>
 
 <!-- CORPORATE -->
 <div class="section" id="sec-corporate">
-<div class="kpi-row">
-<div class="kpi kpi-o"><div class="kpi-label">ยอด B2B รวม</div><div class="kpi-value" style="color:var(--orange)" id="co-tot">—</div></div>
-<div class="kpi kpi-s"><div class="kpi-label">จำนวน B2B</div><div class="kpi-value" style="color:var(--sky)" id="co-cnt">—</div></div>
-<div class="kpi kpi-m"><div class="kpi-label">% ของปี</div><div class="kpi-value" style="color:var(--mint)" id="co-pct">—</div></div>
-</div>
-<div class="expbar"><span class="expbar-title">📤 Export:</span>
-<button class="btn btn-ghost btn-sm" onclick="expCorp('csv')">CSV</button>
-<button class="btn btn-ghost btn-sm" onclick="expCorp('xlsx')">Excel</button>
-<button class="btn btn-ghost btn-sm" onclick="expCorp('pdf')">PDF</button>
-</div>
-<div class="card"><div class="card-title">🏢 Corporate Orders</div><div class="tbl-wrap" id="co-tbl"></div></div>
-<div class="igrid">
-<div class="ibox ib-s"><div class="ib-title" style="color:var(--sky)">💡 B2B Opportunity</div><div style="font-size:.78rem;line-height:1.9;color:var(--text2)" id="co-ins"></div></div>
-<div class="ibox ib-o"><div class="ib-title" style="color:var(--orange)">🎯 Target Industries</div>
-<div style="font-size:.78rem;line-height:2;color:var(--text2)">✦ Event Organizer / Concert<br>✦ K-pop Agency<br>✦ Wedding Planner<br>✦ Corporate Gift Co.<br>✦ Record Label</div></div>
-</div>
+  <div class="kpi-row">
+    <div class="kpi kpi-o"><div class="kpi-label">ยอด B2B รวม</div><div class="kpi-value" style="color:var(--orange)" id="co-tot">—</div></div>
+    <div class="kpi kpi-s"><div class="kpi-label">จำนวน B2B</div><div class="kpi-value" style="color:var(--sky)" id="co-cnt">—</div></div>
+    <div class="kpi kpi-m"><div class="kpi-label">% ของปี</div><div class="kpi-value" style="color:var(--mint)" id="co-pct">—</div></div>
+  </div>
+  <div class="expbar"><span class="expbar-title">📤 Export:</span>
+    <button class="btn btn-ghost btn-sm" onclick="expCorp('csv')">CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="expCorp('xlsx')">Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="expCorp('pdf')">PDF</button>
+  </div>
+  <div class="card"><div class="card-title">🏢 Corporate Orders</div><div class="tbl-wrap" id="co-tbl"></div></div>
+  <div class="igrid">
+    <div class="ibox ib-s"><div class="ib-title" style="color:var(--sky)">💡 B2B Opportunity</div><div style="font-size:.78rem;line-height:1.9;color:var(--text2)" id="co-ins"></div></div>
+    <div class="ibox ib-o"><div class="ib-title" style="color:var(--orange)">🎯 Target Industries</div>
+      <div style="font-size:.78rem;line-height:2;color:var(--text2)">✦ Event Organizer / Concert<br>✦ K-pop Agency<br>✦ Wedding Planner<br>✦ Corporate Gift Co.<br>✦ Record Label</div></div>
+  </div>
 </div>
 
 <!-- SETTINGS -->
 <div class="section" id="sec-settings">
-<div class="g2">
-<div class="card">
-<div class="card-h">🔥 Firebase Cloud Sync</div>
-<p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">เชื่อมต่อ Firestore — ออเดอร์และไฟล์ CSV จะถูก sync ข้ามทุกเครื่องอัตโนมัติ</p>
-<div class="ffull"><label>API Key</label><input class="inp" id="fb-ak" placeholder="AIzaSy..."></div>
-<div class="ffull"><label>Auth Domain</label><input class="inp" id="fb-ad" placeholder="app.firebaseapp.com"></div>
-<div class="ffull"><label>Project ID</label><input class="inp" id="fb-pid" placeholder="your-project-id"></div>
-<div style="display:flex;gap:8px;margin-top:4px">
-<button class="btn btn-orange" onclick="saveFBCfg()">💾 บันทึก & เชื่อมต่อ</button>
-<button class="btn btn-danger btn-sm" onclick="disconnFB()">ยกเลิก</button>
-</div>
-<div id="fb-cfg-st" style="margin-top:10px;font-size:.73rem;color:var(--muted)"></div>
-<div style="margin-top:14px;padding:12px;background:var(--sky3);border-radius:10px;font-size:.73rem;color:var(--sky);line-height:1.85;border:1.5px solid rgba(62,168,216,.2)">
-<b>วิธีสร้าง Firebase ฟรี:</b><br>
-1. <a href="https://console.firebase.google.com" target="_blank" style="color:var(--orange)">console.firebase.google.com</a><br>
-2. Add project → Firestore Database → Start in test mode<br>
-3. Project Settings → Your apps → Web → Copy config<br>
-4. วาง apiKey, authDomain, projectId ด้านบน
-</div>
-</div>
-<div class="card">
-<div class="card-h">📂 Import / Export ทั้งหมด</div>
-<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
-<button class="btn btn-ghost" onclick="expAll('json')">💾 Export ทั้งหมด → JSON (backup)</button>
-<button class="btn btn-ghost" onclick="expAll('xlsx')">📊 Export ทุก sheet → Excel</button>
-<button class="btn btn-ghost" onclick="expAll('csv')">📦 Export → CSV (ทีละไฟล์)</button>
-<button class="btn btn-ghost" onclick="expAll('pdf')">🖨 Summary → PDF</button>
-</div>
-<div class="card-title">📤 Import / Restore JSON</div>
-<div class="upzone" onclick="document.getElementById('imp-json').click()"
-ondragover="event.preventDefault();this.classList.add('drag')"
-ondragleave="this.classList.remove('drag')"
-ondrop="dropJSON(event)">
-<input type="file" id="imp-json" accept=".json" onchange="importJSON(this)">
-<div style="font-size:1.8rem">📁</div>
-<div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-top:5px">คลิกหรือลากไฟล์ JSON</div>
-<div style="font-size:.68rem;color:var(--muted);margin-top:3px">Restore จาก backup</div>
-</div>
-<div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
-<button class="btn btn-danger btn-sm" onclick="clearNO()">🗑 ลบออเดอร์ใหม่ทั้งหมด</button>
-<button class="btn btn-danger btn-sm" onclick="clearNS()">🗑 ลบค่าส่งใหม่ทั้งหมด</button>
-</div>
-</div>
-</div>
-<div class="card">
-<div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูลปี <span id="lbl-up-year" style="color:var(--orange)">2026</span></div>
-<p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">อัปโหลด CSV ตามรูปแบบเดิม — ระบบจะบันทึกเข้าปีที่เลือกไว้ด้านบน</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px" id="upload-grid"></div>
-</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-h">🔥 Firebase Cloud Sync</div>
+      <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">เชื่อมต่อ Firestore — ออเดอร์และไฟล์ CSV จะถูก sync ข้ามทุกเครื่องอัตโนมัติ</p>
+      <div class="ffull"><label>API Key</label><input class="inp" id="fb-ak" placeholder="AIzaSy..."></div>
+      <div class="ffull"><label>Auth Domain</label><input class="inp" id="fb-ad" placeholder="app.firebaseapp.com"></div>
+      <div class="ffull"><label>Project ID</label><input class="inp" id="fb-pid" placeholder="your-project-id"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-orange" onclick="saveFBCfg()">💾 บันทึก & เชื่อมต่อ</button>
+        <button class="btn btn-danger btn-sm" onclick="disconnFB()">ยกเลิก</button>
+      </div>
+      <div id="fb-cfg-st" style="margin-top:10px;font-size:.73rem;color:var(--muted)"></div>
+      
+      <hr style="border:0;border-top:1.5px solid var(--cream3);margin:20px 0">
+      
+      <div class="card-h">📊 เชื่อมต่อ Google Sheets</div>
+      <p style="font-size:.78rem;color:var(--text2);line-height:1.8;margin-bottom:14px">นำ Web App URL จาก Google Apps Script มาใส่ เพื่อให้ระบบยิงข้อมูลไปที่ชีทแบบอัตโนมัติ</p>
+      <div class="ffull"><label>Google Sheets Web App URL</label><input class="inp" id="sheet-url" placeholder="https://script.google.com/macros/s/AKfycby.../exec"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-sky" onclick="saveSheetUrl()">💾 บันทึก URL</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">📂 Import / Export ทั้งหมด</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+        <button class="btn btn-ghost" onclick="expAll('json')">💾 Export ทั้งหมด → JSON (backup)</button>
+        <button class="btn btn-ghost" onclick="expAll('xlsx')">📊 Export ทุก sheet → Excel</button>
+        <button class="btn btn-ghost" onclick="expAll('csv')">📦 Export → CSV (ทีละไฟล์)</button>
+        <button class="btn btn-ghost" onclick="expAll('pdf')">🖨 Summary → PDF</button>
+      </div>
+      <div class="card-title">📤 Import / Restore JSON</div>
+      <div class="upzone" onclick="document.getElementById('imp-json').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="dropJSON(event)">
+        <input type="file" id="imp-json" accept=".json" onchange="importJSON(this)">
+        <div style="font-size:1.8rem">📁</div>
+        <div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-top:5px">คลิกหรือลากไฟล์ JSON</div>
+        <div style="font-size:.68rem;color:var(--muted);margin-top:3px">Restore จาก backup</div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn btn-danger btn-sm" onclick="clearNO()">🗑 ลบออเดอร์ใหม่ทั้งหมด</button>
+        <button class="btn btn-danger btn-sm" onclick="clearNS()">🗑 ลบค่าส่งใหม่ทั้งหมด</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h">📂 อัปโหลด CSV เพื่ออัปเดตข้อมูลปี <span id="lbl-up-year" style="color:var(--orange)">2026</span></div>
+    <p style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.8">อัปโหลด CSV ตามรูปแบบเดิม — ระบบจะบันทึกเข้าปีที่เลือกไว้ด้านบน</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px" id="upload-grid"></div>
+  </div>
 </div>
 
 </div><!-- /.wrap -->
 
 <!-- MODALS -->
 <div class="overlay hidden" id="m-order">
-<div class="modal">
-<div class="modal-title">＋ เพิ่มออเดอร์ใหม่</div>
-<button class="mclose" onclick="closeM('m-order')">✕</button>
-<div class="frow"><div><label>ชื่อลูกค้า *</label><input class="inp" id="fn" placeholder="เช่น Mint"></div><div><label>วันที่</label><input class="inp" id="fd" type="date"></div></div>
-<div class="frow"><div><label>การชำระเงิน</label><select class="inp" id="fp"><option>โอนครบ</option><option>มัดจำ</option><option>รอโอน</option></select></div><div><label>ค่าส่ง (บาท)</label><input class="inp" id="fs" type="number" value="50" min="0" oninput="calcTot()"></div></div>
-<div class="ffull"><label>สินค้า</label><div class="ppick" id="ppick"></div></div>
-<div class="frow" style="margin-top:9px"><div><label>หมายเหตุ</label><input class="inp" id="fnote" placeholder="เช่น เร่งด่วน / ของขวัญ"></div><div><label>ยอดรวม</label><input class="inp" id="ftot" readonly></div></div>
-<div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
-<button class="btn btn-ghost" onclick="closeM('m-order')">ยกเลิก</button>
-<button class="btn btn-orange" onclick="saveOrder()">💾 บันทึก</button>
-</div>
-</div>
+  <div class="modal">
+    <div class="modal-title">＋ เพิ่มออเดอร์ใหม่</div>
+    <button class="mclose" onclick="closeM('m-order')">✕</button>
+    <div class="frow"><div><label>ชื่อลูกค้า *</label><input class="inp" id="fn" placeholder="เช่น Mint"></div><div><label>วันที่</label><input class="inp" id="fd" type="date"></div></div>
+    <div class="frow"><div><label>การชำระเงิน</label><select class="inp" id="fp"><option>โอนครบ</option><option>มัดจำ</option><option>รอโอน</option></select></div><div><label>ค่าส่ง (บาท)</label><input class="inp" id="fs" type="number" value="50" min="0" oninput="calcTot()"></div></div>
+    <div class="ffull"><label>สินค้า</label><div class="ppick" id="ppick"></div></div>
+    <div class="frow" style="margin-top:9px"><div><label>หมายเหตุ</label><input class="inp" id="fnote" placeholder="เช่น เร่งด่วน / ของขวัญ"></div><div><label>ยอดรวม</label><input class="inp" id="ftot" readonly></div></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeM('m-order')">ยกเลิก</button>
+      <button class="btn btn-orange" onclick="saveOrder()">💾 บันทึก</button>
+    </div>
+  </div>
 </div>
 
 <div class="overlay hidden" id="m-ship">
-<div class="modal" style="max-width:380px">
-<div class="modal-title">🚚 บันทึกค่าส่ง</div>
-<button class="mclose" onclick="closeM('m-ship')">✕</button>
-<div class="ffull"><label>วันที่ส่ง *</label><input class="inp" id="fsd" type="date"></div>
-<div class="ffull"><label>ค่าส่งที่จ่ายจริง (บาท) *</label><input class="inp" id="fsc" type="number" min="0" placeholder="225"></div>
-<div class="ffull"><label>หมายเหตุ</label><input class="inp" id="fsn" placeholder="เช่น แกร็บ 4 ชิ้น"></div>
-<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-<button class="btn btn-ghost" onclick="closeM('m-ship')">ยกเลิก</button>
-<button class="btn btn-sky" onclick="saveShip()">💾 บันทึก</button>
+  <div class="modal" style="max-width:380px">
+    <div class="modal-title">🚚 บันทึกค่าส่ง</div>
+    <button class="mclose" onclick="closeM('m-ship')">✕</button>
+    <div class="ffull"><label>วันที่ส่ง *</label><input class="inp" id="fsd" type="date"></div>
+    <div class="ffull"><label>ค่าส่งที่จ่ายจริง (บาท) *</label><input class="inp" id="fsc" type="number" min="0" placeholder="225"></div>
+    <div class="ffull"><label>หมายเหตุ</label><input class="inp" id="fsn" placeholder="เช่น แกร็บ 4 ชิ้น"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeM('m-ship')">ยกเลิก</button>
+      <button class="btn btn-sky" onclick="saveShip()">💾 บันทึก</button>
+    </div>
+  </div>
 </div>
+
+<!-- NEW: CORPORATE MODAL -->
+<div class="overlay hidden" id="m-corp">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">🏢 เพิ่มออเดอร์ Corporate (B2B)</div>
+    <button class="mclose" onclick="closeM('m-corp')">✕</button>
+    <div class="frow">
+      <div><label>วันที่ *</label><input class="inp" id="co-date" type="date"></div>
+      <div><label>ชื่อลูกค้า *</label><input class="inp" id="co-client" placeholder="เช่น k.louk"></div>
+    </div>
+    <div class="ffull"><label>องค์กร / สังกัด</label><input class="inp" id="co-org" placeholder="เช่น Love is"></div>
+    <div class="frow">
+      <div><label>สินค้า</label><input class="inp" id="co-prod" placeholder="เช่น CD BOX"></div>
+      <div><label>จำนวนชิ้น</label><input class="inp" id="co-qty" type="number" min="1" value="1"></div>
+    </div>
+    <div class="frow">
+      <div><label>ยอดรวม (บาท) *</label><input class="inp" id="co-amt" type="number" min="0" value="0"></div>
+      <div><label>การจัดส่ง</label><input class="inp" id="co-del" placeholder="เช่น ส่ง GRAB"></div>
+    </div>
+    <div class="ffull"><label>หมายเหตุ</label><input class="inp" id="co-note" placeholder="เช่น มัดจำ, งานด่วน"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeM('m-corp')">ยกเลิก</button>
+      <button class="btn btn-mint" onclick="saveCorp()">💾 บันทึก</button>
+    </div>
+  </div>
 </div>
+
+<!-- NEW: PURCHASE MODAL -->
+<div class="overlay hidden" id="m-purchase">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">🛒 เพิ่มรายการสั่งของ (อุปกรณ์/ต้นทุน)</div>
+    <button class="mclose" onclick="closeM('m-purchase')">✕</button>
+    <div class="frow">
+      <div><label>เดือน (เลข 1-12) *</label><input class="inp" id="pu-mm" type="number" min="1" max="12" value="1"></div>
+      <div><label>เดือนที่ซื้อ (ชื่อเดือน)</label><input class="inp" id="pu-mn" placeholder="เช่น มกราคม"></div>
+    </div>
+    <div class="ffull"><label>ชื่อรายการ / สินค้า *</label><input class="inp" id="pu-name" placeholder="เช่น กล่องพัสดุ 0"></div>
+    <div class="ffull">
+      <label>ประเภท</label>
+      <select class="inp" id="pu-type">
+        <option value="ของที่ใช้ทำขาย">ของที่ใช้ทำขาย</option>
+        <option value="อุปกรณ์แพ็ค">อุปกรณ์แพ็ค</option>
+        <option value="อุปกรณ์ทำของ">อุปกรณ์ทำของ</option>
+        <option value="ค่าซ่อม/บำรุงรักษา">ค่าซ่อม/บำรุงรักษา</option>
+        <option value="จิปาถะอื่นๆ">จิปาถะอื่นๆ</option>
+      </select>
+    </div>
+    <div class="frow">
+      <div><label>จำนวนชิ้น *</label><input class="inp" id="pu-qty" type="number" min="1" value="1" oninput="calcPu()"></div>
+      <div><label>ยอดจ่ายรวม (บาท) *</label><input class="inp" id="pu-totp" type="number" min="0" value="0" oninput="calcPu()"></div>
+    </div>
+    <div class="ffull"><label>ตกชิ้นละ (บาท)</label><input class="inp" id="pu-unit" readonly></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeM('m-purchase')">ยกเลิก</button>
+      <button class="btn btn-red" onclick="savePurchase()">💾 บันทึก</button>
+    </div>
+  </div>
 </div>
 
 <div class="overlay hidden" id="m-upload">
-<div class="modal" style="max-width:440px">
-<div class="modal-title">📂 นำเข้า CSV</div>
-<button class="mclose" onclick="closeM('m-upload')">✕</button>
-<div class="ffull"><label>ประเภทข้อมูล</label>
-<select class="inp" id="up-type"></select>
-</div>
-<div class="upzone" onclick="document.getElementById('up-f').click()"
-ondragover="event.preventDefault();this.classList.add('drag')"
-ondragleave="this.classList.remove('drag')"
-ondrop="dropCSV(event)">
-<input type="file" id="up-f" accept=".csv" onchange="doUpload(this)">
-<div style="font-size:1.8rem">📄</div>
-<div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-top:5px">คลิกหรือลากไฟล์ .csv</div>
-<div id="up-st" style="font-size:.68rem;color:var(--muted);margin-top:3px">รอไฟล์...</div>
-</div>
-</div>
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">📂 นำเข้า CSV</div>
+    <button class="mclose" onclick="closeM('m-upload')">✕</button>
+    <div class="ffull"><label>ประเภทข้อมูล</label>
+      <select class="inp" id="up-type"></select>
+    </div>
+    <div class="upzone" onclick="document.getElementById('up-f').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="dropCSV(event)">
+      <input type="file" id="up-f" accept=".csv" onchange="doUpload(this)">
+      <div style="font-size:1.8rem">📄</div>
+      <div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-top:5px">คลิกหรือลากไฟล์ .csv</div>
+      <div id="up-st" style="font-size:.68rem;color:var(--muted);margin-top:3px">รอไฟล์...</div>
+    </div>
+  </div>
 </div>
 
 <div class="overlay hidden" id="m-fb">
-<div class="modal" style="max-width:460px">
-<div class="modal-title">🔥 Firebase Setup</div>
-<button class="mclose" onclick="closeM('m-fb')">✕</button>
-<div class="ffull"><label>API Key</label><input class="inp" id="mfb-ak"></div>
-<div class="ffull"><label>Auth Domain</label><input class="inp" id="mfb-ad"></div>
-<div class="ffull"><label>Project ID</label><input class="inp" id="mfb-pid"></div>
-<div style="display:flex;gap:8px;margin-top:11px;justify-content:flex-end">
-<button class="btn btn-ghost" onclick="closeM('m-fb')">ยกเลิก</button>
-<button class="btn btn-orange" onclick="fbFromModal()">🔥 เชื่อมต่อ</button>
-</div>
-</div>
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title">🔥 Firebase Setup</div>
+    <button class="mclose" onclick="closeM('m-fb')">✕</button>
+    <div class="ffull"><label>API Key</label><input class="inp" id="mfb-ak"></div>
+    <div class="ffull"><label>Auth Domain</label><input class="inp" id="mfb-ad"></div>
+    <div class="ffull"><label>Project ID</label><input class="inp" id="mfb-pid"></div>
+    <div style="display:flex;gap:8px;margin-top:11px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeM('m-fb')">ยกเลิก</button>
+      <button class="btn btn-orange" onclick="fbFromModal()">🔥 เชื่อมต่อ</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast-el"></div>
@@ -571,46 +637,46 @@ const M_KEYS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV
 const M_LABELS = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 
 const SEED = {
-price_list: {
-"ม้วนฟิล์ม": 89, "ไวนิล NFC": 134, "ฟิล์มสไลด์": 28, "ฟิล์มสไลด์ NFC": 48,
-"POCKET TAPE": 189, "NFC แผ่นหมุนๆ": 140, "NFC แผ่นหมุนๆ SET": 289,
-"CD BOX": 90, "กล่องใส่ CD": 0, "CARD NFC": 39, "PVC TAG": 25,
-"เข็มกลัด NFC": 35, "SPIN BOX": 549, "SNOWGLOBE": 299, "Film Book": 199,
-"POCKET VINYL": 149
-},
-"2026": {
-JAN: [
-{id:"JAN_1", date:"1/1/2026", name:"Tanawin", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2, "SNOWGLOBE":1}, shipping_charged:0, revenue:1015, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:"ลูกค้ารีบ"},
-{id:"JAN_2", date:"3/1/2026", name:"Prim", products:{"CD BOX":1}, shipping_charged:50, revenue:179, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-],
-FEB: [
-{id:"FEB_1", date:"2/2/2026", name:"Chua", products:{"ฟิล์มสไลด์ NFC":12}, shipping_charged:50, revenue:686, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-],
-MAR: [
-{id:"MAR_1", date:"1/3/2026", name:"จิระ", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2}, shipping_charged:50, revenue:626, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
-],
-shipping: [
-{date:"3/1/2026", cost:225, note:""},{date:"4/1/2026", cost:175, note:""}
-],
-corp: [
-{date:"10/2/2026", client:"TARN", org:"บริษัทจำกัด", product:"VINYL HEART", qty:"51", amount:8000, note:"แถม 1", delivery:"ส่ง GRAB"}
-],
-purchases: [], // Added array for purchases
-summary: {
-JAN: {revenue: 82094, shipping_actual: 4977, orders: 96, cogs: 23627.81, net_profit: 54997.19, shipping_charged: 6485},
-FEB: {revenue: 189164, shipping_actual: 6996, orders: 128, cogs: 66058.45, net_profit: 118608.55, shipping_charged: 9495},
-MAR: {revenue: 59100, shipping_actual: 1554, orders: 68, cogs: 15264.5, net_profit: 43697.5, shipping_charged: 2970}
-}
-}
+  price_list: {
+    "ม้วนฟิล์ม": 89, "ไวนิล NFC": 134, "ฟิล์มสไลด์": 28, "ฟิล์มสไลด์ NFC": 48,
+    "POCKET TAPE": 189, "NFC แผ่นหมุนๆ": 140, "NFC แผ่นหมุนๆ SET": 289,
+    "CD BOX": 90, "กล่องใส่ CD": 0, "CARD NFC": 39, "PVC TAG": 25,
+    "เข็มกลัด NFC": 35, "SPIN BOX": 549, "SNOWGLOBE": 299, "Film Book": 199,
+    "POCKET VINYL": 149
+  },
+  "2026": {
+    JAN: [
+      {id:"JAN_1", date:"1/1/2026", name:"Tanawin", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2, "SNOWGLOBE":1}, shipping_charged:0, revenue:1015, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:"ลูกค้ารีบ"},
+      {id:"JAN_2", date:"3/1/2026", name:"Prim", products:{"CD BOX":1}, shipping_charged:50, revenue:179, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    FEB: [
+      {id:"FEB_1", date:"2/2/2026", name:"Chua", products:{"ฟิล์มสไลด์ NFC":12}, shipping_charged:50, revenue:686, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    MAR: [
+      {id:"MAR_1", date:"1/3/2026", name:"จิระ", products:{"NFC แผ่นหมุนๆ":2, "CD BOX":2}, shipping_charged:50, revenue:626, payment:"โอนครบ", detail:"จัดส่งแล้ว", packed:true, done:true, note:""}
+    ],
+    shipping: [
+      {date:"3/1/2026", cost:225, note:""},{date:"4/1/2026", cost:175, note:""}
+    ],
+    corp: [
+      {date:"10/2/2026", client:"TARN", org:"บริษัทจำกัด", product:"VINYL HEART", qty:"51", amount:8000, note:"แถม 1", delivery:"ส่ง GRAB"}
+    ],
+    purchases: [],
+    summary: {
+      JAN: {revenue: 82094, shipping_actual: 4977, orders: 96, cogs: 23627.81, net_profit: 54997.19, shipping_charged: 6485},
+      FEB: {revenue: 189164, shipping_actual: 6996, orders: 128, cogs: 66058.45, net_profit: 118608.55, shipping_charged: 9495},
+      MAR: {revenue: 59100, shipping_actual: 1554, orders: 68, cogs: 15264.5, net_profit: 43697.5, shipping_charged: 2970}
+    }
+  }
 };
 
 const PRICE = SEED.price_list;
 const PRODS = Object.keys(PRICE);
 const PROFIT_DATA = [
-{n:"ม้วนฟิล์ม",m:"585-917%",c:8,p:89,t:"high"},{n:"ไวนิล NFC",m:"354-422%",c:27,p:134,t:"high"},{n:"ฟิล์มสไลด์",m:"295-519%",c:5,p:28,t:"high"},
-{n:"CD BOX",m:"207-400%",c:24,p:90,t:"high"},{n:"เข็มกลัด NFC",m:"233-250%",c:10,p:35,t:"high"},{n:"ฟิล์มสไลด์ NFC",m:"180-265%",c:14,p:48,t:"med"},
-{n:"NFC แผ่นหมุนๆ",m:"109-156%",c:57,p:140,t:"med"},{n:"POCKET VINYL",m:"~150%",c:60,p:149,t:"med"},{n:"POCKET TAPE",m:"114-125%",c:84,p:189,t:"low"},
-{n:"SPIN BOX",m:"114%",c:257,p:549,t:"low"},
+  {n:"ม้วนฟิล์ม",m:"585-917%",c:8,p:89,t:"high"},{n:"ไวนิล NFC",m:"354-422%",c:27,p:134,t:"high"},{n:"ฟิล์มสไลด์",m:"295-519%",c:5,p:28,t:"high"},
+  {n:"CD BOX",m:"207-400%",c:24,p:90,t:"high"},{n:"เข็มกลัด NFC",m:"233-250%",c:10,p:35,t:"high"},{n:"ฟิล์มสไลด์ NFC",m:"180-265%",c:14,p:48,t:"med"},
+  {n:"NFC แผ่นหมุนๆ",m:"109-156%",c:57,p:140,t:"med"},{n:"POCKET VINYL",m:"~150%",c:60,p:149,t:"med"},{n:"POCKET TAPE",m:"114-125%",c:84,p:189,t:"low"},
+  {n:"SPIN BOX",m:"114%",c:257,p:549,t:"low"},
 ];
 const ALLP=["ม้วนฟิล์ม","ไวนิล NFC","ฟิล์มสไลด์","ฟิล์มสไลด์ NFC","POCKET TAPE","NFC แผ่นหมุนๆ","NFC แผ่นหมุนๆหัวใจ","NFC แผ่นหมุนๆ SET","CD BOX","กล่องใส่ CD","โปสการ์ดฟิล์ม","CARD NFC","PVC TAG","เข็มกลัด","KEY TAGS","การ์ดขูด","ฟิล์ม 3 ช่อง","FLOPPY DISK","POCKET VINYL","SPIN BOX","SPIN FRAME","TAPE จริงๆ","SNOWGLOBE","Film Book","โคมไฟฟิล์มสไลด์","ฟิล์มเปล่า 10 บาท","รูปฟิล์มเปล่า"];
 
@@ -618,503 +684,579 @@ const ALLP=["ม้วนฟิล์ม","ไวนิล NFC","ฟิล์ม
 let curYear = "2026";
 let DB = { "2024": {}, "2025": {}, "2026": {} };
 ["2024", "2025", "2026"].forEach(y => {
-DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
-M_KEYS.forEach(m => DB[y][m] = []);
-// Load SEED for 2026
-if (y === "2026") {
-M_KEYS.forEach(m => DB[y][m] = SEED["2026"][m] || []);
-DB[y].shipping = [...SEED["2026"].shipping];
-DB[y].corp = [...SEED["2026"].corp];
-DB[y].purchases = [...(SEED["2026"].purchases || [])];
-DB[y].summary = { ...SEED["2026"].summary };
-}
+  DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
+  M_KEYS.forEach(m => DB[y][m] = []);
+  // Load SEED for 2026
+  if (y === "2026") {
+    M_KEYS.forEach(m => DB[y][m] = SEED["2026"][m] || []);
+    DB[y].shipping = [...SEED["2026"].shipping];
+    DB[y].corp = [...SEED["2026"].corp];
+    DB[y].purchases = [...(SEED["2026"].purchases || [])];
+    DB[y].summary = { ...SEED["2026"].summary };
+  }
 });
 
 let NO=[], NS=[], FB_DB=null, curOM="JAN";
 let ch_mo, ch_tp, ch_mp, ch_sh, ch_cmp;
 
 // HELPERS
+function parseNum(val) {
+  if(!val) return 0;
+  const n = parseFloat(val.toString().replace(/,/g,""));
+  return isNaN(n) ? 0 : n;
+}
+
 function getOrderYear(d) {
-if(!d) return curYear;
-if(d.includes("/")) return d.split("/")[2];
-if(d.includes("-")) return d.split("-")[0];
-return curYear;
+  if(!d) return curYear;
+  if(d.includes("/")) return d.split("/")[2];
+  if(d.includes("-")) return d.split("-")[0];
+  return curYear;
 }
 function getO(m){
-const yNO = NO.filter(o => getOrderYear(o.date) == curYear);
-if(m === "NEW") return yNO;
-return [...(DB[curYear][m] || []), ...yNO.filter(o => o.month === m)];
+  const yNO = NO.filter(o => getOrderYear(o.date) == curYear);
+  if(m === "NEW") return yNO;
+  return [...(DB[curYear][m] || []), ...yNO.filter(o => o.month === m)];
 }
 function allShip(){
-const yNS = NS.filter(e => getOrderYear(e.date) == curYear);
-return [...(DB[curYear].shipping || []), ...yNS];
+  const yNS = NS.filter(e => getOrderYear(e.date) == curYear);
+  return [...(DB[curYear].shipping || []), ...yNS];
 }
 function getMonthSummary(m) {
-if (DB[curYear].summary && DB[curYear].summary[m]) {
-const newOrds = NO.filter(o => o.isNew && o.month === m && getOrderYear(o.date) == curYear);
-const newRev = newOrds.reduce((s,o)=>s+(o.revenue||0), 0);
-const newProf = newOrds.reduce((s,o)=>s+((o.revenue||0)*0.65), 0);
-return {
-revenue: DB[curYear].summary[m].revenue + newRev,
-orders: DB[curYear].summary[m].orders + newOrds.length,
-net_profit: DB[curYear].summary[m].net_profit + newProf,
-shipping_charged: DB[curYear].summary[m].shipping_charged + newOrds.reduce((s,o)=>s+(o.shipping_charged||0), 0)
-};
-}
-const ords = getO(m);
-const rev = ords.reduce((s,o)=>s+(o.revenue||0), 0);
-const prof = ords.reduce((s,o)=>s+((o.revenue||0)*0.65), 0);
-const sh_chg = ords.reduce((s,o)=>s+(o.shipping_charged||0), 0);
-return { revenue: rev, orders: ords.length, net_profit: prof, shipping_charged: sh_chg };
+  if (DB[curYear].summary && DB[curYear].summary[m]) {
+    const newOrds = NO.filter(o => o.isNew && o.month === m && getOrderYear(o.date) == curYear);
+    const newRev = newOrds.reduce((s,o)=>s+(o.revenue||0), 0);
+    const newProf = newOrds.reduce((s,o)=>s+((o.revenue||0)*0.65), 0);
+    return {
+      revenue: DB[curYear].summary[m].revenue + newRev,
+      orders: DB[curYear].summary[m].orders + newOrds.length,
+      net_profit: DB[curYear].summary[m].net_profit + newProf,
+      shipping_charged: DB[curYear].summary[m].shipping_charged + newOrds.reduce((s,o)=>s+(o.shipping_charged||0), 0)
+    };
+  }
+  const ords = getO(m);
+  const rev = ords.reduce((s,o)=>s+(o.revenue||0), 0);
+  const prof = ords.reduce((s,o)=>s+((o.revenue||0)*0.65), 0); 
+  const sh_chg = ords.reduce((s,o)=>s+(o.shipping_charged||0), 0);
+  return { revenue: rev, orders: ords.length, net_profit: prof, shipping_charged: sh_chg };
 }
 function getYearSummary() {
-let r=0, o=0, pr=0, sc=0;
-M_KEYS.forEach(m => {
-const s = getMonthSummary(m);
-r += s.revenue; o += s.orders; pr += s.net_profit; sc += s.shipping_charged;
-});
-return { r, o, pr, sc };
+  let r=0, o=0, pr=0, sc=0;
+  M_KEYS.forEach(m => {
+    const s = getMonthSummary(m);
+    r += s.revenue; o += s.orders; pr += s.net_profit; sc += s.shipping_charged;
+  });
+  return { r, o, pr, sc };
 }
 function sP(m,p){return getO(m).reduce((s,o)=>s+(o.products?.[p]||0),0);}
 function sPQ(q, p){
-const months = q===1 ? ["JAN","FEB","MAR"] : q===2 ? ["APR","MAY","JUN"] : q===3 ? ["JUL","AUG","SEP"] : ["OCT","NOV","DEC"];
-return months.reduce((sum, m) => sum + sP(m, p), 0);
+  const months = q===1 ? ["JAN","FEB","MAR"] : q===2 ? ["APR","MAY","JUN"] : q===3 ? ["JUL","AUG","SEP"] : ["OCT","NOV","DEC"];
+  return months.reduce((sum, m) => sum + sP(m, p), 0);
 }
 function q1P(){
-const t={};
-M_KEYS.forEach(m=>getO(m).forEach(o=>Object.entries(o.products||{}).forEach(([k,v])=>{t[k]=(t[k]||0)+v})));
-return t;
+  const t={};
+  M_KEYS.forEach(m=>getO(m).forEach(o=>Object.entries(o.products||{}).forEach(([k,v])=>{t[k]=(t[k]||0)+v})));
+  return t;
 }
 
 // UTILS
 function persist(){try{localStorage.setItem("tg_no",JSON.stringify(NO));localStorage.setItem("tg_ns",JSON.stringify(NS));localStorage.setItem("tg_db",JSON.stringify(DB));}catch(e){}}
 function loadP(){
-try{
-NO=JSON.parse(localStorage.getItem("tg_no")||"[]");
-NS=JSON.parse(localStorage.getItem("tg_ns")||"[]");
-const lDB=JSON.parse(localStorage.getItem("tg_db"));
-if(lDB) {
-DB = lDB;
-// Compatibility check for new keys
-["2024", "2025", "2026"].forEach(y => {
-if(!DB[y]) DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
-if(!DB[y].purchases) DB[y].purchases = [];
-});
-}
-}catch(e){}
+  try{
+    NO=JSON.parse(localStorage.getItem("tg_no")||"[]");
+    NS=JSON.parse(localStorage.getItem("tg_ns")||"[]");
+    const lDB=JSON.parse(localStorage.getItem("tg_db"));
+    if(lDB) { 
+      DB = lDB; 
+      ["2024", "2025", "2026"].forEach(y => {
+        if(!DB[y]) DB[y] = { shipping: [], corp: [], purchases: [], summary: {} };
+        if(!DB[y].purchases) DB[y].purchases = [];
+      });
+    }
+    // Load Sheet URL
+    const url = localStorage.getItem("tg_sheet_url");
+    if(url) {
+      const input = document.getElementById("sheet-url");
+      if(input) input.value = url;
+    }
+  }catch(e){}
 }
 const fmt=n=>"฿"+Math.round(n||0).toLocaleString();
 const fN=n=>Math.round(n||0).toLocaleString();
 function toast(m,t="ok",d=2600){const el=document.getElementById("toast-el");el.textContent=m;el.className="toast show"+(t==="warn"?" warn":t==="err"?" err":"");setTimeout(()=>el.classList.remove("show"),d);}
-function openM(id){document.getElementById(id).classList.remove("hidden");if(id==="m-order")buildPick();if(id==="m-ship")document.getElementById("fsd").value=td();}
+
+function openM(id){
+  document.getElementById(id).classList.remove("hidden");
+  if(id==="m-order") buildPick();
+  if(id==="m-ship") document.getElementById("fsd").value=td();
+  if(id==="m-corp") document.getElementById("co-date").value=td();
+}
+
 function closeM(id){document.getElementById(id).classList.add("hidden");}
+function closeOD() { document.getElementById('odp').classList.add('hidden'); }
 function td(){return new Date().toISOString().split("T")[0];}
 function pDate(d){if(!d)return 0;const p=d.split("/");return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0;}
 
 const CC={plugins:{legend:{labels:{color:"rgba(45,26,8,.55)",font:{size:11}}}},scales:{x:{ticks:{color:"rgba(45,26,8,.45)",font:{size:10}},grid:{color:"rgba(45,26,8,.05)"}},y:{ticks:{color:"rgba(45,26,8,.45)",font:{size:10}},grid:{color:"rgba(45,26,8,.05)"}}},responsive:true,maintainAspectRatio:false};
 const CL=["#e8722a","#3ea8d8","#3dbfa8","#2da06a","#f59c4a","#7bc4e8","#7dd4c4","#68c89a","#c8820a","#e0907a"];
 
-// INITIALIZE UI
-function initUI() {
-// Month Toggles
-const mHtml = M_KEYS.map((m,i) => `<button class="mbtn ${curOM===m?'active':''}" onclick="setOM('${m}',this)">${M_LABELS[i]}</button>`).join("");
-document.getElementById("om-tog").innerHTML = mHtml + `<button class="mbtn ${curOM==='NEW'?'active':''}" onclick="setOM('NEW',this)">✨ ใหม่</button>`;
-
-// Upload Grid
-const upGrid = document.getElementById("upload-grid");
-if(upGrid) {
-let uHtml = M_KEYS.map((m,i) => `<div><div class="card-title">${M_LABELS[i]}</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-${m}').click()"><input type="file" id="csv-${m}" accept=".csv" onchange="upCSV('${m}',this)"><div style="font-size:1.3rem">📄</div><div style="font-size:.72rem;color:var(--orange);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-${m.toLowerCase()}">ยังไม่ได้อัปโหลด</div></div></div>`).join("");
-uHtml += `<div><div class="card-title">ค่าส่ง</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-ship').click()"><input type="file" id="csv-ship" accept=".csv" onchange="upCSV('SHIP',this)"><div style="font-size:1.3rem">🚚</div><div style="font-size:.72rem;color:var(--sky);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-ship">ยังไม่ได้อัปโหลด</div></div></div>`;
-uHtml += `<div><div class="card-title">Corporate (B2B)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-corp').click()"><input type="file" id="csv-corp" accept=".csv" onchange="upCSV('CORP',this)"><div style="font-size:1.3rem">🏢</div><div style="font-size:.72rem;color:var(--mint);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-corp">ยังไม่ได้อัปโหลด</div></div></div>`;
-uHtml += `<div><div class="card-title">สั่งของ (ต้นทุน)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-pur').click()"><input type="file" id="csv-pur" accept=".csv" onchange="upCSV('PURCHASE',this)"><div style="font-size:1.3rem">🛒</div><div style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-pur">ยังไม่ได้อัปโหลด</div></div></div>`;
-upGrid.innerHTML = uHtml;
+// GOOGLE SHEETS SYNC
+function saveSheetUrl() {
+  const url = document.getElementById('sheet-url').value.trim();
+  if (url.includes("docs.google.com")) {
+    toast("❌ ต้องใช้ลิงก์ Web App (script.google.com) นะครับ ไม่ใช่ลิงก์ Sheet", "err", 4000);
+    return;
+  }
+  localStorage.setItem('tg_sheet_url', url);
+  toast("✓ บันทึก URL ของ Sheet แล้ว");
 }
 
-// Selects
-let selHtml = M_KEYS.map((m,i) => `<option value="${m}">ออเดอร์ ${M_LABELS[i]}</option>`).join("");
-selHtml += `<option value="SHIP">ค่าส่ง</option><option value="CORP">B2B Corporate</option><option value="PURCHASE">สั่งของ (ต้นทุน)</option>`;
-document.getElementById("up-type").innerHTML = selHtml;
+function sendToSheet(type, rowData) {
+  const url = localStorage.getItem('tg_sheet_url');
+  if(!url) return; 
+  
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: type, row: rowData })
+  }).catch(e => console.log("Google Sheets sync error: ", e));
+}
 
-let shMfHtml = `<option value="">ทุกเดือน</option>` + M_LABELS.map((l,i) => `<option value="${i+1}">${l}</option>`).join("");
-document.getElementById("sh-mf").innerHTML = shMfHtml;
-document.getElementById("pu-m").innerHTML = shMfHtml; // Reuse for purchase tab
-
-document.getElementById("year-sel").value = curYear;
+// INITIALIZE UI
+function initUI() {
+  const mHtml = M_KEYS.map((m,i) => `<button class="mbtn ${curOM===m?'active':''}" onclick="setOM('${m}',this)">${M_LABELS[i]}</button>`).join("");
+  document.getElementById("om-tog").innerHTML = mHtml + `<button class="mbtn ${curOM==='NEW'?'active':''}" onclick="setOM('NEW',this)">✨ ใหม่</button>`;
+  
+  const upGrid = document.getElementById("upload-grid");
+  if(upGrid) {
+    let uHtml = M_KEYS.map((m,i) => `<div><div class="card-title">${M_LABELS[i]}</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-${m}').click()"><input type="file" id="csv-${m}" accept=".csv" onchange="upCSV('${m}',this)"><div style="font-size:1.3rem">📄</div><div style="font-size:.72rem;color:var(--orange);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-${m.toLowerCase()}">ยังไม่ได้อัปโหลด</div></div></div>`).join("");
+    uHtml += `<div><div class="card-title">ค่าส่ง</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-ship').click()"><input type="file" id="csv-ship" accept=".csv" onchange="upCSV('SHIP',this)"><div style="font-size:1.3rem">🚚</div><div style="font-size:.72rem;color:var(--sky);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-ship">ยังไม่ได้อัปโหลด</div></div></div>`;
+    uHtml += `<div><div class="card-title">Corporate (B2B)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-corp').click()"><input type="file" id="csv-corp" accept=".csv" onchange="upCSV('CORP',this)"><div style="font-size:1.3rem">🏢</div><div style="font-size:.72rem;color:var(--mint);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-corp">ยังไม่ได้อัปโหลด</div></div></div>`;
+    uHtml += `<div><div class="card-title">สั่งของ (ต้นทุน)</div><div class="upzone" style="padding:16px" onclick="document.getElementById('csv-pur').click()"><input type="file" id="csv-pur" accept=".csv" onchange="upCSV('PURCHASE',this)"><div style="font-size:1.3rem">🛒</div><div style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:3px">เลือกไฟล์</div><div style="font-size:.63rem;color:var(--muted)" id="st-pur">ยังไม่ได้อัปโหลด</div></div></div>`;
+    upGrid.innerHTML = uHtml;
+  }
+  
+  let selHtml = M_KEYS.map((m,i) => `<option value="${m}">ออเดอร์ ${M_LABELS[i]}</option>`).join("");
+  selHtml += `<option value="SHIP">ค่าส่ง</option><option value="CORP">B2B Corporate</option><option value="PURCHASE">สั่งของ (ต้นทุน)</option>`;
+  document.getElementById("up-type").innerHTML = selHtml;
+  
+  let shMfHtml = `<option value="">ทุกเดือน</option>` + M_LABELS.map((l,i) => `<option value="${i+1}">${l}</option>`).join("");
+  document.getElementById("sh-mf").innerHTML = shMfHtml;
+  document.getElementById("pu-m").innerHTML = shMfHtml; 
+  
+  document.getElementById("year-sel").value = curYear;
 }
 
 function changeYear(y) {
-curYear = y;
-document.getElementById("lbl-up-year").textContent = y;
-rOverview();
-rOTab();
-if(document.getElementById("sec-shipping").classList.contains("active")) rShip();
-if(document.getElementById("sec-products").classList.contains("active")) rProds();
-if(document.getElementById("sec-purchase").classList.contains("active")) rPurchase();
-if(document.getElementById("sec-customers").classList.contains("active")) rCusts();
-if(document.getElementById("sec-corporate").classList.contains("active")) rCorp();
-document.querySelector(".brand-sub").textContent = "Sales Dashboard " + y;
-toast("เปลี่ยนเป็นปี " + y);
+  curYear = y;
+  document.getElementById("lbl-up-year").textContent = y;
+  rOverview();
+  rOTab();
+  if(document.getElementById("sec-shipping").classList.contains("active")) rShip();
+  if(document.getElementById("sec-products").classList.contains("active")) rProds();
+  if(document.getElementById("sec-purchase").classList.contains("active")) rPurchase();
+  if(document.getElementById("sec-customers").classList.contains("active")) rCusts();
+  if(document.getElementById("sec-corporate").classList.contains("active")) rCorp();
+  document.querySelector(".brand-sub").textContent = "Sales Dashboard " + y;
+  toast("เปลี่ยนเป็นปี " + y);
 }
 
 function goTab(n,btn){
-document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-document.getElementById("sec-"+n).classList.add("active");
-btn.classList.add("active");
-if(n==="shipping")rShip();
-if(n==="products")rProds();
-if(n==="purchase")rPurchase();
-if(n==="customers")rCusts();
-if(n==="corporate")rCorp();
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("sec-"+n).classList.add("active");
+  btn.classList.add("active");
+  if(n==="shipping")rShip();
+  if(n==="products")rProds();
+  if(n==="purchase")rPurchase();
+  if(n==="customers")rCusts();
+  if(n==="corporate")rCorp();
 }
 
 // OVERVIEW
 function rOverview(){
-const ys = getYearSummary();
-const goal=1500000; const pct = (ys.r/goal)*100;
-const aov = ys.o ? ys.r/ys.o : 0;
-const mg = ys.r ? (ys.pr/ys.r)*100 : 0;
-
-document.getElementById("kv-rev").textContent=fmt(ys.r);
-document.getElementById("ksub-rev").textContent="ปี " + curYear;
-document.getElementById("kv-ord").textContent=fN(ys.o);
-document.getElementById("kv-aov").textContent=fmt(aov);
-document.getElementById("kv-profit").textContent=fmt(ys.pr);
-document.getElementById("kv-margin").textContent="margin "+mg.toFixed(1)+"%";
-document.getElementById("kv-gpct").textContent=pct.toFixed(1)+"%";
-document.getElementById("kv-gleft").textContent="เหลืออีก "+fmt(Math.max(0, goal-ys.r));
-
-const arc=276,off=arc-arc*pct/100;
-document.getElementById("ring-arc").setAttribute("stroke-dashoffset",Math.max(0,off));
-document.getElementById("ring-txt").textContent=pct.toFixed(1)+"%";
-
-const mData = M_KEYS.map((k, i) => ({ k, l: M_LABELS[i], s: getMonthSummary(k) })).filter(m => m.s.revenue > 0);
-document.getElementById("mbars").innerHTML = mData.map(m => {
-const p=(m.s.revenue/goal*100).toFixed(1);
-return `<div class="prog-wrap"><div class="prog-meta"><span>${m.l} <b>${fmt(m.s.revenue)}</b></span><span style="color:var(--muted)">${p}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%;background:var(--orange)"></div></div></div>`;
-}).join("") || `<div style='font-size:.73rem;color:var(--muted);padding:10px 0'>ยังไม่มีข้อมูลในปี ${curYear}</div>`;
-
-document.getElementById("g-advice").innerHTML=`💡 เฉลี่ย <b>${fmt(ys.r/(mData.length||1))}/เดือน</b> — ต้องทำ <b style='color:var(--orange)'>${fmt(Math.max(0,goal-ys.r)/(12-(mData.length||1)||1))}/เดือน</b> ที่เหลือ 🚀`;
-
-if(ch_mo)ch_mo.destroy();
-ch_mo=new Chart(document.getElementById("ch-monthly"),{
-type:"bar",
-data:{
-labels:M_LABELS,
-datasets:[
-{label:"ยอดขาย",data:M_KEYS.map(m=>getMonthSummary(m).revenue),backgroundColor:"#e8722acc",borderRadius:4},
-{label:"กำไร",data:M_KEYS.map(m=>getMonthSummary(m).net_profit),backgroundColor:"rgba(45,160,106,.4)",borderRadius:4}
-]
-},options:{...CC}
-});
-
-const q1p=q1P();const top=Object.entries(q1p).sort((a,b)=>b[1]-a[1]).slice(0,9);
-if(ch_tp)ch_tp.destroy();
-ch_tp=new Chart(document.getElementById("ch-topprod"),{type:"bar",data:{labels:top.map(p=>p[0]),datasets:[{label:"จำนวน",data:top.map(p=>p[1]),backgroundColor:CL.map(c=>c+"cc"),borderRadius:6}]},options:{...CC,indexAxis:"y",plugins:{legend:{display:false}}}});
-
-// Recent orders
-let allYearOrds = [];
-M_KEYS.forEach(m => allYearOrds.push(...getO(m)));
-allYearOrds.sort((a,b) => pDate(b.date) - pDate(a.date));
-document.getElementById("recent-ol").innerHTML=allYearOrds.slice(0,8).map(oiH).join("") || `<div style='font-size:.75rem;color:var(--muted);text-align:center;padding:20px 0'>ยังไม่มีออเดอร์</div>`;
+  const ys = getYearSummary();
+  const goal=1500000; const pct = (ys.r/goal)*100;
+  const aov = ys.o ? ys.r/ys.o : 0;
+  const mg = ys.r ? (ys.pr/ys.r)*100 : 0;
+  
+  document.getElementById("kv-rev").textContent=fmt(ys.r);
+  document.getElementById("ksub-rev").textContent="ปี " + curYear;
+  document.getElementById("kv-ord").textContent=fN(ys.o);
+  document.getElementById("kv-aov").textContent=fmt(aov);
+  document.getElementById("kv-profit").textContent=fmt(ys.pr);
+  document.getElementById("kv-margin").textContent="margin "+mg.toFixed(1)+"%";
+  document.getElementById("kv-gpct").textContent=pct.toFixed(1)+"%";
+  document.getElementById("kv-gleft").textContent="เหลืออีก "+fmt(Math.max(0, goal-ys.r));
+  
+  const arc=276,off=arc-arc*pct/100;
+  document.getElementById("ring-arc").setAttribute("stroke-dashoffset",Math.max(0,off));
+  document.getElementById("ring-txt").textContent=pct.toFixed(1)+"%";
+  
+  const mData = M_KEYS.map((k, i) => ({ k, l: M_LABELS[i], s: getMonthSummary(k) })).filter(m => m.s.revenue > 0);
+  document.getElementById("mbars").innerHTML = mData.map(m => {
+    const p=(m.s.revenue/goal*100).toFixed(1);
+    return `<div class="prog-wrap"><div class="prog-meta"><span>${m.l} <b>${fmt(m.s.revenue)}</b></span><span style="color:var(--muted)">${p}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%;background:var(--orange)"></div></div></div>`;
+  }).join("") || `<div style='font-size:.73rem;color:var(--muted);padding:10px 0'>ยังไม่มีข้อมูลในปี ${curYear}</div>`;
+  
+  document.getElementById("g-advice").innerHTML=`💡 เฉลี่ย <b>${fmt(ys.r/(mData.length||1))}/เดือน</b> — ต้องทำ <b style='color:var(--orange)'>${fmt(Math.max(0,goal-ys.r)/(12-(mData.length||1)||1))}/เดือน</b> ที่เหลือ 🚀`;
+  
+  if(ch_mo)ch_mo.destroy();
+  ch_mo=new Chart(document.getElementById("ch-monthly"),{
+    type:"bar",
+    data:{
+      labels:M_LABELS,
+      datasets:[
+        {label:"ยอดขาย",data:M_KEYS.map(m=>getMonthSummary(m).revenue),backgroundColor:"#e8722acc",borderRadius:4},
+        {label:"กำไร",data:M_KEYS.map(m=>getMonthSummary(m).net_profit),backgroundColor:"rgba(45,160,106,.4)",borderRadius:4}
+      ]
+    },options:{...CC}
+  });
+  
+  const q1p=q1P();const top=Object.entries(q1p).sort((a,b)=>b[1]-a[1]).slice(0,9);
+  if(ch_tp)ch_tp.destroy();
+  ch_tp=new Chart(document.getElementById("ch-topprod"),{type:"bar",data:{labels:top.map(p=>p[0]),datasets:[{label:"จำนวน",data:top.map(p=>p[1]),backgroundColor:CL.map(c=>c+"cc"),borderRadius:6}]},options:{...CC,indexAxis:"y",plugins:{legend:{display:false}}}});
+  
+  let allYearOrds = [];
+  M_KEYS.forEach(m => allYearOrds.push(...getO(m)));
+  allYearOrds.sort((a,b) => pDate(b.date) - pDate(a.date));
+  document.getElementById("recent-ol").innerHTML=allYearOrds.slice(0,8).map(oiH).join("") || `<div style='font-size:.75rem;color:var(--muted);text-align:center;padding:20px 0'>ยังไม่มีออเดอร์</div>`;
 }
 
 function oiH(o){
-const stCls = o.done ? "p-g" : o.payment === "มัดจำ" ? "p-o" : "p-s";
-const stTxt = o.done ? "✓ เสร็จ" : o.payment === "มัดจำ" ? "มัดจำ" : "รอโอน";
-const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
-return `<div class="oi" onclick="showOD('${o.id}')">
-<div class="oi-av">${(o.name||"?")[0]}</div>
-<div class="oi-info">
-<div class="oi-name">${o.name||"—"}${o.corp?" 🏢":""} <span class="pill ${stCls}" style="font-size:.55rem;padding:0px 6px;margin-left:4px">${stTxt}</span></div>
-<div class="oi-det">${pr}</div>
-<div style="font-size:.6rem;color:var(--muted);margin-top:2px">📅 ${o.date || "ไม่ระบุ"}</div>
-</div>
-<div class="oi-r">
-<div class="oi-amt">${fmt(o.revenue)}</div>
-</div>
-</div>`;
+  const stCls = o.done ? "p-g" : o.payment === "มัดจำ" ? "p-o" : "p-s";
+  const stTxt = o.done ? "✓ เสร็จ" : o.payment === "มัดจำ" ? "มัดจำ" : "รอโอน";
+  const pr = Object.entries(o.products||{}).map(([k,v])=>k+"×"+v).join(", ")||o.detail||"—";
+  return `<div class="oi" onclick="showOD('${o.id}')">
+            <div class="oi-av">${(o.name||"?")[0]}</div>
+            <div class="oi-info">
+              <div class="oi-name">${o.name||"—"}${o.corp?" 🏢":""} <span class="pill ${stCls}" style="font-size:.55rem;padding:0px 6px;margin-left:4px">${stTxt}</span></div>
+              <div class="oi-det">${pr}</div>
+              <div style="font-size:.6rem;color:var(--muted);margin-top:2px">📅 ${o.date || "ไม่ระบุ"}</div>
+            </div>
+            <div class="oi-r">
+              <div class="oi-amt">${fmt(o.revenue)}</div>
+            </div>
+          </div>`;
 }
 
 function showOD(id){
-let o = null;
-[...M_KEYS, "NEW"].forEach(m => {
-if(!o) o = getO(m).find(x => x.id === id);
-});
-if(!o) return;
-const p=document.getElementById("odp");
-const pr=Object.entries(o.products||{}).map(([k,v])=>`<span class="pill p-o">${k} ×${v}</span>`).join(" ");
-document.getElementById("odp-title").textContent="📦 "+o.name;
-document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${o.note?`<div style='font-size:.76rem;color:var(--gold)'>📝 ${o.note}</div>`:""}${o.detail?`<div style='font-size:.73rem;color:var(--muted);margin-top:3px'>📦 ${o.detail}</div>`:""}`;
-p.classList.remove("hidden");
-p.scrollIntoView({behavior:"smooth",block:"nearest"});
+  let o = null;
+  [...M_KEYS, "NEW"].forEach(m => {
+    if(!o) o = getO(m).find(x => x.id === id);
+  });
+  if(!o) return;
+  const p=document.getElementById("odp");
+  const pr=Object.entries(o.products||{}).map(([k,v])=>`<span class="pill p-o">${k} ×${v}</span>`).join(" ");
+  document.getElementById("odp-title").textContent="📦 "+o.name;
+  
+  const delBtn = o.isNew ? `<button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">🗑 ลบออเดอร์นี้</button>` : '';
+  
+  document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${o.note?`<div style='font-size:.76rem;color:var(--gold)'>📝 ${o.note}</div>`:""}${o.detail?`<div style='font-size:.73rem;color:var(--muted);margin-top:3px'>📦 ${o.detail}</div>`:""}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1.5px solid rgba(0,0,0,.05)"><button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button>${delBtn}</div>`;
+  
+  p.classList.remove("hidden");
+  p.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 // ORDERS TAB
 function setOM(m,btn){
-document.querySelectorAll("#om-tog .mbtn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-curOM=m;
-document.getElementById("odp").classList.add("hidden");
-rOTab();
+  document.querySelectorAll("#om-tog .mbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  curOM=m;
+  document.getElementById("odp").classList.add("hidden");
+  rOTab();
 }
 function rOTab(){
-const ords=getO(curOM);
-const rev=ords.reduce((s,o)=>s+o.revenue,0);
-const aov=ords.length?rev/ords.length:0;
-
-let pr=0;
-if(curOM === "NEW") {
-pr = ords.reduce((s,o)=>s+((o.revenue||0)*0.65),0);
-} else {
-pr = getMonthSummary(curOM).net_profit;
-}
-
-document.getElementById("om-rev").textContent=fmt(rev);
-document.getElementById("om-cnt").textContent=ords.length;
-document.getElementById("om-aov").textContent=fmt(aov);
-document.getElementById("om-prof").textContent=fmt(pr);
-renderOL();
-
-const pt={};
-ords.forEach(o=>Object.entries(o.products||{}).forEach(([k,v])=>{pt[k]=(pt[k]||0)+v}));
-const top=Object.entries(pt).sort((a,b)=>b[1]-a[1]).slice(0,8);
-if(ch_mp)ch_mp.destroy();
-ch_mp=new Chart(document.getElementById("ch-mprod"),{type:"doughnut",data:{labels:top.map(p=>p[0]),datasets:[{data:top.map(p=>p[1]),backgroundColor:CL.map(c=>c+"cc"),borderWidth:0,hoverOffset:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"rgba(45,26,8,.55)",font:{size:10},boxWidth:10}}}}});
+  const ords=getO(curOM);
+  const rev=ords.reduce((s,o)=>s+o.revenue,0);
+  const aov=ords.length?rev/ords.length:0;
+  
+  let pr=0;
+  if(curOM === "NEW") {
+     pr = ords.reduce((s,o)=>s+((o.revenue||0)*0.65),0);
+  } else {
+     pr = getMonthSummary(curOM).net_profit;
+  }
+  
+  document.getElementById("om-rev").textContent=fmt(rev);
+  document.getElementById("om-cnt").textContent=ords.length;
+  document.getElementById("om-aov").textContent=fmt(aov);
+  document.getElementById("om-prof").textContent=fmt(pr);
+  renderOL();
+  
+  const pt={};
+  ords.forEach(o=>Object.entries(o.products||{}).forEach(([k,v])=>{pt[k]=(pt[k]||0)+v}));
+  const top=Object.entries(pt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(ch_mp)ch_mp.destroy();
+  ch_mp=new Chart(document.getElementById("ch-mprod"),{type:"doughnut",data:{labels:top.map(p=>p[0]),datasets:[{data:top.map(p=>p[1]),backgroundColor:CL.map(c=>c+"cc"),borderWidth:0,hoverOffset:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"rgba(45,26,8,.55)",font:{size:10},boxWidth:10}}}}});
 }
 function renderOL(){
-const q=(document.getElementById("os-q").value||"").toLowerCase();
-const sf=document.getElementById("os-f").value;
-let ords=getO(curOM);
-if(q)ords=ords.filter(o=>(o.name||"").toLowerCase().includes(q)||(o.note||"").toLowerCase().includes(q));
-if(sf==="done")ords=ords.filter(o=>o.done);
-if(sf==="pending")ords=ords.filter(o=>!o.done);
-if(sf==="deposit")ords=ords.filter(o=>o.payment==="มัดจำ");
-document.getElementById("order-main-list").innerHTML=ords.slice(0,120).map(oiH).join("") || `<div style='text-align:center;padding:20px;color:var(--muted);font-size:.8rem'>ไม่มีข้อมูลออเดอร์</div>`;
-document.getElementById("ol-ct").textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
+  const q=(document.getElementById("os-q").value||"").toLowerCase();
+  const sf=document.getElementById("os-f").value;
+  let ords=getO(curOM);
+  if(q)ords=ords.filter(o=>(o.name||"").toLowerCase().includes(q)||(o.note||"").toLowerCase().includes(q));
+  if(sf==="done")ords=ords.filter(o=>o.done);
+  if(sf==="pending")ords=ords.filter(o=>!o.done);
+  if(sf==="deposit")ords=ords.filter(o=>o.payment==="มัดจำ");
+  document.getElementById("order-main-list").innerHTML=ords.slice(0,120).map(oiH).join("") || `<div style='text-align:center;padding:20px;color:var(--muted);font-size:.8rem'>ไม่มีข้อมูลออเดอร์</div>`;
+  document.getElementById("ol-ct").textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
 }
 
 // SHIPPING
 function rShip(){
-const all=allShip();
-const paid=all.reduce((s,e)=>s+e.cost,0);
-const ys=getYearSummary();
-const sp = ys.sc - paid;
-
-document.getElementById("sh-paid").textContent=fmt(paid);
-document.getElementById("sh-chg").textContent=fmt(ys.sc);
-document.getElementById("sh-prof").textContent=(sp>=0?"+":"")+fmt(sp);
-document.getElementById("sh-days").textContent=all.length;
-
-const sorted=[...all].sort((a,b)=>pDate(a.date)-pDate(b.date));
-if(ch_sh)ch_sh.destroy();
-ch_sh=new Chart(document.getElementById("ch-ship"),{type:"line",data:{labels:sorted.map(e=>e.date),datasets:[{label:"ค่าส่ง",data:sorted.map(e=>e.cost),borderColor:"var(--sky)",backgroundColor:"rgba(62,168,216,.1)",fill:true,tension:.4,pointRadius:3,pointHoverRadius:7}]},options:{...CC,plugins:{legend:{display:false}},scales:{x:{...CC.scales.x,ticks:{...CC.scales.x.ticks,maxTicksLimit:18}},y:CC.scales.y}}});
-renderSL();
+  const all=allShip();
+  const paid=all.reduce((s,e)=>s+e.cost,0);
+  const ys=getYearSummary();
+  const sp = ys.sc - paid;
+  
+  document.getElementById("sh-paid").textContent=fmt(paid);
+  document.getElementById("sh-chg").textContent=fmt(ys.sc);
+  document.getElementById("sh-prof").textContent=(sp>=0?"+":"")+fmt(sp);
+  document.getElementById("sh-days").textContent=all.length;
+  
+  const sorted=[...all].sort((a,b)=>pDate(a.date)-pDate(b.date));
+  if(ch_sh)ch_sh.destroy();
+  ch_sh=new Chart(document.getElementById("ch-ship"),{type:"line",data:{labels:sorted.map(e=>e.date),datasets:[{label:"ค่าส่ง",data:sorted.map(e=>e.cost),borderColor:"var(--sky)",backgroundColor:"rgba(62,168,216,.1)",fill:true,tension:.4,pointRadius:3,pointHoverRadius:7}]},options:{...CC,plugins:{legend:{display:false}},scales:{x:{...CC.scales.x,ticks:{...CC.scales.x.ticks,maxTicksLimit:18}},y:CC.scales.y}}});
+  renderSL();
 }
 function renderSL(){
-const q=(document.getElementById("sh-q").value||"").toLowerCase();
-const mf=document.getElementById("sh-mf").value;
-let es=allShip();
-if(q)es=es.filter(e=>(e.date||"").includes(q)||(e.note||"").toLowerCase().includes(q));
-if(mf)es=es.filter(e=>{const p=(e.date||"").split("/");return p.length>=2&&+p[1]===+mf;});
-es=[...es].sort((a,b)=>pDate(b.date)-pDate(a.date));
-document.getElementById("sh-ftot").textContent=fmt(es.reduce((s,e)=>s+e.cost,0));
-document.getElementById("ship-list").innerHTML=es.map(e=>`<div class="sli"><span class="sli-d">📅 ${e.date}</span><span class="sli-n">${e.note||"—"}</span><span class="sli-a">${fmt(e.cost)}</span>${e.isNew?`<button class="sli-del" onclick="delShip(${NS.indexOf(e)})">✕</button>`:""}</div>`).join("")||`<div style="color:var(--muted);padding:18px 0;text-align:center;font-size:.78rem">ไม่มีข้อมูล</div>`;
+  const q=(document.getElementById("sh-q").value||"").toLowerCase();
+  const mf=document.getElementById("sh-mf").value;
+  let es=allShip();
+  if(q)es=es.filter(e=>(e.date||"").includes(q)||(e.note||"").toLowerCase().includes(q));
+  if(mf)es=es.filter(e=>{const p=(e.date||"").split("/");return p.length>=2&&+p[1]===+mf;});
+  es=[...es].sort((a,b)=>pDate(b.date)-pDate(a.date));
+  document.getElementById("sh-ftot").textContent=fmt(es.reduce((s,e)=>s+e.cost,0));
+  document.getElementById("ship-list").innerHTML=es.map(e=>`<div class="sli"><span class="sli-d">📅 ${e.date}</span><span class="sli-n">${e.note||"—"}</span><span class="sli-a">${fmt(e.cost)}</span>${e.isNew?`<button class="sli-del" onclick="delShip(${NS.indexOf(e)})">✕</button>`:""}</div>`).join("")||`<div style="color:var(--muted);padding:18px 0;text-align:center;font-size:.78rem">ไม่มีข้อมูล</div>`;
 }
-function delShip(i){if(i<0)return;NS.splice(i,1);persist();renderSL();toast("ลบแล้ว","warn");}
 
-// PURCHASE (NEW)
+// PURCHASE (สั่งของ/ต้นทุน)
 function rPurchase() {
-const pu = DB[curYear].purchases || [];
-const tot = pu.reduce((s, c) => s + c.totalPrice, 0);
-document.getElementById("pu-tot").textContent = fmt(tot);
-document.getElementById("pu-cnt").textContent = fN(pu.length);
-renderPU();
+  const pu = DB[curYear].purchases || [];
+  const tot = pu.reduce((s, c) => s + c.totalPrice, 0);
+  document.getElementById("pu-tot").textContent = fmt(tot);
+  document.getElementById("pu-cnt").textContent = fN(pu.length);
+  renderPU();
 }
 
 function renderPU() {
-const q = (document.getElementById("pu-q").value || "").toLowerCase();
-const m = document.getElementById("pu-m").value;
-let es = DB[curYear].purchases || [];
+  const q = (document.getElementById("pu-q").value || "").toLowerCase();
+  const m = document.getElementById("pu-m").value;
+  let es = DB[curYear].purchases || [];
+  
+  if(q) es = es.filter(e => (e.name||"").toLowerCase().includes(q) || (e.type||"").toLowerCase().includes(q));
+  if(m) es = es.filter(e => e.month == m);
 
-if(q) es = es.filter(e => (e.name||"").toLowerCase().includes(q) || (e.type||"").toLowerCase().includes(q));
-if(m) es = es.filter(e => e.month == m);
+  document.getElementById("pu-wrap").innerHTML = `<table class="tbl"><thead><tr><th>เดือน</th><th>รายการ</th><th>ประเภท</th><th>จำนวน</th><th>ยอดจ่าย (ต้นทุน)</th><th>ราคา/หน่วย</th><th></th></tr></thead><tbody>${es.map(c=>`<tr><td style="color:var(--muted)">${c.monthName||c.month}</td><td style="font-weight:600">${c.name}</td><td><span class="pill p-c">${c.type}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--red);font-weight:700">${fmt(c.totalPrice)}</td><td style="font-size:.69rem;color:var(--muted)">฿${(c.unitPrice||0).toFixed(2)}</td><td>${c.isNew?`<button class="sli-del" onclick="delPur(${DB[curYear].purchases.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>` || `<div style="text-align:center;padding:20px;color:var(--muted);font-size:.8rem">ยังไม่มีข้อมูลการสั่งของในปีนี้</div>`;
+}
 
-document.getElementById("pu-wrap").innerHTML = `<table class="tbl"><thead><tr><th>เดือน</th><th>รายการ</th><th>ประเภท</th><th>จำนวน</th><th>ยอดจ่าย (ต้นทุน)</th><th>ราคา/หน่วย</th></tr></thead><tbody>${es.map(c=>`<tr><td style="color:var(--muted)">${c.monthName||c.month}</td><td style="font-weight:600">${c.name}</td><td><span class="pill p-c">${c.type}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--red);font-weight:700">${fmt(c.totalPrice)}</td><td style="font-size:.69rem;color:var(--muted)">฿${c.unitPrice.toFixed(2)}</td></tr>`).join("")}</tbody></table>` || `<div style="text-align:center;padding:20px;color:var(--muted);font-size:.8rem">ยังไม่มีข้อมูลการสั่งของในปีนี้</div>`;
+function calcPu() {
+  let q = parseFloat(document.getElementById('pu-qty').value) || 0;
+  let t = parseFloat(document.getElementById('pu-totp').value) || 0;
+  document.getElementById('pu-unit').value = q > 0 ? (t/q).toFixed(2) : 0;
+}
+
+function savePurchase() {
+  const m = parseInt(document.getElementById('pu-mm').value) || 1;
+  const mn = document.getElementById('pu-mn').value.trim();
+  const name = document.getElementById('pu-name').value.trim();
+  const type = document.getElementById('pu-type').value.trim();
+  const qty = parseFloat(document.getElementById('pu-qty').value) || 0;
+  const tot = parseFloat(document.getElementById('pu-totp').value) || 0;
+  const unit = parseFloat(document.getElementById('pu-unit').value) || 0;
+  
+  if(!name || qty <= 0) { toast("กรุณาใส่ชื่อรายการและจำนวน", "warn"); return; }
+  
+  if(!DB[curYear].purchases) DB[curYear].purchases = [];
+  
+  const rowData = [m, mn, name, type, qty, tot, unit];
+  DB[curYear].purchases.push({ month: m, monthName: mn, name, type, qty, totalPrice: tot, unitPrice: unit, isNew: true });
+  
+  persist(); 
+  fbSave(); 
+  rPurchase(); 
+  closeM('m-purchase');
+  toast("บันทึกการสั่งของสำเร็จ");
+  
+  sendToSheet("PURCHASE", rowData); // Send to Google Sheet
+}
+
+// CORPORATE (B2B)
+function rCorp(){
+  const corp=DB[curYear].corp || [];
+  const tot=corp.reduce((s,c)=>s+c.amount,0);
+  const q1r=getYearSummary().r;
+  document.getElementById("co-tot").textContent=fmt(tot);
+  document.getElementById("co-cnt").textContent=corp.length;
+  document.getElementById("co-pct").textContent=q1r>0?(tot/q1r*100).toFixed(1)+"%":"0%";
+  document.getElementById("co-tbl").innerHTML=`<table class="tbl"><thead><tr><th>วันที่</th><th>ลูกค้า</th><th>องค์กร</th><th>สินค้า</th><th>จำนวน</th><th>ยอด</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>${corp.map(c=>`<tr><td style="color:var(--muted)">${c.date}</td><td style="font-weight:600">${c.client}</td><td style="font-size:.71rem;color:var(--muted)">${c.org}</td><td><span class="pill p-o">${c.product}</span></td><td style="font-family:'Space Mono',monospace">${fN(c.qty)}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${fmt(c.amount)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td><td>${c.isNew?`<button class="sli-del" onclick="delCorp(${DB[curYear].corp.indexOf(c)})">✕</button>`:''}</td></tr>`).join("")}</tbody></table>`;
+  
+  document.getElementById("co-ins").innerHTML="Corporate ปี "+curYear+" = <b style='color:var(--orange)'>"+fmt(tot)+"</b><br><br>🎯 Target B2B เพิ่ม <b>2-3 เจ้า/เดือน</b><br>Avg ticket = <b>"+fmt(corp.length>0?tot/corp.length:0)+"</b>";
+}
+
+function saveCorp() {
+  const dateVal = document.getElementById('co-date').value;
+  const client = document.getElementById('co-client').value.trim();
+  if(!dateVal || !client) { toast("กรุณาใส่วันที่และชื่อลูกค้า", "warn"); return; }
+  
+  const dp = dateVal.split("-");
+  const ds = dp.length===3 ? `${+dp[2]}/${+dp[1]}/${dp[0]}` : dateVal;
+  const org = document.getElementById('co-org').value.trim();
+  const prod = document.getElementById('co-prod').value.trim();
+  const qty = document.getElementById('co-qty').value.trim() || "1";
+  const amt = parseFloat(document.getElementById('co-amt').value) || 0;
+  const note = document.getElementById('co-note').value.trim();
+  const deliv = document.getElementById('co-del').value.trim();
+  
+  if(!DB[curYear].corp) DB[curYear].corp = [];
+  DB[curYear].corp.push({ date: ds, client, org, product: prod, qty, amount: amt, note, delivery: deliv, isNew: true });
+  
+  persist(); 
+  fbSave(); 
+  rCorp(); 
+  closeM('m-corp');
+  toast("บันทึกออเดอร์ B2B สำเร็จ");
+  
+  sendToSheet("CORP", [ds, client, org, prod, qty, amt, note]); // Send to Google Sheet
+}
+
+// DELETE LOGIC
+function delShip(i){if(i<0)return;if(!confirm("ลบรายการค่าส่งนี้?"))return; NS.splice(i,1);persist();renderSL();fbSave();toast("ลบแล้ว","warn");}
+function delPur(i){if(i<0)return;if(!confirm("ลบรายการสั่งของนี้?"))return; DB[curYear].purchases.splice(i, 1);persist();rPurchase();fbSave();toast("ลบแล้ว","warn");}
+function delCorp(i){if(i<0)return;if(!confirm("ลบออเดอร์ B2B นี้?"))return; DB[curYear].corp.splice(i, 1);persist();rCorp();fbSave();toast("ลบแล้ว","warn");}
+function delOrder(id) {
+  if(!confirm("ลบออเดอร์นี้?")) return;
+  const idx = NO.findIndex(o => o.id === id);
+  if(idx > -1) {
+      NO.splice(idx, 1);
+      persist(); fbSave(); closeOD(); rOverview(); rOTab(); toast("ลบออเดอร์แล้ว", "warn");
+  } else {
+      toast("ลบได้เฉพาะออเดอร์ที่เพิ่มเองด้วยมือเท่านั้น", "err");
+  }
 }
 
 // PRODUCTS
 function rProds(){
-renderPR();
-document.getElementById("margin-list").innerHTML=PROFIT_DATA.map(p=>{const cls=p.t==="high"?"p-g":p.t==="med"?"p-m":"p-s";return`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><div style="flex:1;font-size:.79rem;font-weight:500">${p.n}</div><span class="pill ${cls}">${p.m}</span><span style="font-size:.67rem;color:var(--muted);font-family:'Space Mono',monospace">฿${p.c}→฿${p.p}</span></div>`;}).join("");
-
-const cps=["CD BOX","ฟิล์มสไลด์ NFC","ไวนิล NFC","CARD NFC","NFC แผ่นหมุนๆ","POCKET VINYL","ฟิล์มสไลด์","เข็มกลัด"];
-if(ch_cmp)ch_cmp.destroy();
-ch_cmp=new Chart(document.getElementById("ch-cmp"),{type:"bar",data:{
-labels:cps,
-datasets:[
-{label:"Q1",data:cps.map(p=>sPQ(1,p)),backgroundColor:"rgba(62,168,216,.8)",borderRadius:4},
-{label:"Q2",data:cps.map(p=>sPQ(2,p)),backgroundColor:"rgba(232,114,42,.8)",borderRadius:4},
-{label:"Q3",data:cps.map(p=>sPQ(3,p)),backgroundColor:"rgba(61,191,168,.8)",borderRadius:4},
-{label:"Q4",data:cps.map(p=>sPQ(4,p)),backgroundColor:"rgba(224,80,80,.8)",borderRadius:4}
-]},options:{...CC}});
-
-document.getElementById("push-list").innerHTML=`<div style="font-size:.79rem;line-height:2.2;color:var(--text2)"><div>🏅 <b>CD BOX</b> — Hero Product ทุกเดือน</div><div>💫 <b>CARD NFC</b> — พุ่งช่วงเทศกาล margin 400%+</div><div>✨ <b>ไวนิล NFC</b> — margin ดี B2B ดีมาก</div><div>📸 <b>ฟิล์มสไลด์</b> — volume เยอะ ต้นทุนต่ำ</div></div>`;
-document.getElementById("review-list").innerHTML=`<div style="font-size:.79rem;line-height:2.2;color:var(--text2)"><div>💿 <b>FLOPPY DISK</b> — stock หมด Drop ได้เลย</div><div>❄️ <b>SNOWGLOBE</b> — ขายตามฤดูกาล</div><div>📦 <b>SPIN BOX</b> — ใช้เวลานาน margin ต่ำ</div><div>💡 <b>โคมไฟ</b> — margin ดี แต่เวลามาก</div></div>`;
+  renderPR();
+  document.getElementById("margin-list").innerHTML=PROFIT_DATA.map(p=>{const cls=p.t==="high"?"p-g":p.t==="med"?"p-m":"p-s";return`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><div style="flex:1;font-size:.79rem;font-weight:500">${p.n}</div><span class="pill ${cls}">${p.m}</span><span style="font-size:.67rem;color:var(--muted);font-family:'Space Mono',monospace">฿${p.c}→฿${p.p}</span></div>`;}).join("");
+  
+  const cps=["CD BOX","ฟิล์มสไลด์ NFC","ไวนิล NFC","CARD NFC","NFC แผ่นหมุนๆ","POCKET VINYL","ฟิล์มสไลด์","เข็มกลัด"];
+  if(ch_cmp)ch_cmp.destroy();
+  ch_cmp=new Chart(document.getElementById("ch-cmp"),{type:"bar",data:{
+    labels:cps,
+    datasets:[
+      {label:"Q1",data:cps.map(p=>sPQ(1,p)),backgroundColor:"rgba(62,168,216,.8)",borderRadius:4},
+      {label:"Q2",data:cps.map(p=>sPQ(2,p)),backgroundColor:"rgba(232,114,42,.8)",borderRadius:4},
+      {label:"Q3",data:cps.map(p=>sPQ(3,p)),backgroundColor:"rgba(61,191,168,.8)",borderRadius:4},
+      {label:"Q4",data:cps.map(p=>sPQ(4,p)),backgroundColor:"rgba(224,80,80,.8)",borderRadius:4}
+    ]},options:{...CC}});
+  
+  document.getElementById("push-list").innerHTML=`<div style="font-size:.79rem;line-height:2.2;color:var(--text2)"><div>🏅 <b>CD BOX</b> — Hero Product ทุกเดือน</div><div>💫 <b>CARD NFC</b> — พุ่งช่วงเทศกาล margin 400%+</div><div>✨ <b>ไวนิล NFC</b> — margin ดี B2B ดีมาก</div><div>📸 <b>ฟิล์มสไลด์</b> — volume เยอะ ต้นทุนต่ำ</div></div>`;
+  document.getElementById("review-list").innerHTML=`<div style="font-size:.79rem;line-height:2.2;color:var(--text2)"><div>💿 <b>FLOPPY DISK</b> — stock หมด Drop ได้เลย</div><div>❄️ <b>SNOWGLOBE</b> — ขายตามฤดูกาล</div><div>📦 <b>SPIN BOX</b> — ใช้เวลานาน margin ต่ำ</div><div>💡 <b>โคมไฟ</b> — margin ดี แต่เวลามาก</div></div>`;
 }
 
 function renderPR(){
-const q=(document.getElementById("pr-q").value||"").toLowerCase();
-const q1p=q1P();
-let es=Object.entries(q1p).sort((a,b)=>b[1]-a[1]);
-if(q)es=es.filter(([k])=>k.toLowerCase().includes(q));
-document.getElementById("pr-wrap").innerHTML=`<table class="tbl"><thead><tr><th>#</th><th>สินค้า</th><th>ยอดรวมปี</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead><tbody>${es.map(([p,t],i)=>{
-const md=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
-return`<tr><td style="color:var(--muted);font-size:.7rem">${md||i+1}</td><td style="font-weight:600">${p}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${t}</td><td style="color:var(--muted)">${sPQ(1,p)||"—"}</td><td style="color:var(--muted)">${sPQ(2,p)||"—"}</td><td style="color:var(--muted)">${sPQ(3,p)||"—"}</td><td style="color:var(--muted)">${sPQ(4,p)||"—"}</td></tr>`;
-}).join("")}</tbody></table>`;
+  const q=(document.getElementById("pr-q").value||"").toLowerCase();
+  const q1p=q1P();
+  let es=Object.entries(q1p).sort((a,b)=>b[1]-a[1]);
+  if(q)es=es.filter(([k])=>k.toLowerCase().includes(q));
+  document.getElementById("pr-wrap").innerHTML=`<table class="tbl"><thead><tr><th>#</th><th>สินค้า</th><th>ยอดรวมปี</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead><tbody>${es.map(([p,t],i)=>{
+    const md=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+    return`<tr><td style="color:var(--muted);font-size:.7rem">${md||i+1}</td><td style="font-weight:600">${p}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${t}</td><td style="color:var(--muted)">${sPQ(1,p)||"—"}</td><td style="color:var(--muted)">${sPQ(2,p)||"—"}</td><td style="color:var(--muted)">${sPQ(3,p)||"—"}</td><td style="color:var(--muted)">${sPQ(4,p)||"—"}</td></tr>`;
+  }).join("")}</tbody></table>`;
 }
 
 // CUSTOMERS
 function rCusts(){
-let all=[]; M_KEYS.forEach(m => all.push(...getO(m)));
-const cm={};
-all.forEach(o=>{const n=o.name||"?";if(!cm[n])cm[n]={name:n,total:0,count:0,products:{}};cm[n].total+=o.revenue;cm[n].count++;Object.entries(o.products||{}).forEach(([k,v])=>{cm[n].products[k]=(cm[n].products[k]||0)+v});});
-const q=(document.getElementById("cu-q").value||"").toLowerCase();
-let cs=Object.values(cm).sort((a,b)=>b.total-a.total);
-if(q)cs=cs.filter(c=>c.name.toLowerCase().includes(q));
-document.getElementById("cust-list").innerHTML=cs.slice(0,60).map((c,i)=>{const tp=Object.entries(c.products).sort((a,b)=>b[1]-a[1])[0];return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.69rem;color:var(--muted);width:22px">${i+1}</span><div style="flex:1"><div style="font-size:.8rem;font-weight:600">${c.name}</div><div style="font-size:.65rem;color:var(--muted)">${c.count} orders${tp?` · ${tp[0]}×${tp[1]}`:""}</div></div><span style="font-family:'Space Mono',monospace;font-size:.78rem;color:var(--orange)">${fmt(c.total)}</span></div>`;}).join("") || "<div style='font-size:.78rem;color:var(--muted);padding:10px'>ไม่มีข้อมูลลูกคัา</div>";
-const rep=Object.values(cm).filter(c=>c.count>=2).sort((a,b)=>b.count-a.count);
-document.getElementById("repeat-list").innerHTML=rep.slice(0,15).map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.8rem;flex:1">${c.name}</span><span class="pill p-m">${c.count}x</span><span style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--orange)">${fmt(c.total)}</span></div>`).join("")||"<div style=\"color:var(--muted);padding:10px 0;font-size:.78rem\">ยังไม่มีข้อมูล</div>";
-const tot=Object.values(cm).length;
-const rep2=rep.length;
-const q1r=getYearSummary().r;
-document.getElementById("cust-ins").innerHTML=`<div class="str"><div class="sti"><span class="stl">ลูกค้าทั้งหมด</span><span class="stv" style="color:var(--sky)">${tot}</span></div><div class="sti"><span class="stl">ซื้อซ้ำ</span><span class="stv" style="color:var(--mint)">${rep2}</span></div><div class="sti"><span class="stl">Repeat Rate</span><span class="stv" style="color:var(--orange)">${tot>0?(rep2/tot*100).toFixed(1):0}%</span></div></div><div style="margin-top:9px;font-size:.76rem;color:var(--muted);line-height:1.9">💡 Top 10 สร้างยอด <b style="color:var(--orange)">${fmt(cs.slice(0,10).reduce((s,c)=>s+c.total,0))}</b> = ${q1r>0?(cs.slice(0,10).reduce((s,c)=>s+c.total,0)/q1r*100).toFixed(1):0}% ของปีนี้</div>`;
-}
-
-// CORPORATE
-function rCorp(){
-const corp=DB[curYear].corp || [];
-const tot=corp.reduce((s,c)=>s+c.amount,0);
-const q1r=getYearSummary().r;
-document.getElementById("co-tot").textContent=fmt(tot);
-document.getElementById("co-cnt").textContent=corp.length;
-document.getElementById("co-pct").textContent=q1r>0?(tot/q1r*100).toFixed(1)+"%":"0%";
-document.getElementById("co-tbl").innerHTML=`<table class="tbl"><thead><tr><th>วันที่</th><th>ลูกค้า</th><th>องค์กร</th><th>สินค้า</th><th>จำนวน</th><th>ยอด</th><th>หมายเหตุ</th></tr></thead><tbody>${corp.map(c=>`<tr><td style="color:var(--muted)">${c.date}</td><td style="font-weight:600">${c.client}</td><td style="font-size:.71rem;color:var(--muted)">${c.org}</td><td><span class="pill p-o">${c.product}</span></td><td style="font-family:'Space Mono',monospace">${c.qty}</td><td style="font-family:'Space Mono',monospace;color:var(--orange);font-weight:700">${fmt(c.amount)}</td><td style="font-size:.69rem;color:var(--muted)">${c.note||"—"}</td></tr>`).join("")}</tbody></table>`;
-
-document.getElementById("co-ins").innerHTML="Corporate ปี "+curYear+" = <b style='color:var(--orange)'>"+fmt(tot)+"</b><br><br>🎯 Target B2B เพิ่ม <b>2-3 เจ้า/เดือน</b><br>Avg ticket = <b>"+fmt(corp.length>0?tot/corp.length:0)+"</b>";
-}
-
-// ADD ORDER
-function buildPick(){document.getElementById("fd").value=td();document.getElementById("ftot").value="";document.getElementById("ppick").innerHTML=ALLP.map(p=>`<div class="ppi"><span class="ppi-n">${p}</span><input class="qinp" type="number" min="0" value="0" data-prod="${p}" data-price="${PRICE[p]||0}" oninput="calcTot()"></div>`).join("");}
-function calcTot(){let t=0;document.querySelectorAll(".qinp").forEach(i=>{t+=((+i.value)||0)*((+i.dataset.price)||0);});t+=+(document.getElementById("fs").value)||0;document.getElementById("ftot").value=t>0?fmt(t):"";}
-function saveOrder(){
-const name=document.getElementById("fn").value.trim();
-if(!name){toast("กรุณาใส่ชื่อลูกค้า","warn");return;}
-const prods={};let sub=0;
-document.querySelectorAll(".qinp").forEach(i=>{const q=+(i.value)||0;if(q>0){prods[i.dataset.prod]=q;sub+=q*(+(i.dataset.price)||0);}});
-const ship=+(document.getElementById("fs").value)||0;const rev=sub+ship;
-const dv=document.getElementById("fd").value;const dp=dv.split("-");
-const ds=dp.length===3?`${+dp[2]}/${+dp[1]}/${dp[0]}`:dv;
-const month=dp.length===3?(M_KEYS[+dp[1]-1]||"NEW"):"NEW";
-
-const ord={id:"N"+Date.now(),date:ds,name,products:prods,shipping_charged:ship,revenue:rev,payment:document.getElementById("fp").value,detail:"",packed:false,done:false,note:document.getElementById("fnote").value.trim(),month,isNew:true};
-NO.push(ord);
-persist();
-closeM("m-order");
-toast("✓ เพิ่มออเดอร์ "+name+" "+fmt(rev));
-
-const oYear = getOrderYear(ds);
-if(oYear !== curYear) {
-toast("ออเดอร์ถูกเพิ่มในปี " + oYear);
-} else {
-rOverview();
-if(curOM===month||curOM==="NEW")rOTab();
-}
-fbSave();
-}
-
-// ADD SHIPPING
-function saveShip(){
-const dv=document.getElementById("fsd").value;
-const cost=+(document.getElementById("fsc").value)||0;
-if(!dv||cost<=0){toast("กรุณาใส่วันที่และค่าส่ง","warn");return;}
-const dp=dv.split("-");const ds=dp.length===3?`${+dp[2]}/${+dp[1]}/${dp[0]}`:dv;
-NS.push({date:ds,cost,note:document.getElementById("fsn").value.trim(),isNew:true});
-persist();
-closeM("m-ship");
-toast("✓ บันทึกค่าส่ง "+fmt(cost)+" วัน "+ds);
-if(getOrderYear(ds) === curYear && document.getElementById("sec-shipping").classList.contains("active")) rShip();
-fbSave();
+  let all=[]; M_KEYS.forEach(m => all.push(...getO(m)));
+  const cm={};
+  all.forEach(o=>{const n=o.name||"?";if(!cm[n])cm[n]={name:n,total:0,count:0,products:{}};cm[n].total+=o.revenue;cm[n].count++;Object.entries(o.products||{}).forEach(([k,v])=>{cm[n].products[k]=(cm[n].products[k]||0)+v});});
+  const q=(document.getElementById("cu-q").value||"").toLowerCase();
+  let cs=Object.values(cm).sort((a,b)=>b.total-a.total);
+  if(q)cs=cs.filter(c=>c.name.toLowerCase().includes(q));
+  document.getElementById("cust-list").innerHTML=cs.slice(0,60).map((c,i)=>{const tp=Object.entries(c.products).sort((a,b)=>b[1]-a[1])[0];return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.69rem;color:var(--muted);width:22px">${i+1}</span><div style="flex:1"><div style="font-size:.8rem;font-weight:600">${c.name}</div><div style="font-size:.65rem;color:var(--muted)">${c.count} orders${tp?` · ${tp[0]}×${tp[1]}`:""}</div></div><span style="font-family:'Space Mono',monospace;font-size:.78rem;color:var(--orange)">${fmt(c.total)}</span></div>`;}).join("") || "<div style='font-size:.78rem;color:var(--muted);padding:10px'>ไม่มีข้อมูลลูกคัา</div>";
+  const rep=Object.values(cm).filter(c=>c.count>=2).sort((a,b)=>b.count-a.count);
+  document.getElementById("repeat-list").innerHTML=rep.slice(0,15).map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid var(--cream2)"><span style="font-size:.8rem;flex:1">${c.name}</span><span class="pill p-m">${c.count}x</span><span style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--orange)">${fmt(c.total)}</span></div>`).join("")||"<div style=\"color:var(--muted);padding:10px 0;font-size:.78rem\">ยังไม่มีข้อมูล</div>";
+  const tot=Object.values(cm).length;
+  const rep2=rep.length;
+  const q1r=getYearSummary().r;
+  document.getElementById("cust-ins").innerHTML=`<div class="str"><div class="sti"><span class="stl">ลูกค้าทั้งหมด</span><span class="stv" style="color:var(--sky)">${tot}</span></div><div class="sti"><span class="stl">ซื้อซ้ำ</span><span class="stv" style="color:var(--mint)">${rep2}</span></div><div class="sti"><span class="stl">Repeat Rate</span><span class="stv" style="color:var(--orange)">${tot>0?(rep2/tot*100).toFixed(1):0}%</span></div></div><div style="margin-top:9px;font-size:.76rem;color:var(--muted);line-height:1.9">💡 Top 10 สร้างยอด <b style="color:var(--orange)">${fmt(cs.slice(0,10).reduce((s,c)=>s+c.total,0))}</b> = ${q1r>0?(cs.slice(0,10).reduce((s,c)=>s+c.total,0)/q1r*100).toFixed(1):0}% ของปีนี้</div>`;
 }
 
 // CSV UPLOAD
 function upCSV(type,inp){
-const file=inp.files[0];if(!file)return;
-const r=new FileReader();
-r.onload=e=>{
-const txt=e.target.result;
-if(type==="SHIP"){
-const es=parseShipCSV(txt);
-DB[curYear].shipping=es;
-toast("✓ ค่าส่งปี "+curYear+" : "+es.length+" รายการ");
-const el=document.getElementById("st-ship");if(el)el.textContent="✓ "+es.length+" รายการ";
-}else if(type==="CORP"){
-const es=parseCorpCSV(txt);
-DB[curYear].corp=es;
-toast("✓ Corporate "+curYear+" : "+es.length+" รายการ");
-const el=document.getElementById("st-corp");if(el)el.textContent="✓ "+es.length+" รายการ";
-}else if(type==="PURCHASE"){
-const es=parsePurchaseCSV(txt);
-DB[curYear].purchases=es;
-toast("✓ สั่งของ(ต้นทุน) "+curYear+" : "+es.length+" รายการ");
-const el=document.getElementById("st-pur");if(el)el.textContent="✓ "+es.length+" รายการ";
-}else{
-const ords=parseOrdCSV(txt,type);
-DB[curYear][type]=ords;
-if(DB[curYear].summary) delete DB[curYear].summary[type];
-toast("✓ ปี "+curYear+" ออเดอร์ "+type+" "+ords.length+" รายการ");
-const el=document.getElementById("st-"+type.toLowerCase());if(el)el.textContent="✓ "+ords.length+" orders";
+  const file=inp.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const txt=e.target.result;
+    if(type==="SHIP"){
+      const es=parseShipCSV(txt);
+      DB[curYear].shipping=es;
+      toast("✓ ค่าส่งปี "+curYear+" : "+es.length+" รายการ");
+      const el=document.getElementById("st-ship");if(el)el.textContent="✓ "+es.length+" รายการ";
+    }else if(type==="CORP"){
+      const es=parseCorpCSV(txt);
+      DB[curYear].corp=es;
+      toast("✓ Corporate "+curYear+" : "+es.length+" รายการ");
+      const el=document.getElementById("st-corp");if(el)el.textContent="✓ "+es.length+" รายการ";
+    }else if(type==="PURCHASE"){
+      const es=parsePurchaseCSV(txt);
+      DB[curYear].purchases=es;
+      toast("✓ สั่งของ(ต้นทุน) "+curYear+" : "+es.length+" รายการ");
+      const el=document.getElementById("st-pur");if(el)el.textContent="✓ "+es.length+" รายการ";
+    }else{
+      const ords=parseOrdCSV(txt,type);
+      DB[curYear][type]=ords;
+      if(DB[curYear].summary) delete DB[curYear].summary[type]; 
+      toast("✓ ปี "+curYear+" ออเดอร์ "+type+" "+ords.length+" รายการ");
+      const el=document.getElementById("st-"+type.toLowerCase());if(el)el.textContent="✓ "+ords.length+" orders";
+    }
+    persist();
+    rOverview();
+    if(curOM===type)rOTab();
+    if(document.getElementById("sec-shipping").classList.contains("active")&&type==="SHIP")rShip();
+    if(document.getElementById("sec-corporate").classList.contains("active")&&type==="CORP")rCorp();
+    if(document.getElementById("sec-purchase").classList.contains("active")&&type==="PURCHASE")rPurchase();
+    
+    fbSave();
+  };
+  r.readAsText(file,"UTF-8");
 }
-persist();
-rOverview();
-if(curOM===type)rOTab();
-if(document.getElementById("sec-shipping").classList.contains("active")&&type==="SHIP")rShip();
-if(document.getElementById("sec-corporate").classList.contains("active")&&type==="CORP")rCorp();
-if(document.getElementById("sec-purchase").classList.contains("active")&&type==="PURCHASE")rPurchase();
 
-// Save the entire DB to ensure CSV uploads sync to cloud
-fbSave();
-};
-r.readAsText(file,"UTF-8");
-}
 function parseOrdCSV(txt,mk){const res=Papa.parse(txt,{header:true,skipEmptyLines:true});const out=[];res.data.forEach((row,i)=>{const name=(row["ชื่อลูกค้า"]||"").trim();if(!name)return;let rev=0;try{rev=parseFloat((row["รวมยอด"]||"0").replace(/,/g,""))||0;}catch(e){}if(rev<=0)return;const dt=Object.values(row)[0]||"";const prods={};ALLP.forEach(p=>{const v=row[p];if(!v)return;try{const q=parseInt(parseFloat(v.replace(",","")));if(q>0)prods[p]=q;}catch(e){}});let ship=0;try{ship=parseFloat((row["คิดค่าส่ง(บาท)"]||"0").replace(/,/g,""))||0;}catch(e){}out.push({id:mk+"_"+i,date:dt,name,products:prods,shipping_charged:ship,revenue:rev,payment:(row["โอนครบ/มัดจำ"]||"").trim(),detail:(row["รายละเอียด"]||"").trim(),packed:(row["กล่องใส่งาน"]||"").trim().toUpperCase()==="TRUE",done:(row["เสร็จแล้ว"]||"").trim().toUpperCase()==="TRUE",note:(row["หมายเหตุ"]||"").trim(),isUploaded:true});});return out;}
 function parseShipCSV(txt){const res=Papa.parse(txt,{header:true,skipEmptyLines:true});return res.data.filter(r=>r["วันที่ส่ง"]&&r["ค่าส่งที่จ่าย"]).map(r=>({date:(r["วันที่ส่ง"]||"").trim(),cost:parseFloat((r["ค่าส่งที่จ่าย"]||"0").replace(/,/g,""))||0,note:"",isUploaded:true})).filter(e=>e.cost>0);}
+
 function parseCorpCSV(txt){
-const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
-return res.data.map(r=>({
-date:(r["วันที่"]||"").trim(), client:(r["ลูกค้า"]||"").trim(), org:(r["องค์กร"]||"").trim(),
-product:(r["สินค้า"]||"").trim(), qty:(r["จำนวน"]||"0").replace(/,/g,""),
-amount:parseFloat((r["ยอด"]||"0").replace(/,/g,""))||0, note:(r["หมายเหตุ"]||"").trim()
-})).filter(e=>e.amount>0);
+  const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
+  return res.data.map(r=>{
+    const getV = (k) => { for(let key in r) if(key.trim()===k) return r[key]; return ""; };
+    return {
+      date: (getV("วันที่")||"").trim(),
+      client: (getV("ลูกค้า")||"").trim(),
+      org: (getV("องค์กร")||"").trim(),
+      product: (getV("สินค้า")||"").trim(),
+      qty: (getV("จำนวน")||"0").replace(/,/g,""),
+      amount: parseNum(getV("ยอด")),
+      note: (getV("หมายเหตุ")||"").trim()
+    };
+  }).filter(e=>e.amount>0 || e.client);
 }
-// NEW: Parse Purchase CSV
+
 function parsePurchaseCSV(txt){
-const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
-return res.data.map(r=>{
-let qty = parseFloat((r["จำนวนชิ้น"]||"0").replace(/,/g,""))||0;
-let tot = parseFloat((r["ราคารวมที่จ่าย"]||"0").replace(/,/g,""))||0;
-let unit = parseFloat((r["หารต่อ 1 หน่วย"]||"0").replace(/,/g,""));
-if(isNaN(unit)) unit = 0; // Handle #DIV/0! or empty
-return {
-month: parseInt(r["เดือน"])||0,
-monthName: (r["เดือนที่ซื้อ"]||"").trim(),
-name: (r["สินค้า"]||"").trim(),
-type: (r["ประเภท"]||"").trim(),
-qty: qty,
-totalPrice: tot,
-unitPrice: unit
-};
-}).filter(e=>e.name && e.totalPrice > 0);
+  const res=Papa.parse(txt,{header:true,skipEmptyLines:true});
+  return res.data.map(r=>{
+    const getV = (k) => { for(let key in r) if(key.trim()===k) return r[key]; return ""; };
+    return {
+      month: parseInt(getV("เดือน"))||0,
+      monthName: (getV("เดือนที่ซื้อ")||"").trim(),
+      name: (getV("สินค้า")||getV("รายการ")||"").trim(),
+      type: (getV("ประเภท")||"").trim(),
+      qty: parseNum(getV("จำนวนชิ้น")||getV("จำนวน")),
+      totalPrice: parseNum(getV("ราคารวมที่จ่าย")||getV("ยอดจ่าย")),
+      unitPrice: parseNum(getV("หารต่อ 1 หน่วย")||getV("ราคา/หน่วย")),
+      isUploaded: true
+    };
+  }).filter(e=>e.name);
 }
 
 function doUpload(inp){const type=document.getElementById("up-type").value;upCSV(type,inp);document.getElementById("up-st").textContent="✓ กำลัง parse...";setTimeout(()=>closeM("m-upload"),900);}
@@ -1134,31 +1276,31 @@ function expCusts(f){let all=[]; M_KEYS.forEach(m => all.push(...getO(m)));const
 function expCorp(f){const rows=(DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,องค์กร:c.org,สินค้า:c.product,จำนวน:c.qty,ยอด:c.amount,หมายเหตุ:c.note}));if(f==="csv")toCSV(rows,`tinkle_corporate_${curYear}`);else if(f==="xlsx")toXLSX([{name:"Corporate",rows}],`tinkle_corporate_${curYear}`);else toPDF(rows,`Corporate Orders ${curYear}`);}
 function expPurchase(f){const rows=(DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวนชิ้น:c.qty,ราคารวม:c.totalPrice,ต่อหน่วย:c.unitPrice}));if(f==="csv")toCSV(rows,`tinkle_purchases_${curYear}`);}
 function expAll(f){
-if(f==="json"){
-const data={ DB: DB, new_orders:NO, new_shipping:NS, exported:new Date().toISOString() };
-dl(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),"tinkle_backup_"+new Date().toISOString().slice(0,10)+".json");
-toast("✓ Export JSON สำเร็จ");
-}else if(f==="xlsx"){
-const sheets = M_KEYS.map(m => ({name: m, rows: o2rows(getO(m))})).filter(s => s.rows.length > 0);
-sheets.push({name: "ค่าส่ง", rows: allShip().map(e=>({วันที่:e.date,ค่าส่ง:e.cost,หมายเหตุ:e.note||""})) });
-sheets.push({name: "Corporate", rows: (DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,สินค้า:c.product,ยอด:c.amount})) });
-sheets.push({name: "สั่งของ(ต้นทุน)", rows: (DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวน:c.qty,ยอดรวม:c.totalPrice,ต่อหน่วย:c.unitPrice})) });
-if(sheets.length) toXLSX(sheets, `tinkle_goodies_${curYear}`); else toast("ไม่มีข้อมูลในปีนี้","warn");
-}else if(f==="csv"){
-M_KEYS.forEach((m,i)=>setTimeout(()=>{
-const rows = o2rows(getO(m));
-if(rows.length) toCSV(rows, `tinkle_${m}_${curYear}`);
-}, i*400));
-toast("✓ ดาวน์โหลด CSV ทีละไฟล์...");
-}else if(f==="pdf"){
-const {r,o,pr}=getYearSummary();
-const rows = M_KEYS.map((k,i) => {
-const s = getMonthSummary(k);
-return {เดือน:M_LABELS[i],ยอดขาย:s.revenue,ออเดอร์:s.orders,กำไร:s.net_profit};
-}).filter(x => x.ยอดขาย > 0);
-rows.push({เดือน:"รวมทั้งปี",ยอดขาย:r,ออเดอร์:o,กำไร:pr});
-toPDF(rows, `Summary ${curYear}`);
-}
+  if(f==="json"){
+    const data={ DB: DB, new_orders:NO, new_shipping:NS, exported:new Date().toISOString() };
+    dl(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),"tinkle_backup_"+new Date().toISOString().slice(0,10)+".json");
+    toast("✓ Export JSON สำเร็จ");
+  }else if(f==="xlsx"){
+    const sheets = M_KEYS.map(m => ({name: m, rows: o2rows(getO(m))})).filter(s => s.rows.length > 0);
+    sheets.push({name: "ค่าส่ง", rows: allShip().map(e=>({วันที่:e.date,ค่าส่ง:e.cost,หมายเหตุ:e.note||""})) });
+    sheets.push({name: "Corporate", rows: (DB[curYear].corp||[]).map(c=>({วันที่:c.date,ลูกค้า:c.client,สินค้า:c.product,ยอด:c.amount})) });
+    sheets.push({name: "สั่งของ(ต้นทุน)", rows: (DB[curYear].purchases||[]).map(c=>({เดือน:c.monthName||c.month,สินค้า:c.name,ประเภท:c.type,จำนวน:c.qty,ยอดรวม:c.totalPrice,ต่อหน่วย:c.unitPrice})) });
+    if(sheets.length) toXLSX(sheets, `tinkle_goodies_${curYear}`); else toast("ไม่มีข้อมูลในปีนี้","warn");
+  }else if(f==="csv"){
+    M_KEYS.forEach((m,i)=>setTimeout(()=>{
+      const rows = o2rows(getO(m));
+      if(rows.length) toCSV(rows, `tinkle_${m}_${curYear}`);
+    }, i*400));
+    toast("✓ ดาวน์โหลด CSV ทีละไฟล์...");
+  }else if(f==="pdf"){
+    const {r,o,pr}=getYearSummary();
+    const rows = M_KEYS.map((k,i) => {
+       const s = getMonthSummary(k);
+       return {เดือน:M_LABELS[i],ยอดขาย:s.revenue,ออเดอร์:s.orders,กำไร:s.net_profit};
+    }).filter(x => x.ยอดขาย > 0);
+    rows.push({เดือน:"รวมทั้งปี",ยอดขาย:r,ออเดอร์:o,กำไร:pr});
+    toPDF(rows, `Summary ${curYear}`);
+  }
 }
 
 // IMPORT JSON
@@ -1178,51 +1320,51 @@ function fbFromModal(){document.getElementById("fb-ak").value=document.getElemen
 function disconnFB(){FB_DB=null;localStorage.removeItem("tg_fbc");setFBS("","ไม่ได้เชื่อม Cloud");toast("ยกเลิกแล้ว","warn");}
 
 const DEFAULT_FB_CFG = {
-apiKey: "AIzaSyDUzIPGWZytY1wVtPh4h0-U8s8nLBqPrvA",
-authDomain: "tk-dashboard-9c933.firebaseapp.com",
-projectId: "tk-dashboard-9c933",
-storageBucket: "tk-dashboard-9c933.firebasestorage.app",
-messagingSenderId: "886658615947",
-appId: "1:886658615947:web:65ac396598cdada475628e"
+  apiKey: "AIzaSyDUzIPGWZytY1wVtPh4h0-U8s8nLBqPrvA",
+  authDomain: "tk-dashboard-9c933.firebaseapp.com",
+  projectId: "tk-dashboard-9c933",
+  storageBucket: "tk-dashboard-9c933.firebasestorage.app",
+  messagingSenderId: "886658615947",
+  appId: "1:886658615947:web:65ac396598cdada475628e"
 };
 
 document.addEventListener("DOMContentLoaded",()=>{
-loadP();
-initUI();
-rOverview();
-rOTab();
-
-const saved = getFBC();
-const cfg = saved?.apiKey ? saved : DEFAULT_FB_CFG;
-document.getElementById("fb-ak").value = cfg.apiKey;
-document.getElementById("fb-ad").value = cfg.authDomain || "";
-document.getElementById("fb-pid").value = cfg.projectId || "";
-document.getElementById("mfb-ak").value = cfg.apiKey;
-document.getElementById("mfb-ad").value = cfg.authDomain || "";
-document.getElementById("mfb-pid").value = cfg.projectId || "";
-
-const checkFB = setInterval(() => {
-if (window._firebase) {
-clearInterval(checkFB);
-connectFB(cfg);
-}
-}, 500);
+  loadP();
+  initUI();
+  rOverview();
+  rOTab();
+  
+  const saved = getFBC();
+  const cfg = saved?.apiKey ? saved : DEFAULT_FB_CFG;
+  document.getElementById("fb-ak").value  = cfg.apiKey;
+  document.getElementById("fb-ad").value  = cfg.authDomain || "";
+  document.getElementById("fb-pid").value = cfg.projectId  || "";
+  document.getElementById("mfb-ak").value  = cfg.apiKey;
+  document.getElementById("mfb-ad").value  = cfg.authDomain || "";
+  document.getElementById("mfb-pid").value = cfg.projectId  || "";
+  
+  const checkFB = setInterval(() => {
+    if (window._firebase) {
+      clearInterval(checkFB);
+      connectFB(cfg);
+    }
+  }, 500);
 });
 document.querySelectorAll(".overlay").forEach(el=>{el.addEventListener("click",e=>{if(e.target===el)el.classList.add("hidden");});});
 </script>
 
 <script>
 Promise.all([
-import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
-import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
+  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
+  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
 ]).then(([app, fs]) => {
-window._firebase = {
-initializeApp: app.initializeApp,
-getFirestore: fs.getFirestore,
-doc: fs.doc,
-setDoc: fs.setDoc,
-getDoc: fs.getDoc
-};
+  window._firebase = {
+    initializeApp: app.initializeApp,
+    getFirestore: fs.getFirestore,
+    doc: fs.doc,
+    setDoc: fs.setDoc,
+    getDoc: fs.getDoc
+  };
 }).catch(e => console.log("Firebase load error:", e));
 </script>
 </body>
