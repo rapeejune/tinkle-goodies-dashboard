@@ -1120,7 +1120,7 @@ function goTab(n,btn){
 function openExpenseM() {
     document.getElementById('ex-id').value = '';
     document.getElementById('ex-date').value = td();
-    document.getElementById('ex-month').value = M_KEYS[new Date().getMonth()];
+    document.getElementById('ex-month').value = 'ALL';
     document.getElementById('ex-name').value = '';
     document.getElementById('ex-amt').value = '';
     document.getElementById('ex-note').value = '';
@@ -1163,7 +1163,7 @@ function editExpense(id) {
     if(!e) return;
     document.getElementById('ex-id').value = e.id;
     document.getElementById('ex-date').value = e.date || td();
-    document.getElementById('ex-month').value = e.month || M_KEYS[new Date().getMonth()];
+    document.getElementById('ex-month').value = e.month || 'ALL';
     document.getElementById('ex-name').value = e.name;
     document.getElementById('ex-amt').value = e.amount;
     document.getElementById('ex-note').value = e.note || '';
@@ -1201,7 +1201,7 @@ function delExpense(id) {
 }
 
 function showExpenseList(mKey) {
-   const exps = mKey === 'ALL' ? (DB[curYear].expenses || []) : (DB[curYear].expenses || []).filter(e => e.month === mKey);
+   const exps = mKey === 'ALL' ? (DB[curYear].expenses || []) : (DB[curYear].expenses || []).filter(e => e.month === mKey || e.month === 'ALL');
    const title = document.getElementById("m-expense-list-title");
    if(title) {
        title.dataset.month = mKey;
@@ -1216,7 +1216,7 @@ function showExpenseList(mKey) {
        html = exps.map(e => `
            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--cream2)">
               <div>
-                 <div style="font-weight:600; font-size:0.8rem">${e.name} ${mKey==='ALL'?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]||'รวมทั้งปี'}]</span>`:''}</div>
+                 <div style="font-weight:600; font-size:0.8rem">${e.name} ${(mKey==='ALL' && e.month!=='ALL')?`<span style="font-size:0.6rem;color:var(--orange)">[${M_LABELS[M_KEYS.indexOf(e.month)]}]</span>`:''}</div>
                  <div style="font-size:0.65rem; color:var(--muted)">📅 ${e.date || '-'} ${e.note ? `• 📝 ${e.note}` : ''}</div>
               </div>
               <div style="display:flex; align-items:center; gap:10px">
@@ -1239,7 +1239,8 @@ function showExpenseList(mKey) {
 
 function renderSummaryTable() {
    const tbody = M_KEYS.map((k, i) => {
-       const s = getMonthSummary(k); const exp = getMonthExpenses(curYear, k);
+       const s = getMonthSummary(k); 
+       const exp = getMonthExpenses(curYear, k);
        if(s.revenue === 0 && s.cogs === 0 && exp === 0) return '';
        const netSave = s.net_profit - exp;
        return `<tr>
@@ -1254,7 +1255,8 @@ function renderSummaryTable() {
        </tr>`;
    }).join('');
 
-   const ys = getYearSummary(); const totalExp = (DB[curYear].expenses || []).reduce((s,e)=>s+e.amount,0);
+   const ys = getYearSummary(); 
+   const totalExp = (DB[curYear].expenses || []).reduce((s,e)=>s+e.amount,0);
    const totalNetSave = ys.pr - totalExp;
    
    const tblWrap = document.getElementById("overview-summary-tbl");
@@ -1580,6 +1582,10 @@ function upCSVSummary(inp) {
        if(!DB[targetYear].summary) DB[targetYear].summary = {};
        
        let count = 0;
+       
+       if (!DB[targetYear].expenses) DB[targetYear].expenses = [];
+       DB[targetYear].expenses = DB[targetYear].expenses.filter(ex => !(ex.id && ex.id.startsWith("EX_CSV_")));
+
        res.data.forEach(row => {
            let mName = (row["เดือน"] || "").trim(); if(!mName) return;
            const mKey = TH_TO_EN_MONTHS[mName]; if(!mKey) return;
@@ -1592,19 +1598,26 @@ function upCSVSummary(inp) {
                shipping_charged: parseNum(row["ค่าส่งที่เก็บลูกค้า"])
            };
            
-           const expAmt = parseNum(row["ดึงไปใช้ส่วนตัว"] || row["ดึงไปใช้"] || row["ค่าใช้จ่ายส่วนตัว"] || row["ค่าใช้จ่ายอื่นๆ"] || row["ส่วนตัว"] || row["เงินเดือน"]);
-           if (expAmt > 0) {
-               if (!DB[targetYear].expenses) DB[targetYear].expenses = [];
-               DB[targetYear].expenses = DB[targetYear].expenses.filter(ex => ex.id !== "EX_CSV_"+mKey);
-               DB[targetYear].expenses.push({
-                   id: "EX_CSV_" + mKey,
-                   date: targetYear + "-" + (M_KEYS.indexOf(mKey)+1).toString().padStart(2, '0') + "-01",
-                   month: mKey,
-                   name: "ดึงไปใช้ส่วนตัว (จากตารางรวม)",
-                   amount: expAmt,
-                   note: "นำเข้ายอดจากไฟล์ CSV สรุปรายเดือน"
-               });
-           }
+           const specialKeys = ["ดึงไปใช้ส่วนตัว", "ดึงไปใช้", "ค่าใช้จ่ายส่วนตัว", "ค่าใช้จ่ายอื่นๆ", "ส่วนตัว", "เงินเดือน"];
+           Object.keys(row).forEach(col => {
+               let cleanKey = col.trim();
+               let isExpense = (cleanKey.startsWith("ค่า") && cleanKey !== "ค่าส่งจริง" && cleanKey !== "ค่าส่งที่เก็บลูกค้า" && cleanKey !== "ค่าส่ง") || specialKeys.includes(cleanKey);
+               
+               if (isExpense) {
+                   const expAmt = parseNum(row[col]);
+                   if (expAmt > 0) {
+                       DB[targetYear].expenses.push({
+                           id: "EX_CSV_" + mKey + "_" + cleanKey,
+                           date: targetYear + "-" + (M_KEYS.indexOf(mKey)+1).toString().padStart(2, '0') + "-01",
+                           month: mKey,
+                           name: cleanKey,
+                           amount: expAmt,
+                           note: "นำเข้าจากไฟล์สรุปยอดขายรวม"
+                       });
+                   }
+               }
+           });
+           
            count++;
        });
        persist(); fbSave(); if(targetYear === curYear) rOverview();
@@ -1729,6 +1742,72 @@ function doUpload(inp){
   const tEl = document.getElementById("up-type");
   const yEl = document.getElementById("m-upload-year");
   if(tEl && yEl) upCSV(tEl.value, inp, yEl.value); 
+}
+
+// ── ADD/EDIT FORMS ──
+function getProdRowTemplate() {
+  const newOpts = Object.keys(TIERED_PRICES).map(p => {
+    let baseP = TIERED_PRICES[p][TIERED_PRICES[p].length-1].p;
+    return `<option value="${p}">${p} (เริ่ม ฿${baseP})</option>`;
+  }).join("");
+  const legacyOpts = Object.keys(PRICE).filter(k => !TIERED_PRICES[k]).map(p => `<option value="${p}">${p} (เก่า)</option>`).join("");
+  
+  let html = `<option value="">-- เลือก --</option><optgroup label="สินค้าระบบใหม่ (ลดตามขั้นบันได)">${newOpts}</optgroup><optgroup label="รายการเก่า (Legacy)">${legacyOpts}</optgroup>`;
+  return `<div class="prod-row" style="display:flex;gap:5px"><select class="inp" style="flex:1" onchange="calcTot()">${html}</select><input class="inp" type="number" value="1" min="1" style="width:60px" oninput="calcTot()"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();calcTot()">✕</button></div>`;
+}
+
+function buildPick() { 
+  const elFd = document.getElementById("fd"); if(elFd) elFd.value = td(); 
+  const elCont = document.getElementById("prod-rows-container"); if(elCont) elCont.innerHTML = getProdRowTemplate(); 
+  const fsInput = document.getElementById("fs");
+  if(fsInput) {
+      fsInput.value = 50;
+      fsInput.dataset.manualChange = "";
+      fsInput.style.background = "";
+      fsInput.style.color = "";
+  }
+}
+function addProdRow() { 
+    const elCont = document.getElementById("prod-rows-container");
+    if(elCont) elCont.insertAdjacentHTML('beforeend', getProdRowTemplate()); 
+}
+
+function calcTot() { 
+  let sum = 0; 
+  document.querySelectorAll(".prod-row").forEach(r => { 
+    const s = r.querySelector("select").value; 
+    const q = parseInt(r.querySelector("input").value) || 0; 
+    if(s && q > 0) sum += getPrice(s, q) * q;
+  }); 
+
+  const fsInput = document.getElementById("fs");
+  
+  if(fsInput) {
+      if (sum >= 1500) {
+         if (fsInput.value !== "0" && !fsInput.dataset.manualChange) {
+             fsInput.dataset.oldVal = fsInput.value; 
+         }
+         if (!fsInput.dataset.manualChange || fsInput.dataset.wasFree === "1") {
+            fsInput.value = 0;
+            fsInput.dataset.wasFree = "1";
+         }
+         fsInput.style.background = "var(--green3)";
+         fsInput.style.color = "var(--green)";
+         fsInput.style.borderColor = "var(--green)";
+         fsInput.title = "จัดส่งฟรีเมื่อยอดถึง 1,500 บาท";
+      } else {
+         if (fsInput.dataset.wasFree === "1" && !fsInput.dataset.manualChange) {
+             fsInput.value = fsInput.dataset.oldVal || 50;
+             fsInput.dataset.wasFree = "0";
+         }
+         fsInput.style.background = "";
+         fsInput.style.color = "";
+         fsInput.style.borderColor = "";
+         fsInput.title = "";
+      }
+      const elFtot = document.getElementById("ftot");
+      if(elFtot) elFtot.value = sum + parseFloat(fsInput.value || 0); 
+  }
 }
 
 function saveOrder() { 
@@ -2274,6 +2353,11 @@ async function connectFB(cfg){
 
 async function fbLoad(){
   if(!FB_DB)return;
+  if (!navigator.onLine) {
+    setFBS("err", "❌ ออฟไลน์ (ใช้งานโหมด Local)");
+    toast("ทำงานในโหมดออฟไลน์", "warn");
+    return;
+  }
   try{
     setFBS("sync","กำลังดึงข้อมูล...");
     const fb=window._firebase;
@@ -2293,12 +2377,21 @@ async function fbLoad(){
     }
   }catch(e){
     console.error("Firebase Load Error:", e);
-    setFBS("err","❌ ไม่มีสิทธิ์อ่านข้อมูล");
+    if (e.message && (e.message.includes('offline') || e.message.includes('Failed to get document'))) {
+      setFBS("err","❌ ออฟไลน์ (ใช้งานโหมด Local)");
+      toast("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ ทำงานในโหมด Local", "warn");
+    } else {
+      setFBS("err","❌ ไม่มีสิทธิ์/เข้าถึงไม่ได้");
+    }
   }
 }
 
 async function fbSave(){
   if(!FB_DB)return;
+  if (!navigator.onLine) {
+    setFBS("err", "❌ ออฟไลน์ (รอเชื่อมต่อเพื่อซิงก์)");
+    return;
+  }
   try{
     setFBS("sync","⟳ กำลังเซฟ...");
     const fb=window._firebase;
@@ -2306,7 +2399,7 @@ async function fbSave(){
     setFBS("ok","✓ อัปเดต Cloud แล้ว");
   }catch(e){
     console.error("Firebase Save Error:", e);
-    setFBS("err","❌ เซฟไม่เข้า (ติดสิทธิ์)");
+    setFBS("err","❌ เซฟไม่เข้า");
     toast("❌ เซฟขึ้น Cloud ไม่สำเร็จ", "err");
   }
 }
