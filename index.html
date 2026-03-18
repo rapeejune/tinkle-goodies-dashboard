@@ -1069,20 +1069,56 @@ function showOD(id){
   const pr=Object.entries(o.products||{}).map(([k,v])=>`<span class="pill p-o">${k} ×${v}</span>`).join(" ");
   document.getElementById("odp-title").textContent="📦 "+o.name;
   
-  const delBtn = o.isNew ? `<button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">🗑 ลบออเดอร์นี้</button>` : '';
+  const delBtn = o.isNew ? `<button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">🗑 ลบ</button>` : '';
+  const toggleBtn = `<button class="btn ${o.done ? 'btn-ghost' : 'btn-mint'} btn-sm" onclick="toggleOrderStatus('${o.id}')">${o.done ? '↺ เปลี่ยนเป็นค้างส่ง' : '✓ ติ๊กว่าส่งแล้ว'}</button>`;
   
-  let noteBox = "";
-  if(o.note || o.detail) {
-      noteBox = `<div style="background:var(--cream2); border:1.5px solid var(--cream3); border-radius:8px; padding:10px; margin-top:10px;">`;
-      if(o.note) noteBox += `<div style="font-size:.75rem;color:var(--text2);margin-bottom:4px;line-height:1.5"><b>📝 หมายเหตุ:</b> ${o.note}</div>`;
-      if(o.detail) noteBox += `<div style="font-size:.75rem;color:var(--text2);line-height:1.5"><b>💬 รายละเอียด:</b> ${o.detail}</div>`;
-      noteBox += `</div>`;
-  }
+  let noteBox = `<div style="background:var(--cream2); border:1.5px solid var(--cream3); border-radius:8px; padding:10px; margin-top:10px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+    <div style="flex:1;">
+      <div style="font-size:.75rem;color:${o.note ? 'var(--text2)' : 'var(--muted)'};margin-bottom:4px;line-height:1.5"><b>📝 หมายเหตุ:</b> ${o.note || "-"}</div>
+      ${o.detail ? `<div style="font-size:.75rem;color:var(--text2);line-height:1.5"><b>💬 รายละเอียด:</b> ${o.detail}</div>` : ""}
+    </div>
+    <button class="btn btn-ghost btn-sm" style="padding:4px 8px; font-size:0.65rem;" onclick="editOrderNote('${o.id}')">✏️ แก้ไข</button>
+  </div>`;
 
-  document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${noteBox}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1.5px solid rgba(0,0,0,.05)"><button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button>${delBtn}</div>`;
+  document.getElementById("odp-body").innerHTML=`<div class="str"><div class="sti"><span class="stl">วันที่</span><span class="stv">${o.date||"—"}</span></div><div class="sti"><span class="stl">ยอด</span><span class="stv" style="color:var(--orange)">${fmt(o.revenue)}</span></div><div class="sti"><span class="stl">การจ่าย</span><span class="stv">${o.payment||"—"}</span></div><div class="sti"><span class="stl">สถานะ</span><span class="stv">${o.done?"<span class='pill p-g'>✓ เสร็จ</span>":"<span class='pill p-s'>⏳ ค้าง</span>"}</span></div></div><div style="display:flex;flex-wrap:wrap;gap:5px;margin:9px 0">${pr||"<span style='color:var(--muted)'>ไม่มีข้อมูล</span>"}</div>${noteBox}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1.5px solid rgba(0,0,0,.05)"><button class="btn btn-ghost btn-sm" onclick="closeOD()">ปิดหน้านี้</button><div style="display:flex; gap:6px;">${toggleBtn}${delBtn}</div></div>`;
   
   p.classList.remove("hidden");
   p.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function toggleOrderStatus(id) {
+  let o = null;
+  [...M_KEYS, "NEW"].forEach(m => {
+    if(!o) o = getO(m).find(x => x.id === id);
+  });
+  if(!o) return;
+  
+  o.done = !o.done;
+  persist();
+  fbSave();
+  rOverview();
+  rOTab();
+  showOD(id);
+  toast(o.done ? "ทำเครื่องหมายส่งแล้ว" : "เปลี่ยนสถานะเป็นค้างส่ง");
+}
+
+function editOrderNote(id) {
+  let o = null;
+  [...M_KEYS, "NEW"].forEach(m => {
+    if(!o) o = getO(m).find(x => x.id === id);
+  });
+  if(!o) return;
+  
+  const newNote = prompt("แก้ไขหมายเหตุออเดอร์:", o.note || "");
+  if(newNote !== null) {
+    o.note = newNote.trim();
+    persist();
+    fbSave();
+    rOverview();
+    rOTab();
+    showOD(id);
+    toast("อัปเดตหมายเหตุแล้ว");
+  }
 }
 
 // ORDERS TAB
