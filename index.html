@@ -174,8 +174,8 @@ label{display:block;font-size:.66rem;color:var(--muted);margin-bottom:3px;text-t
 select.inp option{background:#fff;color:var(--text)}
 
 /* SHIPPING LOG */
-.sli{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;background:var(--cream);border:1.5px solid var(--cream3);margin-bottom:5px}
-.sli:hover{background:var(--sky3)}
+.sli{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;background:var(--cream);border:1.5px solid var(--cream3);margin-bottom:5px;cursor:pointer;transition:all .15s}
+.sli:hover{background:var(--sky3);border-color:rgba(62,168,216,.3);transform:translateX(2px)}
 .sli-d{font-size:.73rem;color:var(--muted);width:84px;flex-shrink:0}
 .sli-n{flex:1;font-size:.73rem;color:var(--text2)}
 .sli-a{font-family:'Space Mono',monospace;font-size:.86rem;font-weight:700;color:var(--sky)}
@@ -287,7 +287,7 @@ select.inp option{background:#fff;color:var(--text)}
       <button class="btn btn-sky btn-sm" onclick="openM('m-upload')" title="นำเข้า CSV">📂</button>
       <button class="btn btn-purple btn-sm" onclick="openExpenseM()">💸 จ่ายอื่นๆ</button>
       <button class="btn btn-orange btn-sm" onclick="openCreateOrder()">＋ ออเดอร์</button>
-      <button class="btn btn-mint btn-sm" onclick="openM('m-ship')">＋ ค่าส่ง</button>
+      <button class="btn btn-mint btn-sm" onclick="openShipM()">＋ ค่าส่ง</button>
       <button class="btn btn-red btn-sm" onclick="openPurchaseM()">＋ สั่งของ</button>
       <button class="btn btn-sky btn-sm" style="background:var(--sky2)" onclick="openCorpM()">＋ B2B</button>
     </div>
@@ -702,12 +702,16 @@ select.inp option{background:#fff;color:var(--text)}
   <div class="modal" style="max-width:380px">
     <div class="modal-title">🚚 บันทึกค่าส่ง</div>
     <button class="mclose" onclick="closeM('m-ship')">✕</button>
+    <input type="hidden" id="fs-id">
     <div class="ffull"><label>วันที่ส่ง *</label><input class="inp" id="fsd" type="date"></div>
     <div class="ffull"><label>ค่าส่งที่จ่ายจริง (บาท) *</label><input class="inp" id="fsc" type="number" min="0" placeholder="225"></div>
     <div class="ffull"><label>หมายเหตุ</label><input class="inp" id="fsn" placeholder="เช่น แกร็บ 4 ชิ้น"></div>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-      <button class="btn btn-ghost" onclick="closeM('m-ship')">ยกเลิก</button>
-      <button class="btn btn-sky" onclick="saveShip()">💾 บันทึก</button>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between">
+      <button class="btn btn-danger btn-sm" id="btn-del-ship" style="display:none" onclick="delShipFromModal()">🗑 ลบ</button>
+      <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="closeM('m-ship')">ยกเลิก</button>
+          <button class="btn btn-sky" onclick="saveShip()">💾 บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1702,28 +1706,99 @@ function renderOL(){
   if(elCt) elCt.textContent="แสดง "+Math.min(ords.length,120)+" / "+ords.length+" รายการ";
 }
 
-// --- SHIPPING ---
+// --- SHIPPING (FIXED EDIT & DELETE) ---
+function openShipM() {
+    document.getElementById('fs-id').value = '';
+    document.getElementById('fsd').value = td();
+    document.getElementById('fsc').value = '';
+    document.getElementById('fsn').value = '';
+    const bDel = document.getElementById('btn-del-ship'); if(bDel) bDel.style.display = 'none';
+    openM('m-ship');
+}
+
+function editShip(id) {
+    let s = NS.find(x => String(x.id) === String(id)) || DB[curYear].shipping.find(x => String(x.id) === String(id));
+    if(!s) return;
+    document.getElementById('fs-id').value = s.id;
+    
+    let dVal = s.date;
+    if(dVal && dVal.includes('/')) {
+        let p = dVal.split('/');
+        if(p.length === 3) dVal = `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+    
+    document.getElementById('fsd').value = dVal || td();
+    document.getElementById('fsc').value = s.cost || '';
+    document.getElementById('fsn').value = s.note || '';
+    const bDel = document.getElementById('btn-del-ship'); if(bDel) bDel.style.display = 'block';
+    openM('m-ship');
+}
+
 function saveShip() { 
+    const elId = document.getElementById("fs-id");
+    const id = elId ? elId.value : "";
     const elFsd = document.getElementById("fsd");
     const elFsc = document.getElementById("fsc");
     const elFsn = document.getElementById("fsn");
     if(!elFsd || !elFsc) return;
 
-    NS.push({
-        id:"NS_"+Date.now(), 
-        isNew:true, 
-        date:elFsd.value, 
-        cost:parseFloat(elFsc.value)||0, 
-        note:elFsn ? elFsn.value : ""
-    }); 
-    persist(); fbSave(); rOverview(); rShip(); closeM('m-ship'); toast("บันทึกค่าส่งแล้ว"); 
+    const cost = parseFloat(elFsc.value) || 0;
+    if(!elFsd.value || cost <= 0) { toast("กรุณากรอกวันที่และค่าส่ง", "warn"); return; }
+
+    let dVal = elFsd.value; 
+
+    if (id) {
+        let foundNS = NS.find(x => String(x.id) === String(id));
+        if (foundNS) {
+            foundNS.date = dVal; foundNS.cost = cost; foundNS.note = elFsn ? elFsn.value : "";
+        } else {
+            let foundDB = DB[curYear].shipping.find(x => String(x.id) === String(id));
+            if (foundDB) {
+                foundDB.date = dVal; foundDB.cost = cost; foundDB.note = elFsn ? elFsn.value : "";
+            }
+        }
+        toast("อัปเดตค่าส่งแล้ว");
+    } else {
+        NS.push({
+            id: "NS_" + Date.now(), 
+            isNew: true, 
+            date: dVal, 
+            cost: cost, 
+            note: elFsn ? elFsn.value : ""
+        }); 
+        toast("บันทึกค่าส่งแล้ว");
+    }
+    
+    persist(); fbSave(); rOverview(); rShip(); closeM('m-ship'); 
+}
+
+function delShipFromModal() {
+    showConfirm('ต้องการลบรายการค่าส่งนี้ใช่หรือไม่?', () => {
+        const elId = document.getElementById('fs-id'); if(!elId) return;
+        const id = elId.value;
+        let foundNS = NS.findIndex(x => String(x.id) === String(id));
+        if (foundNS > -1) {
+            NS.splice(foundNS, 1);
+        } else {
+            DB[curYear].shipping = DB[curYear].shipping.filter(x => String(x.id) !== String(id));
+        }
+        persist(); fbSave(); rOverview(); rShip(); closeM('m-ship'); toast('ลบค่าส่งสำเร็จ');
+    });
 }
 
 function rShip() { 
     const sum = allShip().reduce((s,c)=>s+c.cost,0); 
     const elPaid = document.getElementById("sh-paid"); if(elPaid) elPaid.textContent=fmt(sum); 
     const sl = document.getElementById("ship-list"); 
-    if(sl) sl.innerHTML = allShip().map(s=>`<div class="sli"><div class="sli-d">${s.date}</div><div class="sli-n">${s.note||""}</div><div class="sli-a">${fmt(s.cost)}</div></div>`).join(""); 
+    if(sl) {
+        let ships = allShip().sort((a,b) => pDate(b.date) - pDate(a.date));
+        sl.innerHTML = ships.map(s=>`
+        <div class="sli" style="cursor:pointer" onclick="editShip('${s.id}')">
+            <div class="sli-d">${s.date}</div>
+            <div class="sli-n">${s.note||""}</div>
+            <div class="sli-a">${fmt(s.cost)}</div>
+        </div>`).join(""); 
+    }
 }
 
 // --- PURCHASE (FIXED LOGIC) ---
@@ -1778,11 +1853,9 @@ function updatePur() {
     };
 
     if (id) {
-        // Update existing
-        let p = DB[curYear].purchases.find(x => x.id === id);
+        let p = DB[curYear].purchases.find(x => String(x.id) === String(id));
         if(p) Object.assign(p, pData);
     } else {
-        // Insert new
         pData.id = "PU_" + Date.now();
         if(!DB[curYear].purchases) DB[curYear].purchases = [];
         DB[curYear].purchases.push(pData);
@@ -1793,7 +1866,7 @@ function updatePur() {
 }
 
 function showPur(id) {
-    let p = DB[curYear].purchases.find(x => x.id === id);
+    let p = DB[curYear].purchases.find(x => String(x.id) === String(id));
     if(!p) return;
     
     const eId = document.getElementById('epu-id'); if(eId) eId.value = p.id;
@@ -1816,7 +1889,7 @@ function delPur() {
     showConfirm('ต้องการลบรายการนี้ใช่หรือไม่?', () => {
         const elId = document.getElementById('epu-id'); if(!elId) return;
         const id = elId.value;
-        DB[curYear].purchases = DB[curYear].purchases.filter(x => x.id !== id);
+        DB[curYear].purchases = DB[curYear].purchases.filter(x => String(x.id) !== String(id));
         persist(); fbSave(); rOverview(); rPurchase(); closeM('m-pur-detail'); toast('ลบรายการสำเร็จ');
     });
 }
@@ -2217,6 +2290,7 @@ function parseShipCSV(txt){
   return res.data.map(r=>{
     const getV = (keys) => { for(let key in r) { let ck = key.replace(/\s+/g,'').toLowerCase(); for(let k of keys) { if(ck.includes(k.toLowerCase())) return r[key]; } } return ""; };
     return {
+      id: "NS_CSV_" + Date.now() + "_" + Math.random(),
       date: (getV(["วันที่", "date"])||"").trim(),
       cost: parseNum(getV(["ค่าส่งที่จ่าย", "ค่าส่ง", "cost"])),
       note: (getV(["หมายเหตุ", "note"])||"").trim()
