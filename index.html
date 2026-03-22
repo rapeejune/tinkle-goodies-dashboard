@@ -35,7 +35,20 @@ body{
     radial-gradient(ellipse 50% 35% at 5% 90%,rgba(62,168,216,.06) 0%,transparent 55%),
     radial-gradient(circle at 1px 1px,rgba(232,114,42,.06) 1px,transparent 0);
   background-size:auto,auto,26px 26px;
+  /* --- SECURITY: ป้องกันการคลุมดำข้อความ --- */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
+/* อนุญาตให้คลุมดำและพิมพ์ได้เฉพาะในช่องกรอกข้อมูลเท่านั้น */
+input, textarea, select {
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  user-select: auto !important;
+}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--orange2);border-radius:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -2542,6 +2555,18 @@ function saveFBCfg(){
 }
 
 function disconnFB(){localStorage.removeItem("tg_fbc");FB_DB=null;setFBS("err","ไม่ได้เชื่อมต่อ");toast("ยกเลิกเชื่อมต่อแล้ว");}
+
+// ── SECURITY ──
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => {
+  e.preventDefault();
+  toast("⚠️ ไม่อนุญาตให้คัดลอกข้อมูลระบบ", "warn");
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'F12') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && ['I', 'J', 'i', 'j'].includes(e.key)) e.preventDefault();
+  if (e.ctrlKey && ['U', 'u'].includes(e.key)) e.preventDefault();
+});
 
 // ── INIT ──
 document.addEventListener("DOMContentLoaded", () => {
